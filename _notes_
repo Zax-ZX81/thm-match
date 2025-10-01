@@ -27,7 +27,18 @@ E F G H I J L K
 M N O P Q R S T
 U V W X Y Z - +
 
-The RGB of each pixel added together divided by 4096
+Greystamp: The RGB of each pixel added together divided by 4096
 
-Each of R, G and B added together separately and divided by 4096.
+Huestamp: Each of R, G and B added together separately and divided by 4096.
+Then hue calculated for 6 bit
+r>(g|r)=MOD((g-b)/(MIN-MAX),6)*10.5
+g>(r|b)=(2+((b-r)/(MIN-MAX)))*10.5
+r>(r|g)=(4+((r-g)/(MIN-MAX)))*10.5
 
+Magnitude: Image megapixel count expressed as 6 bit.
+((pixels/450)^(1/3))-3
+0=100x75, 1=200x150, 2=300x225, 4=400x300 ... 10=1200x900 ... 20=2700x2025 ... 30=4600x3450 ... 63=13000x9750
+
+Append statistics to rgb thumnail filename
+ImageFile.jpg.rgb_wgMw_Qc7k_b
+ <orig file>     <grey|hue><mag>
