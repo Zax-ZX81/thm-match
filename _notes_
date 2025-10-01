@@ -1,0 +1,33 @@
+ImageFile.jpg -> ImageFile.jpg.rgb
+64x64x6bit, 9216 bytes, with 50% grey padding
+
+__________________		__________________
+|        |        |		|        |        |
+|        |        |		|        |        |
+|        |        |		|        |        |
+|        |        |		|        |        |
+|________|________|		|________|________|
+|        |        |		|        |        |
+|        |        |		|        |        |
+|        |        |		|        |        |
+|        |        |		|        |        |
+|________|________|		| _______|________|
+
+Average greyscale of		Average hue of
+quadrants in 6 bit		quadrants in 6 bit
+expressed as base		expressed as base
+64 characters			64 characters
+
+0 1 2 3 4 5 6 7
+8 9 a b c d e f
+g h i j k l m n
+o p q r s t u v
+w x y z A B C D
+E F G H I J L K
+M N O P Q R S T
+U V W X Y Z - +
+
+The RGB of each pixel added together divided by 4096
+
+Each of R, G and B added together separately and divided by 4096.
+
