@@ -27,9 +27,9 @@ E F G H I J L K
 M N O P Q R S T
 U V W X Y Z - +
 
-Greystamp: The RGB of each pixel added together divided by 4096
+Greystamp: The RGB of pixels in each quadrant added together divided by 4096
 
-Huestamp: Each of R, G and B added together separately and divided by 4096.
+Huestamp: Each of R, G and B added together separately for each quadrant and divided by 4096.
 Then hue calculated for 6 bit
 r>(g|r)=MOD((g-b)/(MIN-MAX),6)*10.5
 g>(r|b)=(2+((b-r)/(MIN-MAX)))*10.5
