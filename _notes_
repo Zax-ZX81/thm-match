@@ -40,5 +40,31 @@ Magnitude: Image megapixel count expressed as 6 bit.
 0=100x75, 1=200x150, 2=300x225, 4=400x300 ... 10=1200x900 ... 20=2700x2025 ... 30=4600x3450 ... 63=13000x9750
 
 Append statistics to rgb thumnail filename
-ImageFile.jpg.rgb_wgMw_Qc7k_b
- <orig file>     <grey|hue><mag>
+ImageFile.jpg_wgMw_Qc7k_b.tprt
+ <orig file> <grey|hue><mag>
+
+One array per quadrant: float red, float green, float blue
+
+Read 9 bytes from file, use division and modululus to turn 12 6 bit values into 8 bit and return averages the channels to the quadrant array.
+
+Process upper left and upper right quadrants through 32 times 16 chunks of 9 bytes - 8 per quadrant.
+Repeat for bottom half.
+
+Quadrant arrays accumulate 256 four pixel averages per channel.
+
+Grey level per quadrant is three channels all added and averaged.  Three channels averaged and hue calculated.
+
+Create thumbnails (ImageFile.jpg.rgb), 
+
+>convert "$f" -resize 400x500\! -set filename:f "%[t]-%[w]x%[h]" "%[filename:f].png"<
+From: https://stackoverflow.com/questions/40320119/mogrify-resize-and-append-new-filesize-to-filename
+
+Use bit fields for 6 bit handling?
+struct S {
+ // 6-bit unsigned field,
+ // allowed values are 0...63
+ unsigned int b : 6;
+};
+
+Bit masking
+https://www.geeksforgeeks.org/c/c-bitmasking/
