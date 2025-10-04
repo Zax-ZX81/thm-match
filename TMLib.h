@@ -113,6 +113,29 @@
 #define TEXT_ORANGE "\33[33m"
 #define TEXT_RED "\33[1m\33[91m"
 
+struct four_six_bit_pixels	//test 6 bit integer array
+        {
+	unsigned int red_a : 6;
+	unsigned int grn_a : 6;
+	unsigned int blu_a : 6;
+	unsigned int red_b : 6;
+	unsigned int grn_b : 6;
+	unsigned int blu_b : 6;
+	unsigned int red_c : 6;
+	unsigned int grn_c : 6;
+	unsigned int blu_c : 6;
+	unsigned int red_d : 6;
+	unsigned int grn_d : 6;
+	unsigned int blu_d : 6;
+	};
+
+struct rgb_accumulator
+	{
+	float red_val;
+	float grn_val;
+	float blu_val;
+	};
+
 struct sha_database
 	{
 	char sha [SHA_LENGTH + 1];
@@ -161,7 +184,7 @@ struct fs_list_entry
 	int index;
 	};
 
-struct filter_list_entry
+struct filtered_list_entry
 	{
 	char object_type;
 	char filepath [FILEPATH_LENGTH];
@@ -256,5 +279,5 @@ char sha_verify (char *file_line);
 void separate_fields (char *field_one, char *field_two, char *field_three, char *fileline);
 char hex_to_dec (char hex_char);
 char *enquote (char *filepath);
-char filter_line_check (char *filter_line);
+char filtered_line_check (char *filtered_line);
 
