@@ -100,7 +100,7 @@
 /*SHA256SUM*/
 #define SHA_LENGTH 64
 #define SHA_OFFSET SHA_LENGTH + 2
-#define SIXTYFOUR_BIT "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+\n"
+#define SIXTYFOUR_BIT "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
 
 #define DIR_TYPE 4
 #define FILE_TYPE 8
@@ -134,6 +134,14 @@ struct rgb_accumulator
 	float red_val;
 	float grn_val;
 	float blu_val;
+	};
+
+struct colgry_accumulator
+	{
+	float red_val;
+	float grn_val;
+	float blu_val;
+	float gry_val;
 	};
 
 struct sha_database
