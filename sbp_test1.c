@@ -25,12 +25,19 @@ struct four_six_bit_pixels fsbp;
 struct rgb_accumulator rgb_return;
 //unsigned char sb_a, sb_b, sb_c, fsbp.red_b, fsbp.grn_b, fsbp.blu_b, fsbp.red_c, fsbp.grn_c, fsbp.blu_c, fsbp.red_d, fsbp.grn_d, fsbp.blu_d;
 unsigned char tmpa, tmpb;
-char nine_byte_string [9] = "aBcDeFgH0";
+char nine_byte_string [9];
 float red_avg, grn_avg, blu_avg;
 
-strcpy (fsbp, nine_byte_string);
+FILE* rgb_thumbnail = fopen("Nomads.jpg.rgb", "rb");
 
-/*tmpa = nine_byte_string [0];
+if (rgb_thumbnail == NULL) {
+	perror("Error opening file");
+	return 1;
+	}
+fread (nine_byte_string, 9, 1, rgb_thumbnail);
+fclose(rgb_thumbnail);
+
+tmpa = nine_byte_string [0];
 fsbp.red_a = (tmpa >> 2);
 
 tmpa = nine_byte_string [0];
@@ -92,7 +99,7 @@ fsbp.grn_d = fsbp.grn_d + tmpb;
 tmpa = nine_byte_string [8];
 tmpb = (tmpa << 2);
 fsbp.blu_d = (tmpb >> 2);
-*/
+
 rgb_return.red_val = (float) (fsbp.red_a + fsbp.red_b + fsbp.red_c + fsbp.red_d)/4;
 rgb_return.grn_val = (float) (fsbp.grn_a + fsbp.grn_b + fsbp.grn_c + fsbp.grn_d)/4;
 rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d)/4;
@@ -100,19 +107,15 @@ rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d)
 printf ("%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d\n", fsbp.red_a, fsbp.grn_a, fsbp.blu_a, fsbp.red_b, fsbp.grn_b, fsbp.blu_b, fsbp.red_c, fsbp.grn_c, fsbp.blu_c, fsbp.red_d, fsbp.grn_d, fsbp.blu_d);
 printf ("Red average: %f, Green average: %f, Blue average: %f\n", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
 
-printf ("Size of FSBP: %lu	%lu", sizeof(fsbp), sizeof(fsbp.red_a));
-
-
-//printf ("24	20	9	35	17	6	21	6	25	52	32	48\n");
 
 }
 /*
 https://www.geeksforgeeks.org/c/how-to-read-struct-from-binary-file-in-c/
 
 
-FILE* file = fopen("employee_data.bin", "rb");
+FILE* rgb_thumbnail = fopen("Nomads.jpg.rgb", "rb");
 
-if (file == NULL) {
+if (rgb_thumbnail == NULL) {
 	perror("Error opening file");
 	return 1;
 	}

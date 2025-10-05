@@ -280,4 +280,4 @@ void separate_fields (char *field_one, char *field_two, char *field_three, char 
 char hex_to_dec (char hex_char);
 char *enquote (char *filepath);
 char filtered_line_check (char *filtered_line);
-
+struct rgb_accumulator get_nine_six (char *nine_byte_string);

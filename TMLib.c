@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SMLib.h"
+#include "TMLib.h"
 
 
 void exit_error (char *message_a, char *message_b)	// Print two strings as error messages in orange
@@ -21,135 +21,82 @@ exit (1);
 }
 
 
-char sha_verify (char *fileline)
+struct rgb_accumulator get_nine_six (char *nine_byte_string)  // Extract 12 6 bit values from 9 bytes
 {
-int char_index;
-char *char_pos;
-const char hex_string [16] = "0123456789abcdef";
-for (char_index = 0; char_index < SHA_LENGTH; char_index ++)
-	{
-	char_pos = strchr (hex_string, fileline [char_index]);
-	if (char_pos == NULL)
-		{
-		return (UNKNOWN_TYPE);
-		}
-	}
+struct four_six_bit_pixels fsbp;
+struct rgb_accumulator rgb_return;
 
-//printf (">%s<", fileline);			// ### uncomment this to pipe stdout to a file to check
-						// ### which line terminators CertUtil is using
-if (fileline [char_index] == SPACE_CHAR)
-	{
-	return (SHA256_TYPE);
-	}
-if (fileline [char_index] == TAB_CHAR)
-	{
-	return (S2DB_TYPE);
-	}
-if (fileline [char_index] == CGE_RET)		// ### use CGE_RET or RET_CHAR depending on CertUtil input
-	{
-	return (CERTUTIL_SHA256);
-	}
-return (UNKNOWN_TYPE);
-}
+unsigned char tmpa, tmpb;
 
+tmpa = nine_byte_string [0];
+fsbp.red_a = (tmpa >> 2);
 
-char *three_fields (char *field_a, char *field_b, char *field_c)	// Join three fields with TAB delimiters
-{
-char *out_string = malloc (FILELINE_LENGTH);
-char str_term [2] = {'\t','\0'};
+tmpa = nine_byte_string [0];
+tmpb = (tmpa << 6);
+fsbp.grn_a = ((tmpb >> 2) & ~15) | 0;
+tmpa = nine_byte_string [1];
+tmpb = (tmpa >> 4);
+fsbp.grn_a = fsbp.grn_a + tmpb;
 
-strcpy (out_string, field_a);
-strcat (out_string, str_term);
-strcat (out_string, field_b);
-strcat (out_string, str_term);
-strcat (out_string, field_c);
+tmpa = nine_byte_string [1];
+tmpb = (tmpa << 4);
+fsbp.blu_a = (tmpb >> 2);
+tmpa = nine_byte_string [2];
+tmpb = (tmpa >> 6);
+fsbp.blu_a = fsbp.blu_a + tmpb;
 
-return out_string;
-}
+tmpa = nine_byte_string [2];
+tmpb = (tmpa << 2);
+fsbp.red_b = (tmpb >> 2);
 
+tmpa = nine_byte_string [3];
+fsbp.grn_b = (tmpa >> 2);
 
-void separate_fields (char *field_one, char *field_two, char *field_three, char *fileline)
-{					// read three column, tab delimited line
-int fileline_len;
-int tab_offset;
-int char_index;
-int out_idx = 0;
+tmpa = nine_byte_string [3];
+tmpb = (tmpa << 6);
+fsbp.blu_b = ((tmpb >> 2) & ~15) | 0;
+tmpa = nine_byte_string [4];
+tmpb = (tmpa >> 4);
+fsbp.blu_b = fsbp.blu_b + tmpb;
 
-fileline_len = strlen (fileline) - 1;
-tab_offset = -(fileline - strrchr (fileline, TAB_CHAR));
-strncpy (field_one, fileline, SHA_LENGTH);
-for (char_index = SHA_LENGTH + 1; char_index < tab_offset; char_index ++)
-	{
-	field_two [out_idx++] = fileline[char_index];
-	}
-field_two [out_idx] = NULL_TERM;
-out_idx = 0;
-for (char_index = tab_offset + 1; char_index < fileline_len; char_index ++)
-	{
-	field_three [out_idx++] = fileline[char_index];
-	}
-field_three [out_idx] = NULL_TERM;
-}
+tmpa = nine_byte_string [4];
+tmpb = (tmpa << 4);
+fsbp.red_c = (tmpb >> 2);
+tmpa = nine_byte_string [5];
+tmpb = (tmpa >> 6);
+fsbp.red_c = fsbp.red_c + tmpb;
 
+tmpa = nine_byte_string [5];
+tmpb = (tmpa << 2);
+fsbp.grn_c = (tmpb >> 2);
 
-char hex_to_dec (char hex_char)
-{
-if (hex_char > 57)
-	{
-	return (hex_char - 87);
-	}
-	else
-	{
-	return (hex_char - 48);
-	}
-}
+tmpa = nine_byte_string [6];
+fsbp.blu_c = (tmpa >> 2);
+
+tmpa = nine_byte_string [6];
+tmpb = (tmpa << 6);
+fsbp.red_d = ((tmpb >> 2) & ~15) | 0;
+tmpa = nine_byte_string [7];
+tmpb = (tmpa >> 4);
+fsbp.red_d = fsbp.red_d + tmpb;
+
+tmpa = nine_byte_string [7];
+tmpb = (tmpa << 4);
+fsbp.grn_d = (tmpb >> 2);
+tmpa = nine_byte_string [8];
+tmpb = (tmpa >> 6);
+fsbp.grn_d = fsbp.grn_d + tmpb;
+
+tmpa = nine_byte_string [8];
+tmpb = (tmpa << 2);
+fsbp.blu_d = (tmpb >> 2);
+
+printf ("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", fsbp.red_a, fsbp.grn_a, fsbp.blu_a, fsbp.red_b, fsbp.grn_b, fsbp.blu_b, fsbp.red_c, fsbp.grn_c, fsbp.blu_c, fsbp.red_d, fsbp.grn_d, fsbp.blu_d);
+
+rgb_return.red_val = (float) (fsbp.red_a + fsbp.red_b + fsbp.red_c + fsbp.red_d) / 4;
+rgb_return.grn_val = (float) (fsbp.grn_a + fsbp.grn_b + fsbp.grn_c + fsbp.grn_d) / 4;
+rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d) / 4;
 
 
-char *enquote (char *filepath)	// Encapsulate a string in double quotes
-{
-char *out_string = malloc (FILELINE_LENGTH);
-char quote_marks [] = {'"', '\0'};
-
-strcpy (out_string, quote_marks);
-strcat (out_string, filepath);
-strcat (out_string, quote_marks);
-
-return out_string;
-}
-
-
-char filter_line_check (char *filter_line)
-{
-char first_char;
-
-if (strchr (filter_line, ':') != NULL)
-	{
-	return (0);
-	}
-first_char = filter_line [0];
-if (first_char == 47)		// ' rejected
-	{
-	return (0);
-	}
-if (first_char == 95)		// _ rejected
-	{
-	return (0);
-	}
-if (first_char == 35)		// # char marks comment
-	{
-	return (2);
-	}
-if (first_char < 45 || first_char > 122)	// NUL -> , and chrs beyond z rejected
-	{
-	return (0);
-	}
-if (first_char < 65 && first_char > 57)		// : -> @ rejected
-	{
-	return (0);
-	}
-if (first_char < 97 && first_char > 90)		// chrs between upper and lower case rejected
-	{
-	return (0);
-	}
-return (1);
+return rgb_return;
 }
