@@ -57,7 +57,7 @@ struct maxmin_return
 	char channel;
 	float value;
 	};
-
+// r g b M m
 
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (char *nine_byte_string);
