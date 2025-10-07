@@ -85,15 +85,20 @@ for (olp = 0; olp < 4; olp++)
 	printf ("R: %f\tG: %f\tB: %f\t", red_eb, grn_eb, blu_eb);
 	if (limit_return.channel == RED_CHAN )
 		{
-		hue_value = fmodf ((grn_eb - blu_eb) / (limit_return.max_val - limit_return.min_val), 6) * 10.5;
+		hue_value = (grn_eb - blu_eb) / (limit_return.max_val - limit_return.min_val);
+		if (hue_value < 0)
+			{
+			hue_value = hue_value + 6;
+			}
+//		printf ("R%f  %f  %fR\t", (float) fabs (grn_eb - blu_eb), (limit_return.max_val - limit_return.min_val), fmodf ((float) fabs (grn_eb - blu_eb) / (limit_return.max_val - limit_return.min_val), 6));
 		}
 	if (limit_return.channel == GRN_CHAN )
 		{
-		hue_value = (2 + ((blu_eb - red_eb) / (limit_return.max_val - limit_return.min_val))) * 10.5;
+		hue_value = 2 + ((blu_eb - red_eb) / (limit_return.max_val - limit_return.min_val));
 		}
 	if (limit_return.channel == BLU_CHAN )
 		{
-		hue_value = (4 + ((red_eb - grn_eb) / (limit_return.max_val - limit_return.min_val))) * 10.5;
+		hue_value = 4 + ((red_eb - grn_eb) / (limit_return.max_val - limit_return.min_val));
 		}
 
 //	printf ("%c%c%c%c ", sixtyfour_bit [(int) quad_accum[0].red_val], sixtyfour_bit [(int) quad_accum[0].grn_val], sixtyfour_bit [(int) quad_accum[0].blu_val], sixtyfour_bit [(int) quad_accum[0].gry_val]);
@@ -124,7 +129,6 @@ g>(r|b)=(2+((b-r)/(MIN-MAX)))*10.5
 r>(r|g)=(4+((r-g)/(MIN-MAX)))*10.5
 
 */
-printf ("\n");
 fclose (rgb_thumbnail);
 }
 

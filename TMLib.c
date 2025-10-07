@@ -106,42 +106,36 @@ struct maxmin_return find_max (float red_value, float grn_value, float blu_value
 {
 struct maxmin_return ans;
 
-if ((blu_value >= red_value) && (blu_value >= grn_value))
-	{
-	ans.channel = BLU_CHAN;
-	ans.max_val = blu_value;
-	}
-
-if ((grn_value >= red_value) && (grn_value >= blu_value))
-	{
-	ans.channel = GRN_CHAN;
-	ans.max_val = grn_value;
-	}
-
 if ((red_value >= grn_value) && (red_value >= blu_value))
 	{
 	ans.channel = RED_CHAN;
 	ans.max_val = red_value;
 	}
-
-if ((blu_value <= red_value) && (blu_value <= grn_value))
+	else
 	{
-	ans.channel = BLU_CHAN;
-	ans.min_val = blu_value;
+	if ((grn_value >= red_value) && (grn_value >= blu_value))
+		{
+		ans.channel = GRN_CHAN;
+		ans.max_val = grn_value;
+		}
+		else
+		{
+		ans.channel = BLU_CHAN;
+		ans.max_val = blu_value;
+		}
 	}
-
-if ((grn_value <= red_value) && (grn_value <= blu_value))
-	{
-	ans.channel = GRN_CHAN;
-	ans.min_val = grn_value;
-	}
-
 if ((red_value <= grn_value) && (red_value <= blu_value))
 	{
-	ans.channel = RED_CHAN;
 	ans.min_val = red_value;
 	}
-
+if ((grn_value <= red_value) && (grn_value <= blu_value))
+	{
+	ans.min_val = grn_value;
+	}
+if ((blu_value <= red_value) && (blu_value <= grn_value))
+	{
+	ans.min_val = blu_value;
+	}
 return ans;
 }
 
