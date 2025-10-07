@@ -55,7 +55,8 @@ struct colgry_accumulator
 struct maxmin_return
 	{
 	char channel;
-	float value;
+	float max_val;
+	float min_val;
 	};
 // r g b M m
 
