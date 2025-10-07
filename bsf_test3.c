@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "TMLib.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -30,7 +31,7 @@ char sixtyfour_bit [65] = SIXTYFOUR_BIT;
 
 int qlp, llp, hlp, olp;
 
-float hue_value;
+float hue_value, red_eb, grn_eb, blu_eb;
 
 FILE* rgb_thumbnail = fopen(argv [FILE_ARG - 1], "rb");
 
@@ -50,17 +51,17 @@ for (olp = 0; olp < 4; olp += 2)
 				{
 				fread (nine_byte_string, 9, 1, rgb_thumbnail);
 				rgb_return = get_nine_six (nine_byte_string);
-				printf ("%c.%c.%c ", sixtyfour_bit [(int) rgb_return.red_val], sixtyfour_bit [(int) rgb_return.grn_val], sixtyfour_bit [(int) rgb_return.blu_val]);
+//				printf ("%c.%c.%c ", sixtyfour_bit [(int) rgb_return.red_val], sixtyfour_bit [(int) rgb_return.grn_val], sixtyfour_bit [(int) rgb_return.blu_val]);
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
 				quad_accum[olp + llp].gry_val = quad_accum[olp + llp].gry_val + (rgb_return.red_val + rgb_return.grn_val + rgb_return.blu_val) / 3;
 				}	// end qlp
-			printf ("  ");
+//			printf ("  ");
 			}	// xend llp
-		printf ("\n");
+//		printf ("\n");
 		}	// end hlp
-	printf ("\n");
+//	printf ("\n");
 	}	// end olp
 for (olp = 0; olp < 4; olp++)
 	{
@@ -70,30 +71,50 @@ for (olp = 0; olp < 4; olp++)
 	quad_accum[olp].gry_val = quad_accum[olp].gry_val / 256;
 	}
 
-printf ("%c%c%c%c ", sixtyfour_bit [(int) quad_accum[0].red_val], sixtyfour_bit [(int) quad_accum[0].grn_val], sixtyfour_bit [(int) quad_accum[0].blu_val], sixtyfour_bit [(int) quad_accum[0].gry_val]);
-printf ("%c%c%c%c\n", sixtyfour_bit [(int) quad_accum[1].red_val], sixtyfour_bit [(int) quad_accum[1].grn_val], sixtyfour_bit [(int) quad_accum[1].blu_val], sixtyfour_bit [(int) quad_accum[1].gry_val]);
+//for (olp = 0; olp < 4; olp++)
+//	{
+	max_return = find_max (quad_accum[0].red_val, quad_accum[0].grn_val, quad_accum[0].blu_val);
+	min_return = find_min (quad_accum[0].red_val, quad_accum[0].grn_val, quad_accum[0].blu_val);
+	max_return.value = max_return.value / 64;
+	min_return.value = min_return.value / 64;
+	printf ("ULQ\tMax: %5.2f\t", max_return.value);
+	printf ("Min: %5.2f\n", min_return.value);
+	printf ("MaxChan: %d\n", max_return.channel);
+	red_eb = quad_accum[0].red_val / 64;
+	grn_eb = quad_accum[0].grn_val / 64;
+	blu_eb = quad_accum[0].blu_val / 64;
+	printf ("R: %f\tG: %f\tB: %f\n", red_eb, grn_eb, blu_eb);
+	if (max_return.channel == RED_CHAN )
+		{
+		hue_value = fmodf ((grn_eb - blu_eb) / (max_return.value - min_return.value), 6) * 10.5;
+		}
+	if (max_return.channel == GRN_CHAN )
+		{
+		hue_value = (2 + ((blu_eb - red_eb) / (max_return.value - min_return.value))) * 10.5;
+		}
+	if (max_return.channel == BLU_CHAN )
+		{
+		hue_value = (4 + ((red_eb - grn_eb) / (max_return.value - min_return.value))) * 10.5;
+		}
 
-printf ("%c%c%c%c ", sixtyfour_bit [(int) quad_accum[2].red_val], sixtyfour_bit [(int) quad_accum[2].grn_val], sixtyfour_bit [(int) quad_accum[2].blu_val], sixtyfour_bit [(int) quad_accum[2].gry_val]);
-printf ("%c%c%c%c\n", sixtyfour_bit [(int) quad_accum[3].red_val], sixtyfour_bit [(int) quad_accum[3].grn_val], sixtyfour_bit [(int) quad_accum[3].blu_val], sixtyfour_bit [(int) quad_accum[3].gry_val]);
+//	printf ("%c%c%c%c ", sixtyfour_bit [(int) quad_accum[0].red_val], sixtyfour_bit [(int) quad_accum[0].grn_val], sixtyfour_bit [(int) quad_accum[0].blu_val], sixtyfour_bit [(int) quad_accum[0].gry_val]);
+//	printf ("%c%c%c%c\n", sixtyfour_bit [(int) quad_accum[1].red_val], sixtyfour_bit [(int) quad_accum[1].grn_val], sixtyfour_bit [(int) quad_accum[1].blu_val], sixtyfour_bit [(int) quad_accum[1].gry_val]);
 
-max_return = find_max (quad_accum[0].red_val, quad_accum[0].grn_val, quad_accum[0].blu_val);
-min_return = find_min (quad_accum[0].red_val, quad_accum[0].grn_val, quad_accum[0].blu_val);
-if (max_return.channel == RED_CHAN )
-	{
-	hue_value = (quad_accum[0].grn_val - quad_accum[0].blu_val) / (min_return.channel - max_return.channel) * 10.5;
-	}
-if (max_return.channel == GRN_CHAN )
-	{
-	hue_value = 2 + (quad_accum[0].grn_val - quad_accum[0].blu_val) / (min_return.channel - max_return.channel) * 10.5;
-	}
-if (max_return.channel == BLU_CHAN )
-	{
-	hue_value = 4 + (quad_accum[0].grn_val - quad_accum[0].blu_val) / (min_return.channel - max_return.channel) * 10.5;
-	}
-printf ("Max ULQ: %5.2f\t", max_return.value);
-printf ("Min ULQ: %5.2f\n", min_return.value);
+//	printf ("%c%c%c%c ", sixtyfour_bit [(int) quad_accum[2].red_val], sixtyfour_bit [(int) quad_accum[2].grn_val], sixtyfour_bit [(int) quad_accum[2].blu_val], sixtyfour_bit [(int) quad_accum[2].gry_val]);
+//	printf ("%c%c%c%c\n", sixtyfour_bit [(int) quad_accum[3].red_val], sixtyfour_bit [(int) quad_accum[3].grn_val], sixtyfour_bit [(int) quad_accum[3].blu_val], sixtyfour_bit [(int) quad_accum[3].gry_val]);
 
-/*if (ulq_output.red_val > ulq_output.grn_val || ulq_output.red_val > ulq_output.blu_val)
+	printf ("\tHue: %5.2f\t%c\n\n", hue_value, sixtyfour_bit [(int) hue_value]);
+
+//	}
+
+/*
+
+
+float fmodf(float x, float y);
+
+
+
+if (ulq_output.red_val > ulq_output.grn_val || ulq_output.red_val > ulq_output.blu_val)
 	{
 	(ulq_output.grn_val - ulq_output.blu_val) 
 	}

@@ -1,0 +1,6 @@
+bin/bsf TestPat-R.png.rgb >> OUT
+bin/bsf TestPat-Y.png.rgb >> OUT
+bin/bsf TestPat-G.png.rgb >> OUT
+bin/bsf TestPat-C.png.rgb >> OUT
+bin/bsf TestPat-B.png.rgb >> OUT
+bin/bsf TestPat-M.png.rgb >> OUT
