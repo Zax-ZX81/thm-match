@@ -24,12 +24,12 @@ struct rgb_accumulator rgb_return;
 struct maxmin_return limits_return;
 struct colgry_accumulator quad_accum [4] = {{0}};
 
-char img_name [256] = "";
-char img_rename [256] = "";
+char img_name [FILENAME_LENGTH] = NULL_STRING;
+char img_rename [FILENAME_LENGTH] = NULL_STRING;
 char nine_byte_string [9];
-char sixtyfour_bit [65] = SIXTYFOUR_BIT;
-char hue_print [5] = "";
-char gry_print [5] = "";
+char base_sixfour [65] = BASE_SIXTYFOUR;
+char hue_print [5] = NULL_STRING;
+char gry_print [5] = NULL_STRING;
 
 int qlp, llp, hlp, olp;
 
@@ -67,23 +67,23 @@ fclose (rgb_thumbnail);
 
 for (olp = 0; olp < 4; olp++)
 	{
-	quad_accum[olp].red_val = quad_accum[olp].red_val / 256;
-	quad_accum[olp].grn_val = quad_accum[olp].grn_val / 256;
-	quad_accum[olp].blu_val = quad_accum[olp].blu_val / 256;
-	quad_accum[olp].gry_val = quad_accum[olp].gry_val / 256;
+	quad_accum[olp].red_val = quad_accum[olp].red_val / QUADRANT_DIVIDER;
+	quad_accum[olp].grn_val = quad_accum[olp].grn_val / QUADRANT_DIVIDER;
+	quad_accum[olp].blu_val = quad_accum[olp].blu_val / QUADRANT_DIVIDER;
+	quad_accum[olp].gry_val = quad_accum[olp].gry_val / QUADRANT_DIVIDER;
 	}
 
 for (olp = 0; olp < 4; olp++)
 	{
 	limits_return = find_limits (quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val);
-	limits_return.max_val = limits_return.max_val / 64;
-	limits_return.min_val = limits_return.min_val / 64;
-//	printf ("%s\tQuadrant %d\tMax: %5.2f\t", argv [FILE_ARG - 1], olp, limits_return.max_val);
+	limits_return.max_val = limits_return.max_val / DECIMAL_DIVIDER;
+	limits_return.min_val = limits_return.min_val / DECIMAL_DIVIDER;
+//	printf ("%s\tQuad: %d\tMax: %5.2f\t", img_name, olp, limits_return.max_val);
 //	printf ("Min: %5.2f\t", limits_return.min_val);
 //	printf ("MaxChan: %d\t", limits_return.channel);
-	red_dec = quad_accum[olp].red_val / 64;
-	grn_dec = quad_accum[olp].grn_val / 64;
-	blu_dec = quad_accum[olp].blu_val / 64;
+	red_dec = quad_accum[olp].red_val / DECIMAL_DIVIDER;
+	grn_dec = quad_accum[olp].grn_val / DECIMAL_DIVIDER;
+	blu_dec = quad_accum[olp].blu_val / DECIMAL_DIVIDER;
 //	printf ("R: %f\tG: %f\tB: %f\t", red_dec, grn_dec, blu_dec);
 	if (limits_return.channel == RED_CHAN )
 		{
@@ -92,22 +92,22 @@ for (olp = 0; olp < 4; olp++)
 			{
 			hue_value = hue_value + 6;
 			}
-		hue_value = hue_value * 10.5;
+		hue_value = hue_value * SIXBIT_MULTIPLIER;
 		}
 	if (limits_return.channel == GRN_CHAN )
 		{
-		hue_value = (2 + ((blu_dec - red_dec) / (limits_return.max_val - limits_return.min_val))) * 10.5;
+		hue_value = (2 + ((blu_dec - red_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
 		}
 	if (limits_return.channel == BLU_CHAN )
 		{
-		hue_value = (4 + ((red_dec - grn_dec) / (limits_return.max_val - limits_return.min_val))) * 10.5;
+		hue_value = (4 + ((red_dec - grn_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
 		}
-//	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, sixtyfour_bit [(int) hue_value]);
-	hue_print[olp] = sixtyfour_bit [(int) hue_value];
-	gry_print[olp] = sixtyfour_bit [(int) quad_accum[olp].gry_val];
+//	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, base_sixfour [(int) hue_value]);
+	hue_print[olp] = base_sixfour [(int) hue_value];
+	gry_print[olp] = base_sixfour [(int) quad_accum[olp].gry_val];
 	}
 compose_filename (img_name, img_rename, gry_print, hue_print);
 
-printf ("%s\n", img_rename);
-rename (img_name, img_rename);
+printf ("%s ...\n", img_rename);
+//rename (img_name, img_rename);
 }

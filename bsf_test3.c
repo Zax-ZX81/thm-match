@@ -27,7 +27,7 @@ struct colgry_accumulator quad_accum [4] = {{0}};
 struct image_print quad_print [4] = {{0}};
 
 char nine_byte_string [9];
-char sixtyfour_bit [65] = SIXTYFOUR_BIT;
+char base_sixfour [65] = BASE_SIXTYFOUR;
 
 int qlp, llp, hlp, olp;
 
@@ -51,7 +51,7 @@ for (olp = 0; olp < 4; olp += 2)
 				{
 				fread (nine_byte_string, 9, 1, rgb_thumbnail);
 				rgb_return = get_nine_six (nine_byte_string);
-//				printf ("%c.%c.%c ", sixtyfour_bit [(int) rgb_return.red_val], sixtyfour_bit [(int) rgb_return.grn_val], sixtyfour_bit [(int) rgb_return.blu_val]);
+//				printf ("%c.%c.%c ", base_sixfour [(int) rgb_return.red_val], base_sixfour [(int) rgb_return.grn_val], base_sixfour [(int) rgb_return.blu_val]);
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
@@ -103,9 +103,9 @@ for (olp = 0; olp < 4; olp++)
 		{
 		hue_value = (4 + ((red_eb - grn_eb) / (limits_return.max_val - limits_return.min_val))) * 10.5;
 		}
-	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, sixtyfour_bit [(int) hue_value]);
-	quad_print[olp].hue = sixtyfour_bit [(int) hue_value];
-	quad_print[olp].gry = sixtyfour_bit [(int) quad_accum[olp].gry_val];
+	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, base_sixfour [(int) hue_value]);
+	quad_print[olp].hue = base_sixfour [(int) hue_value];
+	quad_print[olp].gry = base_sixfour [(int) quad_accum[olp].gry_val];
 	}
 
 for (olp = 0; olp < 4; olp++)

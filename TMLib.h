@@ -8,12 +8,20 @@
  *                         *
  * * * * * * * * * * * * * */
 
-#define SIXTYFOUR_BIT "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
+#define BASE_SIXTYFOUR "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
 #define RED_CHAN 0
 #define GRN_CHAN 1
 #define BLU_CHAN 2
 #define FILE_ARG 2
 #define FILE_EXTN ".fprt"
+#define NULL_STRING ""
+#define FILENAME_LENGTH 256
+#define SIXBIT_MULTIPLIER 10.5
+#define DECIMAL_DIVIDER 256
+#define DECIMAL_DIVIDER 256
+#define QUADRANT_DIVIDER 256
+
+
 /*Text Colours*/
 #define TEXT_RESET "\33[0m"
 #define TEXT_YELLOW "\33[93m"
@@ -65,7 +73,6 @@ struct image_print
 	char hue;
 	};
 
-// r g b M m
 
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (char *nine_byte_string);

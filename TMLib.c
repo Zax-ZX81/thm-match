@@ -141,10 +141,36 @@ return ans;
 
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print)
 {
+int fn_ep;
+char *fn_end;
+char mag_sum [16];
+char f_name [FILENAME_LENGTH];
+char outname [FILENAME_LENGTH];
+
+printf ("1%s\n", img_name);
+fn_end = strrchr (img_name, '_');
+printf ("2%s\n", img_name);
+fn_ep = (int) (fn_end - img_name);
+strncpy (f_name, img_name, fn_ep);
+printf ("3%s\n", img_name);
+f_name [(int) (fn_end - img_name)] = '\0';
+printf ("4%s\t%s\n", f_name, img_name);
 strncat (img_rename, img_name, strlen (img_name) - 4);
+printf ("5%s\t%s\t%s\n", f_name, img_name, img_rename);
+strcpy (mag_sum, img_rename);
 strcat (img_rename, "_");
+printf ("6%s\t%s\t%s\n", f_name, img_name, img_rename);
 strcat (img_rename, gry_print);
+printf ("7%s\t%s\t%s\n", f_name, img_name, img_rename);
 strcat (img_rename, hue_print);
+printf ("8%s\t%s\t%s\n", f_name, img_name, img_rename);
 strcat (img_rename, FILE_EXTN);
+printf ("9%s\t%s\t%s\n", f_name, img_name, img_rename);
+printf ("-%s-\n", img_name);
+printf ("=%d=\n", fn_ep);
+printf (">%s>\n", mag_sum);
+printf ("<%s<\n", f_name);
+printf ("_%s_\n", fn_end + 1);
+//printf ("-%s-\t=%d=\t>%s>\t<%s<\t_%s_\n", img_name, fn_ep, mag_sum, f_name, fn_end + 1);
 return img_rename;
 }
