@@ -13,7 +13,7 @@
 #define GRN_CHAN 1
 #define BLU_CHAN 2
 #define FILE_ARG 2
-
+#define FILE_EXTN ".fprt"
 /*Text Colours*/
 #define TEXT_RESET "\33[0m"
 #define TEXT_YELLOW "\33[93m"
@@ -58,9 +58,16 @@ struct maxmin_return
 	float max_val;
 	float min_val;
 	};
+
+struct image_print
+	{
+	char gry;
+	char hue;
+	};
+
 // r g b M m
 
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (char *nine_byte_string);
-struct maxmin_return find_max (float red_value, float grn_value, float blu_value);
-struct maxmin_return find_min (float red_value, float grn_value, float blu_value);
+struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
+char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);

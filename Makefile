@@ -3,10 +3,10 @@
 CC= gcc
 CFLAGS= -I. -Wunused-variable
 
-all: bsf_test3 sbp_test2
+all: bsf_test3 sbp_test2 tprint
 
-#tbuild:	tbuild.c TMLib.c
-#	$(CC) -o bin/tbuild tbuild.c TMLib.c $(CFLAGS)
+tprint:		tprint.c TMLib.c
+	$(CC) -o bin/tprint tprint.c TMLib.c $(CFLAGS)
 
 #tbuild:	tbuild.c TMLib.c
 #	$(CC) -o bin/tbuild tbuild.c TMLib.c $(CFLAGS)

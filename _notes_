@@ -68,3 +68,6 @@ struct S {
 
 Bit masking
 https://www.geeksforgeeks.org/c/c-bitmasking/
+
+ImageMagick
+-set filename:f '%t_magnify.%e' +adjoin '%[filename:f]'

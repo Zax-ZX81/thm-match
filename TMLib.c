@@ -101,7 +101,7 @@ rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d)
 return rgb_return;
 }
 
-struct maxmin_return find_max (float red_value, float grn_value, float blu_value)
+struct maxmin_return find_limits (float red_value, float grn_value, float blu_value)
 
 {
 struct maxmin_return ans;
@@ -139,33 +139,12 @@ if ((blu_value <= red_value) && (blu_value <= grn_value))
 return ans;
 }
 
-/*
-151 r>(g|r)=MOD((g-b)/(MIN-MAX),6)*10.5
-152 g>(r|b)=(2+((b-r)/(MIN-MAX)))*10.5
-153 r>(r|g)=(4+((r-g)/(MIN-MAX)))*10.5
-154
-155
-char find_max (float red_value, float grn_value, float blu_value)
-
+char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print)
 {
-char ans;
-
-if (red_value > grn_value && red_value > blu_value)
-	{
-	ans = 0;
-	}
-
-if (grn_value > red_value && grn_value > blu_value)
-	{
-	ans = 1;
-	}
-
-if (blu_value > red_value && blu_value > grn_value)
-	{
-	ans = 2;
-	}
-
-return (ans);
+strncat (img_rename, img_name, strlen (img_name) - 4);
+strcat (img_rename, "_");
+strcat (img_rename, gry_print);
+strcat (img_rename, hue_print);
+strcat (img_rename, FILE_EXTN);
+return img_rename;
 }
-
- */
