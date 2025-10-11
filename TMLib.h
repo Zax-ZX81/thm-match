@@ -20,7 +20,8 @@
 #define DECIMAL_DIVIDER 256
 #define DECIMAL_DIVIDER 256
 #define QUADRANT_DIVIDER 256
-
+#define TRUE (1==1)
+#define FALSE (!TRUE)
 
 /*Text Colours*/
 #define TEXT_RESET "\33[0m"
@@ -73,6 +74,12 @@ struct image_print
 	char hue;
 	};
 
+struct file_name_return
+	{
+	char name [FILENAME_LENGTH];
+	int width;
+	int height;
+	};
 
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (char *nine_byte_string);

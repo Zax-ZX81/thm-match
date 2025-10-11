@@ -139,6 +139,7 @@ if ((blu_value <= red_value) && (blu_value <= grn_value))
 return ans;
 }
 
+/*
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print)
 {
 int fn_ep;
@@ -174,3 +175,4 @@ printf ("_%s_\n", fn_end + 1);
 //printf ("-%s-\t=%d=\t>%s>\t<%s<\t_%s_\n", img_name, fn_ep, mag_sum, f_name, fn_end + 1);
 return img_rename;
 }
+*/

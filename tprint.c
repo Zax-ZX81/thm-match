@@ -106,8 +106,8 @@ for (olp = 0; olp < 4; olp++)
 	hue_print[olp] = base_sixfour [(int) hue_value];
 	gry_print[olp] = base_sixfour [(int) quad_accum[olp].gry_val];
 	}
-compose_filename (img_name, img_rename, gry_print, hue_print);
+//compose_filename (img_name, img_rename, gry_print, hue_print);
 
-printf ("%s ...\n", img_rename);
+//printf ("%s ...\n", img_rename);
 //rename (img_name, img_rename);
 }
