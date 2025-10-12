@@ -21,7 +21,9 @@
 #define DECIMAL_DIVIDER 256
 #define QUADRANT_DIVIDER 256
 #define TRUE (1==1)
-#define FALSE (!TRUE)
+#define EXPONENT 0.408163265306
+#define DIVIDER 28.8
+#define SUBTRACTOR 0.83
 
 /*Text Colours*/
 #define TEXT_RESET "\33[0m"
@@ -85,3 +87,4 @@ void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);
+struct file_name_return separate_filename (char *thm_filename);

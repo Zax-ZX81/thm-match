@@ -6,7 +6,7 @@ CFLAGS= -I. -Wunused-variable
 all: bsf_test3 sbp_test2 tprint fns_test1
 
 tprint:		tprint.c TMLib.c
-	$(CC) -o bin/tprint tprint.c TMLib.c $(CFLAGS)
+	$(CC) -o bin/tprint tprint.c TMLib.c -lm $(CFLAGS)
 
 fns_test1:	fns_test1.c TMLib.c
 	$(CC) -o bin/fns_test1 fns_test1.c TMLib.c $(CFLAGS)

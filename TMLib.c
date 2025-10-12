@@ -139,40 +139,76 @@ if ((blu_value <= red_value) && (blu_value <= grn_value))
 return ans;
 }
 
-/*
-char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print)
-{
-int fn_ep;
-char *fn_end;
-char mag_sum [16];
-char f_name [FILENAME_LENGTH];
-char outname [FILENAME_LENGTH];
+struct file_name_return separate_filename (char *thm_filename)
 
-printf ("1%s\n", img_name);
-fn_end = strrchr (img_name, '_');
-printf ("2%s\n", img_name);
-fn_ep = (int) (fn_end - img_name);
-strncpy (f_name, img_name, fn_ep);
-printf ("3%s\n", img_name);
-f_name [(int) (fn_end - img_name)] = '\0';
-printf ("4%s\t%s\n", f_name, img_name);
-strncat (img_rename, img_name, strlen (img_name) - 4);
-printf ("5%s\t%s\t%s\n", f_name, img_name, img_rename);
-strcpy (mag_sum, img_rename);
-strcat (img_rename, "_");
-printf ("6%s\t%s\t%s\n", f_name, img_name, img_rename);
-strcat (img_rename, gry_print);
-printf ("7%s\t%s\t%s\n", f_name, img_name, img_rename);
-strcat (img_rename, hue_print);
-printf ("8%s\t%s\t%s\n", f_name, img_name, img_rename);
-strcat (img_rename, FILE_EXTN);
-printf ("9%s\t%s\t%s\n", f_name, img_name, img_rename);
-printf ("-%s-\n", img_name);
-printf ("=%d=\n", fn_ep);
-printf (">%s>\n", mag_sum);
-printf ("<%s<\n", f_name);
-printf ("_%s_\n", fn_end + 1);
-//printf ("-%s-\t=%d=\t>%s>\t<%s<\t_%s_\n", img_name, fn_ep, mag_sum, f_name, fn_end + 1);
-return img_rename;
+{
+struct file_name_return file_return;
+
+int pos, wid, hig;
+int digit = 1;
+
+pos = strlen (thm_filename) - 1;
+if (!(pos > 4 && thm_filename [pos] == 'b' && thm_filename [pos -1] == 'g' && thm_filename [pos - 2] == 'r' && thm_filename [pos - 3] == '.'))
+	{
+	file_return.name [1] = '\0';
+	return file_return;
+	}
+pos = pos - 4;
+
+while (pos && thm_filename[pos] != 'x')
+	{
+//	printf ("%d\t%c\n", pos, thm_filename[pos]);
+	switch (digit)
+		{
+		case 1:
+			wid = thm_filename[pos--] - 48;
+			break;
+		case 2:
+			wid = wid + (thm_filename[pos--] - 48) * 10;
+			break;
+		case 3:
+			wid = wid + (thm_filename[pos--] - 48) * 100;
+			break;
+		case 4:
+			wid = wid + (thm_filename[pos--] - 48) * 1000;
+			break;
+		case 5:
+			wid = wid + (thm_filename[pos--] - 48) * 10000;
+			break;
+		}
+	digit++;
+	}
+digit = 1;
+pos--;
+while (pos && thm_filename[pos] != '_')
+	{
+//	printf ("%d\t%c\n", pos, thm_filename[pos]);
+	switch (digit)
+		{
+		case 1:
+			hig = thm_filename[pos--] - 48;
+			break;
+		case 2:
+			hig = hig + (thm_filename[pos--] - 48) * 10;
+			break;
+		case 3:
+			hig = hig + (thm_filename[pos--] - 48) * 100;
+			break;
+		case 4:
+			hig = hig + (thm_filename[pos--] - 48) * 1000;
+			break;
+		case 5:
+			hig = hig + (thm_filename[pos--] - 48) * 10000;
+			break;
+		}
+	digit++;
+	}
+pos--;
+thm_filename [pos + 1] = '\0';
+strcpy (file_return.name, thm_filename);
+file_return.width = wid;
+file_return.height = hig;
+
+//printf ("%s\tW=%d\tH=%d\n", file_return.name, file_return.width, file_return.height);
+return file_return;
 }
-*/

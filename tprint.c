@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "TMLib.h"
 //#include <stdlib.h>
+#include <math.h>
 #include <string.h>
 //#include <sys/types.h>
 #include <sys/stat.h>
@@ -23,6 +24,7 @@ int main (int argc, char *argv [])
 struct rgb_accumulator rgb_return;
 struct maxmin_return limits_return;
 struct colgry_accumulator quad_accum [4] = {{0}};
+struct file_name_return filename_separation;
 
 char img_name [FILENAME_LENGTH] = NULL_STRING;
 char img_rename [FILENAME_LENGTH] = NULL_STRING;
@@ -31,16 +33,21 @@ char base_sixfour [65] = BASE_SIXTYFOUR;
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
 
-int qlp, llp, hlp, olp;
+int qlp, llp, hlp, olp, rerr;
 
-float hue_value, red_dec, grn_dec, blu_dec;
+float hue_value, red_dec, grn_dec, blu_dec, mag_n;
 
 strcpy (img_name, argv [FILE_ARG - 1]);
 FILE* rgb_thumbnail = fopen(img_name, "rb");
-
 if (rgb_thumbnail == NULL)
 	{
 	perror("Error opening file");
+	return 1;
+	}
+filename_separation = separate_filename (img_name);
+if (filename_separation.name == "")
+	{
+	perror("Invalid file");
 	return 1;
 	}
 
@@ -48,16 +55,25 @@ for (olp = 0; olp < 4; olp += 2)
 	{
 	for (hlp = 1; hlp < 33; hlp++)
 		{
+printf ("@");
 		for (llp = 0; llp < 2; llp++)
 			{
+printf ("#");
 			for (qlp = 1; qlp < 9; qlp++)
 				{
-				fread (nine_byte_string, 9, 1, rgb_thumbnail);
+				rerr = fread (nine_byte_string, 9, 1, rgb_thumbnail);
+printf ("&");
 				rgb_return = get_nine_six (nine_byte_string);
+printf ("$");
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
+printf ("=");
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
+printf ("-");
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
+printf (":");
 				quad_accum[olp + llp].gry_val = quad_accum[olp + llp].gry_val + (rgb_return.red_val + rgb_return.grn_val + rgb_return.blu_val) / 3;
+printf (".");
+printf ("%d_%d_%d %f-%f-%f\t%d-%d-=%f=\t%d\n", hlp, llp, qlp, rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val, olp, llp, quad_accum[olp + llp].gry_val, rerr);
 				}	// end qlp
 			}	// xend llp
 		}	// end hlp
@@ -107,6 +123,12 @@ for (olp = 0; olp < 4; olp++)
 	gry_print[olp] = base_sixfour [(int) quad_accum[olp].gry_val];
 	}
 //compose_filename (img_name, img_rename, gry_print, hue_print);
+//( ( pix^0.408163265306) /28.8 ) - 0.83
+//#define EXPONENT 0.408163265306
+//#define DIVIDER 28.8
+//#define SUBTRACTOR 0.83
+mag_n = (powf ((float) (filename_separation.width * filename_separation.height), EXPONENT) / DIVIDER) - SUBTRACTOR;
+printf ("%s_%s%s%c%s\n", filename_separation.name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 
 //printf ("%s ...\n", img_rename);
 //rename (img_name, img_rename);

@@ -71,3 +71,6 @@ https://www.geeksforgeeks.org/c/c-bitmasking/
 
 ImageMagick
 -set filename:f '%t_magnify.%e' +adjoin '%[filename:f]'
+
+Formula for number of pixels to b64:
+( ( pix^0.408163265306) /28.8 ) - 0.83
