@@ -32,7 +32,23 @@
 #define TEXT_ORANGE "\33[33m"
 #define TEXT_RED "\33[1m\33[91m"
 
-struct four_six_bit_pixels	//test 6 bit integer array
+/*struct four_six_bit_pixels
+        {
+	int red_a;
+	int grn_a;
+	int blu_a;
+	int red_b;
+	int grn_b;
+	int blu_b;
+	int red_c;
+	int grn_c;
+	int blu_c;
+	int red_d;
+	int grn_d;
+	int blu_d;
+	};*/
+
+struct four_six_bit_pixels
         {
 	unsigned int red_a : 6;
 	unsigned int grn_a : 6;

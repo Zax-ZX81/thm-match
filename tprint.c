@@ -27,7 +27,6 @@ struct colgry_accumulator quad_accum [4] = {{0}};
 struct file_name_return filename_separation;
 
 char img_name [FILENAME_LENGTH] = NULL_STRING;
-char img_rename [FILENAME_LENGTH] = NULL_STRING;
 char nine_byte_string [9];
 char base_sixfour [65] = BASE_SIXTYFOUR;
 char hue_print [5] = NULL_STRING;
@@ -55,25 +54,18 @@ for (olp = 0; olp < 4; olp += 2)
 	{
 	for (hlp = 1; hlp < 33; hlp++)
 		{
-printf ("@");
 		for (llp = 0; llp < 2; llp++)
 			{
-printf ("#");
 			for (qlp = 1; qlp < 9; qlp++)
 				{
 				rerr = fread (nine_byte_string, 9, 1, rgb_thumbnail);
-printf ("&");
 				rgb_return = get_nine_six (nine_byte_string);
-printf ("$");
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
-printf ("=");
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
-printf ("-");
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
-printf (":");
 				quad_accum[olp + llp].gry_val = quad_accum[olp + llp].gry_val + (rgb_return.red_val + rgb_return.grn_val + rgb_return.blu_val) / 3;
-printf (".");
-printf ("%d_%d_%d %f-%f-%f\t%d-%d-=%f=\t%d\n", hlp, llp, qlp, rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val, olp, llp, quad_accum[olp + llp].gry_val, rerr);
+//printf ("\n%f  %f  %f\n", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
+//printf ("\n%f  %f  %f__%f\t%d\n", quad_accum[olp + llp].red_val, quad_accum[olp + llp].grn_val, quad_accum[olp + llp].blu_val, quad_accum[olp + llp].gry_val, rerr);
 				}	// end qlp
 			}	// xend llp
 		}	// end hlp

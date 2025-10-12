@@ -74,3 +74,17 @@ ImageMagick
 
 Formula for number of pixels to b64:
 ( ( pix^0.408163265306) /28.8 ) - 0.83
+
+https://stackoverflow.com/questions/3747086/reading-the-whole-text-file-into-a-char-array-in-c
+FILE *fptr;
+char *msg;
+long length;
+size_t read_s = 0;  
+fptr = fopen("example_test.xml", "rb");
+fseek(fptr, 0L, SEEK_END);
+length = ftell(fptr);
+rewind(fptr);
+msg = (char*)malloc((length+1));
+read_s = fread(msg, 1, length, fptr);
+*(mip_msg+ read_s) = 0;
+if (fptr) fclose(fptr);
