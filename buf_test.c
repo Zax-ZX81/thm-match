@@ -25,21 +25,14 @@ struct rgb_accumulator rgb_return;
 struct file_name_return filename_separation;
 
 char img_name [FILENAME_LENGTH] = NULL_STRING;
-char nine_byte_string [9];
-char *thm_buffer;
-char base_sixfour [65] = BASE_SIXTYFOUR;
+unsigned char nine_byte_chunk [9];
+unsigned char *thm_buffer;
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
 int lp = 0;
 int wid = 1;
 int rerr, f_len, pos;
 
-
-pos = 0;
-while (pos < 64)
-	{
-	putchar (base_sixfour [pos++]);
-	}
-printf ("\n");
 
 strcpy (img_name, argv [FILE_ARG - 1]);
 FILE* rgb_thumbnail = fopen(img_name, "rb");
@@ -58,65 +51,38 @@ if (filename_separation.name == "")
 fseek (rgb_thumbnail, 0L, SEEK_END);
 f_len = ftell (rgb_thumbnail);
 rewind (rgb_thumbnail);
-thm_buffer = (char *) malloc ((f_len + 1));
-printf ("Length=%d\n", f_len);
+thm_buffer = (unsigned char *) calloc (1, f_len + 1);
 rerr = fread (thm_buffer, 1, f_len, rgb_thumbnail);
-pos = 0;
-while (pos < 64)
-	{
-	putchar (base_sixfour [pos++]);
-	}
-printf ("\n");
 
-while (lp < 9217)
+while (lp < 9216)
 	{
 	for (pos = 0; pos <10 ; pos++)
 		{
-		nine_byte_string [pos] = thm_buffer [lp++];
+		nine_byte_chunk [pos] = thm_buffer [lp];
+		lp++;
 		}
-	rgb_return = get_nine_six (nine_byte_string);
-//printf ("%2d%c %2d%c %2d%c  ", (int) rgb_return.red_val, base_sixfour [(int) rgb_return.red_val], \
+	lp = lp - 1;
+//	base_sixfour [0] = '0';
+	rgb_return = get_nine_six (nine_byte_chunk);
+//printf ("=%2d=%c =%2d=%c =%2d=%c  ", (int) rgb_return.red_val, base_sixfour [(int) rgb_return.red_val], \
 //	(int) rgb_return.grn_val, base_sixfour [(int) rgb_return.grn_val], \
 //	(int) rgb_return.blu_val, base_sixfour [(int) rgb_return.blu_val]);
-printf ("%c%c%c ", base_sixfour [(int) rgb_return.red_val], base_sixfour [(int) rgb_return.grn_val], base_sixfour [(int) rgb_return.blu_val]);
-//printf ("%6.3f  %6.3f  %6.3f\n", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
-	if (++wid > 18)
+	base_sixfour [0] = '0';
+	putchar (base_sixfour [(int) rgb_return.red_val]);
+	base_sixfour [0] = '0';
+	putchar (base_sixfour [(int) rgb_return.grn_val]);
+	base_sixfour [0] = '0';
+	putchar (base_sixfour [(int) rgb_return.blu_val]);
+	base_sixfour [0] = '0';
+	putchar (' ');
+	if (wid++ > 15)
 		{
 		wid = 1;
-		printf ("\n");
-pos = 0;
-while (pos < 64)
-	{
-	putchar (base_sixfour [pos++]);
-	}
+		putchar ('\n');
 		}
 	}	// end olp
 
 fclose (rgb_thumbnail);
-printf ("\n%s\n", BASE_SIXTYFOUR);
-pos = 0;
-while (pos < 64)
-	{
-	putchar (base_sixfour [pos++]);
-	}
-printf ("\n");
+//printf ("\n%d-%d =%c=\n", 0, base_sixfour [0], base_sixfour [0]);
 //printf ("%s ...\n", img_rename);
 }
-
-/*
-
-FILE *fptr;
-char *msg;
-long length;
-size_t read_s = 0;
-fptr = fopen("example_test.xml", "rb");
-fseek(fptr, 0L, SEEK_END);
-length = ftell(fptr);
-rewind(fptr);
-msg = (char*)malloc((length+1));
-read_s = fread(msg, 1, length, fptr);
-*(mip_msg+ read_s) = 0;
-if (fptr) fclose(fptr);
-
-
-*/

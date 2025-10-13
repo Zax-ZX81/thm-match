@@ -21,7 +21,7 @@ exit (1);
 }
 
 
-struct rgb_accumulator get_nine_six (char *nine_byte_string)  // Extract 12 6 bit values from 9 bytes
+struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string)  // Extract 12 6 bit values from 9 bytes
 {
 struct four_six_bit_pixels fsbp;
 struct rgb_accumulator rgb_return;
