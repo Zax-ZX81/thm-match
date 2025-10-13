@@ -8,7 +8,7 @@
  *                         *
  * * * * * * * * * * * * * */
 
-#define BASE_SIXTYFOUR "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
+#define BASE_SIXTYFOUR "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+\0"
 #define RED_CHAN 0
 #define GRN_CHAN 1
 #define BLU_CHAN 2

@@ -88,3 +88,11 @@ msg = (char*)malloc((length+1));
 read_s = fread(msg, 1, length, fptr);
 *(mip_msg+ read_s) = 0;
 if (fptr) fclose(fptr);
+
+
+Make thumbnails
+Change thumbnail names to reflect magnitude, greyscale and hue prints
+Create database of thumbnail filenames
+Compare single images to database | Search for duplicates in database
+Delete thumbnails
+Keep database for reference
