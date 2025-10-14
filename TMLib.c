@@ -144,71 +144,75 @@ struct file_name_return separate_filename (char *thm_filename)
 {
 struct file_name_return file_return;
 
+char old_filename [FILENAME_LENGTH] = NULL_STRING;
+
 int pos, wid, hig;
 int digit = 1;
 
-pos = strlen (thm_filename) - 1;
-if (!(pos > 4 && thm_filename [pos] == 'b' && thm_filename [pos -1] == 'g' && thm_filename [pos - 2] == 'r' && thm_filename [pos - 3] == '.'))
+strcpy (old_filename, thm_filename);
+pos = strlen (old_filename) - 1;
+if (!(pos > 4 && old_filename [pos] == 'b' && old_filename [pos -1] == 'g' && old_filename [pos - 2] == 'r' && old_filename [pos - 3] == '.'))
 	{
 	file_return.name [1] = '\0';
 	return file_return;
 	}
 pos = pos - 4;
 
-while (pos && thm_filename[pos] != 'x')
+while (pos && old_filename[pos] != 'x')
 	{
-//	printf ("%d\t%c\n", pos, thm_filename[pos]);
+//	printf ("%d\t%c\n", pos, old_filename[pos]);
 	switch (digit)
 		{
 		case 1:
-			wid = thm_filename[pos--] - 48;
+			wid = old_filename[pos--] - 48;
 			break;
 		case 2:
-			wid = wid + (thm_filename[pos--] - 48) * 10;
+			wid = wid + (old_filename[pos--] - 48) * 10;
 			break;
 		case 3:
-			wid = wid + (thm_filename[pos--] - 48) * 100;
+			wid = wid + (old_filename[pos--] - 48) * 100;
 			break;
 		case 4:
-			wid = wid + (thm_filename[pos--] - 48) * 1000;
+			wid = wid + (old_filename[pos--] - 48) * 1000;
 			break;
 		case 5:
-			wid = wid + (thm_filename[pos--] - 48) * 10000;
+			wid = wid + (old_filename[pos--] - 48) * 10000;
 			break;
 		}
 	digit++;
 	}
 digit = 1;
 pos--;
-while (pos && thm_filename[pos] != '_')
+while (pos && old_filename[pos] != '_')
 	{
-//	printf ("%d\t%c\n", pos, thm_filename[pos]);
+//	printf ("%d\t%c\n", pos, old_filename[pos]);
 	switch (digit)
 		{
 		case 1:
-			hig = thm_filename[pos--] - 48;
+			hig = old_filename[pos--] - 48;
 			break;
 		case 2:
-			hig = hig + (thm_filename[pos--] - 48) * 10;
+			hig = hig + (old_filename[pos--] - 48) * 10;
 			break;
 		case 3:
-			hig = hig + (thm_filename[pos--] - 48) * 100;
+			hig = hig + (old_filename[pos--] - 48) * 100;
 			break;
 		case 4:
-			hig = hig + (thm_filename[pos--] - 48) * 1000;
+			hig = hig + (old_filename[pos--] - 48) * 1000;
 			break;
 		case 5:
-			hig = hig + (thm_filename[pos--] - 48) * 10000;
+			hig = hig + (old_filename[pos--] - 48) * 10000;
 			break;
 		}
 	digit++;
 	}
-//pos--;
-//thm_filename [pos + 1] = '\0';
-strncpy (file_return.name, thm_filename, pos);
+old_filename [pos] = '\0';
+//printf ("=%s=\t%d\n", old_filename, pos);
+strncpy (file_return.name, old_filename, pos);
+file_return.name [pos] = '\0';
 file_return.width = wid;
 file_return.height = hig;
 
-//printf ("%s\tW=%d\tH=%d\n", file_return.name, file_return.width, file_return.height);
+//printf ("O=%s=\tP=%d=\tN=%s=\tW=%d=\tH=%d=\n", old_filename, pos, file_return.name, file_return.width, file_return.height);
 return file_return;
 }

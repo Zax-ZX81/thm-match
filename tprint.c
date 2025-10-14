@@ -137,13 +137,14 @@ for (olp = 0; olp < 4; olp++)
 	base_sixfour [0] = '0';
 	hue_print [olp] = base_sixfour [(int) hue_value];
 	base_sixfour [0] = '0';
-	base_sixfour [0] = '0';
 	gry_print[olp] = base_sixfour [(int) quad_accum[olp].gry_val];
+//printf ("%f\n", quad_accum[olp].gry_val);
 	}
 base_sixfour [0] = '0';
 
 mag_n = (powf ((float) (filename_separation.width * filename_separation.height), EXPONENT) / DIVIDER) - SUBTRACTOR;
+printf ("%s\t%s\t%c\t%s\n", gry_print, hue_print, base_sixfour [(int) mag_n], filename_separation.name);
 nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", filename_separation.name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
-printf ("%s\t%s\n", img_name, new_name);
-rename (img_name, new_name);
+//printf ("%s\t%s\n", img_name, new_name);
+//rename (img_name, new_name);
 }
