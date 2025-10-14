@@ -203,9 +203,9 @@ while (pos && thm_filename[pos] != '_')
 		}
 	digit++;
 	}
-pos--;
-thm_filename [pos + 1] = '\0';
-strcpy (file_return.name, thm_filename);
+//pos--;
+//thm_filename [pos + 1] = '\0';
+strncpy (file_return.name, thm_filename, pos);
 file_return.width = wid;
 file_return.height = hig;
 
