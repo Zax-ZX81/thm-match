@@ -102,3 +102,14 @@ Tools
 Make thumbnails
 Rename thumbnails with prints etc
 Write database of prints with names etc
+Look for duplicates in database
+
+
+Duplicates
+Sort database by print - 0-9, a-z, A-Z, -+
+Go down list looking for duplicates in greyprint, hueprint
+Print filenames, prints, and magnitudes of duplicates
+
+Compare two or three thumbnails side by side
+
+
