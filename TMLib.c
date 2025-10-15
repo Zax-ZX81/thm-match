@@ -216,3 +216,73 @@ file_return.height = hig;
 //printf ("O=%s=\tP=%d=\tN=%s=\tW=%d=\tH=%d=\n", old_filename, pos, file_return.name, file_return.width, file_return.height);
 return file_return;
 }
+
+
+struct dimension_return separate_magnitude (char *mag_string)
+
+{
+struct dimension_return mag_return;
+
+char mag_sum [FILENAME_LENGTH] = NULL_STRING;
+
+int pos, wid, hig;
+int digit = 1;
+
+strcpy (mag_sum, mag_string);
+pos = strlen (mag_sum) - 1;
+//printf ("%s\t%d\t=%c=\n", mag_sum, pos, mag_sum [pos]);
+
+while (pos && mag_sum[pos] != 'x')
+	{
+//	printf ("%d\t%c\n", pos, mag_sum[pos]);
+	switch (digit)
+		{
+		case 1:
+			wid = mag_sum[pos--] - 48;
+			break;
+		case 2:
+			wid = wid + (mag_sum[pos--] - 48) * 10;
+			break;
+		case 3:
+			wid = wid + (mag_sum[pos--] - 48) * 100;
+			break;
+		case 4:
+			wid = wid + (mag_sum[pos--] - 48) * 1000;
+			break;
+		case 5:
+			wid = wid + (mag_sum[pos--] - 48) * 10000;
+			break;
+		}
+	digit++;
+	}
+digit = 1;
+pos--;
+while (pos >= 0)
+	{
+//	printf ("%d\t%c\n", pos, mag_sum[pos]);
+	switch (digit)
+		{
+		case 1:
+			hig = mag_sum[pos--] - 48;
+			break;
+		case 2:
+			hig = hig + (mag_sum[pos--] - 48) * 10;
+			break;
+		case 3:
+			hig = hig + (mag_sum[pos--] - 48) * 100;
+			break;
+		case 4:
+			hig = hig + (mag_sum[pos--] - 48) * 1000;
+			break;
+		case 5:
+			hig = hig + (mag_sum[pos--] - 48) * 10000;
+			break;
+		}
+	digit++;
+	}
+//printf ("=%s=\t%d\n", mag_sum, pos);
+mag_return.width = wid;
+mag_return.height = hig;
+
+return mag_return;
+}

@@ -8,23 +8,33 @@
  *                         *
  * * * * * * * * * * * * * */
 
-#define BASE_SIXTYFOUR "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+\0"
+#define BASE_SIXTYFOUR "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+\0"
+#define MAGICK_COMMAND "magick "
+#define RGB_ARGS " -resize '64x64' -background 'gray(50%)' -gravity center -extent 64x64 -depth 6 -compress None rgb:-"
+#define MAG_ARGS "identify -format '%G' "
+
 #define RED_CHAN 0
 #define GRN_CHAN 1
 #define BLU_CHAN 2
+
 #define FILE_ARG 2
 #define FILE_EXTN ".fprt"
+
 #define NULL_STRING ""
 #define FILENAME_LENGTH 256
 #define THUMBNAIL_BYTES 9216
+#define TRUE (1==1)
+#define FALSE !TRUE
+#define SW_ON TRUE
+#define SW_OFF FALSE
+
+/*Calculation Values*/
 #define SIXBIT_MULTIPLIER 10.5
 #define DECIMAL_DIVIDER 256
-#define DECIMAL_DIVIDER 256
 #define QUADRANT_DIVIDER 256
-#define TRUE (1==1)
-#define EXPONENT 0.408163265306
+#define EXPONENT 0.4082
 #define DIVIDER 28.8
-#define SUBTRACTOR 0.83
+#define SUBTRACTOR 1.39
 
 /*Text Colours*/
 #define TEXT_RESET "\33[0m"
@@ -32,22 +42,6 @@
 #define TEXT_BLUE "\33[94m"
 #define TEXT_ORANGE "\33[33m"
 #define TEXT_RED "\33[1m\33[91m"
-
-/*struct four_six_bit_pixels
-        {
-	int red_a;
-	int grn_a;
-	int blu_a;
-	int red_b;
-	int grn_b;
-	int blu_b;
-	int red_c;
-	int grn_c;
-	int blu_c;
-	int red_d;
-	int grn_d;
-	int blu_d;
-	};*/
 
 struct four_six_bit_pixels
         {
@@ -100,8 +94,31 @@ struct file_name_return
 	int height;
 	};
 
+struct dimension_return
+	{
+	int width;
+	int height;
+	};
+
+struct tprint_database
+	{
+	char gry_print [5];             // grey print 4 character code
+	char hue_print [5];             // hue print 4 character code
+	char magnitude [2];             // magnitude 1 character code
+	char filepath [FILENAME_LENGTH];
+	};
+
+struct tprint_flags
+	{
+	char sort;                      // sort by either field or not
+	char tprt;                      // write thumbnail file
+	char std_out;                   // print output to stdout, supress file output
+	char verbose;                   // mirror everything to stdout
+};
+
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);
 struct file_name_return separate_filename (char *thm_filename);
+struct dimension_return separate_magnitude (char *mag_string);

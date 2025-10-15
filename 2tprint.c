@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       tprint 0.30       *
+ *       tprint 0.20       *
  *                         *
  *       2025-10-08        *
  *                         *
@@ -16,8 +16,7 @@
 //#include <sys/types.h>
 #include <sys/stat.h>
 
-#define PROG_NAME "Thumbprint"
-#define PROG_VERSION "0.30"
+#define PROG_VERSION "0.20"
 
 int main (int argc, char *argv [])
 
@@ -25,75 +24,40 @@ int main (int argc, char *argv [])
 struct rgb_accumulator rgb_return;
 struct maxmin_return limits_return;
 struct colgry_accumulator quad_accum [4] = {{0}};
-struct dimension_return mag_separation;
-struct tprint_flags tpflags [1] = {0};
+struct file_name_return filename_separation;
 
 char img_name [FILENAME_LENGTH] = NULL_STRING;
-FILE *IMGFILE;
-FILE *rgb_thumbnail;
-char cmd_line [FILENAME_LENGTH] = NULL_STRING;
+char new_name [FILENAME_LENGTH] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
-char mag_string [12];
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
-char switch_chr;
 
 int lp = 0;
-int qlp, llp, hlp, olp, rerr, pos, arg_no, switch_pos;
+int qlp, llp, hlp, olp, rerr, f_len, pos, nn_len;
 
 float hue_value, red_dec, grn_dec, blu_dec, mag_n;
 
-tpflags->sort = TRUE;
-tpflags->tprt = FALSE;
-tpflags->std_out = FALSE;			// set default switches
-tpflags->verbose = FALSE;
-
-// Arguments section
-for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
+strcpy (img_name, argv [FILE_ARG - 1]);
+FILE* rgb_thumbnail = fopen(img_name, "rb");
+if (rgb_thumbnail == NULL)
 	{
-	if ((int) argv [arg_no] [0] == '-')
-		{
-		for (switch_pos = 1; switch_pos < strlen (argv[arg_no]); switch_pos++)
-			{
-			switch_chr = (int) argv [arg_no] [switch_pos];
-			switch (switch_chr)
-				{
-				case 'p':
-					tpflags->std_out = SW_ON;
-					break;
-				case 's':
-					tpflags->sort = SW_OFF;
-					break;
-				case 't':
-					tpflags->tprt = SW_ON;
-					break;
-				case 'v':
-					tpflags->verbose = SW_ON;
-					break;
-				case 'V':
-					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
-					exit (0);
-				default:
-					printf ("%s# Thumbprint [pstvV] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
-					exit (0);
-				}	// END switch
-			}	// END for switch_pos
-		}	// END if int argv
-		else
-		{
-		if (strcmp (img_name, "") == 0)
-			{
-			strncpy (img_name, argv [arg_no], FILENAME_LENGTH);
-			}
-		}	// END else if int argv
-	}	// END for arg_no
+	perror("Error opening file");
+	return 1;
+	}
+filename_separation = separate_filename (img_name);
+if (filename_separation.name == "")
+	{
+	perror("Invalid file");
+	return 1;
+	}
+fseek (rgb_thumbnail, 0L, SEEK_END);
+f_len = ftell (rgb_thumbnail);
+rewind (rgb_thumbnail);
+thm_buffer = (unsigned char *) calloc (1, f_len + 1);
+rerr = fread (thm_buffer, 1, f_len, rgb_thumbnail);
 
-rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, img_name, RGB_ARGS);
-rgb_thumbnail = popen (cmd_line, "r");
-thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
-rerr = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
 for (olp = 0; olp < 4; olp += 2)
 	{
 	for (hlp = 1; hlp < 33; hlp++)
@@ -178,18 +142,9 @@ for (olp = 0; olp < 4; olp++)
 	}
 base_sixfour [0] = '0';
 
-rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
-IMGFILE = popen (cmd_line, "r");
-rerr = (long) fgets (mag_string, 12, IMGFILE);
-fclose (IMGFILE);
-mag_separation = separate_magnitude (mag_string);
-mag_n = (powf ((float) (mag_separation.width * mag_separation.height), EXPONENT) / DIVIDER) - SUBTRACTOR;
-if (mag_n < 0)
-	{
-	mag_n = 0;
-	}
-printf ("%s\t%s\t%c\t%s\n", gry_print, hue_print, base_sixfour [(int) mag_n], img_name);
-//nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
+mag_n = (powf ((float) (filename_separation.width * filename_separation.height), EXPONENT) / DIVIDER) - SUBTRACTOR;
+printf ("%s\t%s\t%c\t%s\n", gry_print, hue_print, base_sixfour [(int) mag_n], filename_separation.name);
+nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", filename_separation.name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
 //rename (img_name, new_name);
 }

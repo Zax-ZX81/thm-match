@@ -23,20 +23,14 @@
 int main (int argc, char *argv [])
 
 {
-struct file_name_return filename_separation;
-
 FILE *IMGFILE;
 FILE *FILE_OUT;
 char img_name [FILENAME_LENGTH] = NULL_STRING;
 char cmd_line [FILENAME_LENGTH] = NULL_STRING;
 char mag_string [12];
 unsigned char in_byte [2];
-unsigned char nine_byte_chunk [9];
-unsigned char *thm_buffer;
-unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
-int wid = 1;
-int rerr, f_len, pos;
+int rerr, pos;
 
 
 strcpy (img_name, argv [FILE_ARG - 1]);
