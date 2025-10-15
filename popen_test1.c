@@ -18,8 +18,8 @@
 
 #define PROG_VERSION "0.10"
 #define MAGICK_COMMAND "magick "
-#define MAGICK_ARGS " -resize '64x64' -background 'gray(50%)' -gravity center -extent 64x64 -depth 6 -compress None rgb:-"
-
+#define RGB_ARGS " -resize '64x64' -background 'gray(50%)' -gravity center -extent 64x64 -depth 6 -compress None rgb:-"
+#define MAG_ARGS "identify -format '%G' "
 int main (int argc, char *argv [])
 
 {
@@ -29,6 +29,7 @@ FILE *IMGFILE;
 FILE *FILE_OUT;
 char img_name [FILENAME_LENGTH] = NULL_STRING;
 char cmd_line [FILENAME_LENGTH] = NULL_STRING;
+char mag_string [12];
 unsigned char in_byte [2];
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
@@ -39,10 +40,15 @@ int rerr, f_len, pos;
 
 
 strcpy (img_name, argv [FILE_ARG - 1]);
-rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, img_name, MAGICK_ARGS);
+rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
 printf ("%s\n", cmd_line);
 IMGFILE = popen (cmd_line, "r");
-FILE_OUT = fopen ("popentest.rgb", "wb");
+rerr = (long) fgets (mag_string, 12, IMGFILE);
+printf ("%s\n", mag_string);
+rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, img_name, RGB_ARGS);
+printf ("%s\n", cmd_line);
+IMGFILE = popen (cmd_line, "r");
+FILE_OUT = fopen ("img/_popentest.rgb", "wb");
 for (pos = 1; pos < THUMBNAIL_BYTES + 1; pos++)
 	{
 	rerr = fread (in_byte, 1, 1, IMGFILE);
