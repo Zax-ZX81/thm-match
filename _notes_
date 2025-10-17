@@ -100,16 +100,34 @@ Keep database for reference
 
 Tools
 Make thumbnails
-Rename thumbnails with prints etc
+Rename thumbnails with prints etc ???
 Write database of prints with names etc
 Look for duplicates in database
+Compare databases
 
 
 Duplicates
-Sort database by print - 0-9, a-z, A-Z, -+
+Sort database by print - 0-9, A-Z, a-z, -+
 Go down list looking for duplicates in greyprint, hueprint
 Print filenames, prints, and magnitudes of duplicates
 
 Compare two or three thumbnails side by side
 
+Function quad_cmp (char compare, char target)
+global switch for fuzzy search
+if compare = target OR (fuzzy AND (compare = target -1 OR compare = target +1))
+	then return match
+
+Thumbnail comparison
+Compare [192,64] six bit unsigned int
+Target [192,64] eight bit signed int
+Subtract Compare from Target, so target contains number and amount of distance
+divide differences into four sections of frequency
+	first 16 values - difference of one, to difference of fifteen - makes up fractional portion of similarity number
+	1+ 2^2 3^2 4^2 5^2 ... 15^2 
+	last three sections make up the similarity number to the left of decimal point
+	1+ 2^2 3^2 4^2 5^2 ... 47^2
+	So a large number of small differences will make the decimal portion large and a small number of large differences will make the left of the decimal point large
+	similarity/difference number: 0.12345 = difference of compression artifacts, 56789123.12345 = artifacts plus superimposed text
+Histogram. 
 

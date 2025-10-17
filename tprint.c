@@ -27,10 +27,10 @@ struct maxmin_return limits_return;
 struct colgry_accumulator quad_accum [4] = {{0}};
 struct dimension_return mag_separation;
 struct tprint_flags tpflags [1] = {0};
+struct stat sb;
 
 char img_name [FILENAME_LENGTH] = NULL_STRING;
-FILE *IMGFILE;
-FILE *rgb_thumbnail;
+char out_name [FILENAME_LENGTH] = NULL_STRING;
 char cmd_line [FILENAME_LENGTH] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
@@ -41,13 +41,15 @@ char gry_print [5] = NULL_STRING;
 char switch_chr;
 
 int lp = 0;
-int qlp, llp, hlp, olp, rerr, pos, arg_no, switch_pos;
+int qlp, llp, hlp, olp, rerr, pos, arg_no, switch_pos, nn_len;
 
 float hue_value, red_dec, grn_dec, blu_dec, mag_n;
 
-tpflags->sort = TRUE;
+FILE *IMGFILE;
+FILE *rgb_thumbnail;
+FILE *out_thumbnail;
+
 tpflags->tprt = FALSE;
-tpflags->std_out = FALSE;			// set default switches
 tpflags->verbose = FALSE;
 
 // Arguments section
@@ -60,12 +62,6 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
-				case 'p':
-					tpflags->std_out = SW_ON;
-					break;
-				case 's':
-					tpflags->sort = SW_OFF;
-					break;
 				case 't':
 					tpflags->tprt = SW_ON;
 					break;
@@ -94,6 +90,7 @@ rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, img_name, 
 rgb_thumbnail = popen (cmd_line, "r");
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 rerr = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
+
 for (olp = 0; olp < 4; olp += 2)
 	{
 	for (hlp = 1; hlp < 33; hlp++)
@@ -121,7 +118,21 @@ for (olp = 0; olp < 4; olp += 2)
 		}	// end hlp
 	}	// end olp
 
+nn_len = snprintf (out_name, FILENAME_LENGTH, "s/%s%s", img_name, FILE_EXTN);
+//printf ("%s\n", out_name);
+if (tpflags->tprt == SW_ON)
+	{
+	if (stat ("s", &sb) == -1)
+		{
+		mkdir ("s", 0700);
+		}
+	out_thumbnail = fopen (out_name, "wb");
+	rerr = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);
+	fclose (out_thumbnail);
+	}
+
 fclose (rgb_thumbnail);
+free (thm_buffer);
 
 for (olp = 0; olp < 4; olp++)
 	{
@@ -191,5 +202,4 @@ if (mag_n < 0)
 printf ("%s\t%s\t%c\t%s\n", gry_print, hue_print, base_sixfour [(int) mag_n], img_name);
 //nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
-//rename (img_name, new_name);
 }

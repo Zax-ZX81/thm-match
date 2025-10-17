@@ -18,7 +18,7 @@
 #define BLU_CHAN 2
 
 #define FILE_ARG 2
-#define FILE_EXTN ".fprt"
+#define FILE_EXTN ".rgb"
 
 #define NULL_STRING ""
 #define FILENAME_LENGTH 256
