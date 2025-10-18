@@ -307,7 +307,7 @@ int ext_pos = 0;
 strcpy (fp_string, filepath);
 fp_pos = strlen (fp_string) - 1;
 
-while (fp_pos && fp_string [fp_pos] != '.')
+while (fp_pos && fp_string [fp_pos] != '.' && rev_pos < 6)
 	{
 //printf ("1 %d\t%c\n", fp_pos, fp_string [fp_pos]);
 	rev_ext [rev_pos] = fp_string [fp_pos];
@@ -315,15 +315,22 @@ while (fp_pos && fp_string [fp_pos] != '.')
 	rev_pos++;
 	}
 rev_ext [rev_pos--] = '\0';
-//printf ("2 F=%d\tR=%d\tE%d\n", fp_pos, rev_pos, ext_pos);
-while (rev_pos + 1)
+while (rev_pos + 1 && fp_pos > 1)
 	{
-//printf ("3 F=%d\tR=%d\tE%d\n", fp_pos, rev_pos, ext_pos);
+//printf ("2 F=%d\tR=%d\tE%d\n", fp_pos, rev_pos, ext_pos);
 	gpx_ext [ext_pos] = rev_ext [rev_pos];
 	rev_pos--;
 	ext_pos++;
 	}
+if (ext_pos > 0)
+	{
+gpx_ext [ext_pos++] = ' ';
 gpx_ext [ext_pos] = '\0';
-//printf ("Here\t%s\n", gpx_ext);
+	}
+	else
+	{
+	gpx_ext = "XXXXX\0";
+	}
+//printf ("Here\t%s\t%d\n", gpx_ext, ext_pos);
 return (gpx_ext);
 }

@@ -30,22 +30,16 @@ DIR *DIR_PATH;
 int line_index;
 int find_list_write = 0;			// number of file items found in search
 int find_list_read = 0;
-int arg_no, switch_pos;
 int find_list_curr_size = 0;
 int swap_index, lp;
 
-unsigned long file_size_total = 0;
-unsigned long file_size_accum = 0;
-
-double file_size_mult = 0;
-double file_progress = 0;
-
-char switch_chr;
+const char gpx_file_ext [90] = GRAPHICS_EXTENSIONS;
 char C_W_D [FILENAME_LENGTH];				// base directory of search
+char path_sub [FILENAME_LENGTH];
 char swap_made = TRUE;					// swap was made on last sort pass
 char sort_need_check = TRUE;
-char header = TRUE;
-char gpx_ext [6];
+char *ext_match;
+//char ext_string [8];
 
 // Initial search section
 find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
@@ -53,18 +47,25 @@ find_list_curr_size = DATABASE_INITIAL_SIZE;
 getcwd (C_W_D, FILENAME_LENGTH);			// get present working directory
 strcat (C_W_D, SLASH_TERM);
 DIR_PATH = opendir (PATH_CURRENT);			// open directory
+
 if (DIR_PATH != NULL)
 	{
 	while ((dir_ents = readdir (DIR_PATH)))		// get directory listing
 		{
 		lstat (dir_ents->d_name, &file_stat);
+		strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
 		if (file_stat.st_mode & S_IFREG)
 			{
-//printf ("DN=%s\n", dir_ents->d_name);
 			strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
-//printf ("%s\t%s\n", GRAPHICS_EXTENSIONS, find_list [find_list_write].file_ext);
-			if (strstr (GRAPHICS_EXTENSIONS, find_list [find_list_write].file_ext))
+			ext_match = strstr (gpx_file_ext, find_list [find_list_write].file_ext);
+//printf ("=%ld=\t=%d=\n", ext_match - gpx_file_ext, ext_match - gpx_file_ext > 0);
+//			strcpy (ext_string, ext_match);
+//printf ("DN=%s=\tE=%s=\t%ld\n", dir_ents->d_name, get_gpx_ext (dir_ents->d_name), strlen (get_gpx_ext (dir_ents->d_name)));
+//printf ("DN=%s=\tE=%s=\t%ld\n", find_list [find_list_write].filepath, find_list [find_list_write].file_ext, strlen (find_list [find_list_write].file_ext));
+//printf ("L=%d\tX=%s\n", strlen (find_list [find_list_write].file_ext) < 0, ext_match);
+			if ((ext_match - gpx_file_ext) > 0)
 				{
+//printf ("Here\n");
 				find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
 				}
 				else
@@ -87,7 +88,6 @@ if (DIR_PATH != NULL)
 			{						// Filter out ".", ".." from search
 			find_list [find_list_write].object_type = T_REJ;
 			}
-		strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
 /*if (header)
 	{
 	fprintf (stderr, "FindListWr\tObjType\tDType\tDName\n", find_list_write, \
@@ -111,19 +111,19 @@ fprintf (stderr, "\tFLW=%3d\tOT=%c\tDT=%d\tDN=%s=\t%s\n", find_list_write, \
 	{
 	perror ("Couldn't open the directory");		// FIX
 	}
-for (lp = 0; lp < find_list_write; lp++)
+/*for (lp = 0; lp < find_list_write; lp++)
 	{
 	if (find_list [lp].object_type == FILE_ENTRY)
 		{
-		printf ("%s\n", find_list [lp].filepath);
+		printf ("O1=%s\t-%s-\n", find_list [lp].filepath, find_list [lp].file_ext);
 		}
 	}
-/*
+*/
 // Feedback search section
 while (find_list_read < find_list_write)
 	{
 	chdir (C_W_D);					// go back to the starting directory
-	if (find_list [find_list_read].object_type == T_DIR)
+	if (find_list [find_list_read].object_type == DIR_ENTRY)
 		{
 		strcpy (path_sub, C_W_D);
 		strcat (path_sub, find_list [find_list_read].filepath);		// compose directory location for search
@@ -136,7 +136,15 @@ while (find_list_read < find_list_write)
 				lstat (dir_ents->d_name, &file_stat);
 				if (file_stat.st_mode & S_IFREG)
 					{
-					find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+					strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
+					if (find_list [find_list_write].file_ext != NULL_STRING && strlen (get_gpx_ext (dir_ents->d_name)) < 0 && strstr (gpx_file_ext, find_list [find_list_write].file_ext))
+						{
+						find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+						}
+						else
+						{
+						find_list [find_list_write].object_type = T_REJ;
+						}
 					}
 					else
 					{
@@ -162,12 +170,12 @@ while (find_list_read < find_list_write)
 					find_list_curr_size += DATABASE_INCREMENT;
 					find_list = (struct find_list_entry *) realloc (find_list, sizeof (struct find_list_entry) * find_list_curr_size);
 					}
-				if (sfflags->verbose)
+/*				if (sfflags->verbose)
 					{
 					fprintf (stderr, "FBS\tFLW=%3d\tOT=%c\tFP=%s=\n", find_list_write, \
 									find_list [find_list_write].object_type, \
 									find_list [find_list_write].filepath);
-					}
+					}*/
 				find_list_write ++;
 				}
 			closedir (DIR_PATH);
@@ -179,11 +187,14 @@ while (find_list_read < find_list_write)
 		}
 	find_list_read ++;
 	}
-if (sfflags->std_out == SW_OFF)
+for (lp = 0; lp < find_list_write; lp++)
 	{
-	printf ("%d items found.\n", find_list_write);
+	if (find_list [lp].object_type == FILE_ENTRY)
+		{
+		printf ("O2=%s\t-%s-\n", find_list [lp].filepath, find_list [lp].file_ext);
+		}
 	}
-
+/*
 // Sort section
 while (swap_made == TRUE && sfflags->sort > 0)
 	{

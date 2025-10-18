@@ -9,7 +9,7 @@
  * * * * * * * * * * * * * */
 
 #define BASE_SIXTYFOUR "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+\0"
-#define GRAPHICS_EXTENSIONS "bmp BMP gif GIF jfif JFIF jpg jpeg JPG JPEG png PNG tif tiff TIF TIFF webp WEBP"
+#define GRAPHICS_EXTENSIONS "bmp BMP gif GIF jfif JFIF jpg jpeg JPG JPEG png PNG tif tiff TIF TIFF webp WEBP "
 #define MAGICK_COMMAND "magick "
 #define RGB_ARGS " -resize '64x64' -background 'gray(50%)' -gravity center -extent 64x64 -depth 6 -compress None rgb:-"
 #define MAG_ARGS "identify -format '%G' "
