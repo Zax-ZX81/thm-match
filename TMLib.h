@@ -28,6 +28,21 @@
 #define SW_ON TRUE
 #define SW_OFF FALSE
 
+#define SLASH_TERM "/"
+#define PATH_CURRENT "./"
+#define DIR_CURRENT "."
+#define DIR_PREV ".."
+#define FILE_ENTRY 'f'
+#define DIR_ENTRY 'd'
+#define UNKNOWN_ENTRY 'x'
+#define T_REJ 'r'
+#define DATABASE_INITIAL_SIZE 4096
+#define DATABASE_INCREMENT 4096
+/*#define 
+#define 
+#define */
+
+
 /*Calculation Values*/
 #define SIXBIT_MULTIPLIER 10.5
 #define DECIMAL_DIVIDER 256
@@ -116,9 +131,16 @@ struct tprint_flags
 	char verbose;                   // mirror everything to stdout
 };
 
+struct find_list_entry
+{
+	char object_type;
+	char filepath [FILENAME_LENGTH];
+};
+
 void exit_error (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);
 struct file_name_return separate_filename (char *thm_filename);
 struct dimension_return separate_magnitude (char *mag_string);
+char *get_gpx_ext (char *filepath);

@@ -285,4 +285,42 @@ mag_return.width = wid;
 mag_return.height = hig;
 
 return mag_return;
+
+
+}
+
+
+char *get_gpx_ext (char *filepath)
+
+{
+char rev_ext [6] = NULL_STRING;
+char *gpx_ext;
+char fp_string [FILENAME_LENGTH] = NULL_STRING;
+
+
+int fp_pos;
+int rev_pos = 0;
+int ext_pos = 0;
+
+strcpy (fp_string, filepath);
+fp_pos = strlen (fp_string) - 1;
+//printf ("%s\t%d\t=%c=\n", mag_sum, pos, mag_sum [pos]);
+
+while (fp_pos && fp_string [fp_pos] != '.')
+	{
+//	printf ("%d\t%c\n", fp_pos, fp_string [fp_pos]);
+	rev_ext [rev_pos] = fp_string [fp_pos];
+	fp_pos--;
+	rev_pos++;
+	}
+rev_ext [rev_pos--] = '\0';
+while (rev_pos + 1)
+	{
+	gpx_ext [ext_pos] = rev_ext [rev_pos];
+	rev_pos--;
+	ext_pos++;
+	}
+gpx_ext [ext_pos] = '\0';
+
+return (gpx_ext);
 }
