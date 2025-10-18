@@ -32,7 +32,7 @@ int find_list_write = 0;			// number of file items found in search
 int find_list_read = 0;
 int arg_no, switch_pos;
 int find_list_curr_size = 0;
-int swap_index;
+int swap_index, lp;
 
 unsigned long file_size_total = 0;
 unsigned long file_size_accum = 0;
@@ -60,8 +60,17 @@ if (DIR_PATH != NULL)
 		lstat (dir_ents->d_name, &file_stat);
 		if (file_stat.st_mode & S_IFREG)
 			{
-			find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
-//FILE EXTAENSION
+//printf ("DN=%s\n", dir_ents->d_name);
+			strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
+//printf ("%s\t%s\n", GRAPHICS_EXTENSIONS, find_list [find_list_write].file_ext);
+			if (strstr (GRAPHICS_EXTENSIONS, find_list [find_list_write].file_ext))
+				{
+				find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+				}
+				else
+				{
+				find_list [find_list_write].object_type = T_REJ;
+				}
 			}
 			else
 			{
@@ -78,8 +87,8 @@ if (DIR_PATH != NULL)
 			{						// Filter out ".", ".." from search
 			find_list [find_list_write].object_type = T_REJ;
 			}
-			strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
-if (header)
+		strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
+/*if (header)
 	{
 	fprintf (stderr, "FindListWr\tObjType\tDType\tDName\n", find_list_write, \
                                         find_list [find_list_write].object_type, \
@@ -88,7 +97,7 @@ if (header)
 	}
 fprintf (stderr, "\tFLW=%3d\tOT=%c\tDT=%d\tDN=%s=\t%s\n", find_list_write, \
 					find_list [find_list_write].object_type, \
-					dir_ents->d_type, dir_ents->d_name, get_gpx_ext (dir_ents->d_name));
+					dir_ents->d_type, dir_ents->d_name, find_list [find_list_write].file_ext);*/
 		if (find_list_write + 1 == find_list_curr_size)		// allocated more memory if needed
 			{
 			find_list_curr_size += DATABASE_INCREMENT;
@@ -101,6 +110,13 @@ fprintf (stderr, "\tFLW=%3d\tOT=%c\tDT=%d\tDN=%s=\t%s\n", find_list_write, \
 	else
 	{
 	perror ("Couldn't open the directory");		// FIX
+	}
+for (lp = 0; lp < find_list_write; lp++)
+	{
+	if (find_list [lp].object_type == FILE_ENTRY)
+		{
+		printf ("%s\n", find_list [lp].filepath);
+		}
 	}
 /*
 // Feedback search section

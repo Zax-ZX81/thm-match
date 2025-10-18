@@ -101,6 +101,7 @@ rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d)
 return rgb_return;
 }
 
+
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value)
 
 {
@@ -293,8 +294,9 @@ return mag_return;
 char *get_gpx_ext (char *filepath)
 
 {
+char *gpx_ext = malloc (FILENAME_LENGTH);
 char rev_ext [6] = NULL_STRING;
-char *gpx_ext;
+//char gpx_ext [6] = NULL_STRING;
 char fp_string [FILENAME_LENGTH] = NULL_STRING;
 
 
@@ -304,23 +306,24 @@ int ext_pos = 0;
 
 strcpy (fp_string, filepath);
 fp_pos = strlen (fp_string) - 1;
-//printf ("%s\t%d\t=%c=\n", mag_sum, pos, mag_sum [pos]);
 
 while (fp_pos && fp_string [fp_pos] != '.')
 	{
-//	printf ("%d\t%c\n", fp_pos, fp_string [fp_pos]);
+//printf ("1 %d\t%c\n", fp_pos, fp_string [fp_pos]);
 	rev_ext [rev_pos] = fp_string [fp_pos];
 	fp_pos--;
 	rev_pos++;
 	}
 rev_ext [rev_pos--] = '\0';
+//printf ("2 F=%d\tR=%d\tE%d\n", fp_pos, rev_pos, ext_pos);
 while (rev_pos + 1)
 	{
+//printf ("3 F=%d\tR=%d\tE%d\n", fp_pos, rev_pos, ext_pos);
 	gpx_ext [ext_pos] = rev_ext [rev_pos];
 	rev_pos--;
 	ext_pos++;
 	}
 gpx_ext [ext_pos] = '\0';
-
+//printf ("Here\t%s\n", gpx_ext);
 return (gpx_ext);
 }
