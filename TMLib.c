@@ -324,13 +324,9 @@ while (rev_pos + 1 && fp_pos > 1)
 	}
 if (ext_pos > 0)
 	{
-gpx_ext [ext_pos++] = ' ';
-gpx_ext [ext_pos] = '\0';
+	gpx_ext [ext_pos++] = ' ';
+	gpx_ext [ext_pos] = '\0';
 	}
-	else
-	{
-	gpx_ext = "XXXXX\0";
-	}
-//printf ("Here\t%s\t%d\n", gpx_ext, ext_pos);
+//printf ("%s\t%d\n", gpx_ext, ext_pos);
 return (gpx_ext);
 }

@@ -39,6 +39,7 @@ char path_sub [FILENAME_LENGTH];
 char swap_made = TRUE;					// swap was made on last sort pass
 char sort_need_check = TRUE;
 char *ext_match;
+char header = TRUE;
 //char ext_string [8];
 
 // Initial search section
@@ -58,14 +59,9 @@ if (DIR_PATH != NULL)
 			{
 			strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
 			ext_match = strstr (gpx_file_ext, find_list [find_list_write].file_ext);
-//printf ("=%ld=\t=%d=\n", ext_match - gpx_file_ext, ext_match - gpx_file_ext > 0);
-//			strcpy (ext_string, ext_match);
-//printf ("DN=%s=\tE=%s=\t%ld\n", dir_ents->d_name, get_gpx_ext (dir_ents->d_name), strlen (get_gpx_ext (dir_ents->d_name)));
 //printf ("DN=%s=\tE=%s=\t%ld\n", find_list [find_list_write].filepath, find_list [find_list_write].file_ext, strlen (find_list [find_list_write].file_ext));
-//printf ("L=%d\tX=%s\n", strlen (find_list [find_list_write].file_ext) < 0, ext_match);
 			if ((ext_match - gpx_file_ext) > 0)
 				{
-//printf ("Here\n");
 				find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
 				}
 				else
@@ -111,15 +107,10 @@ fprintf (stderr, "\tFLW=%3d\tOT=%c\tDT=%d\tDN=%s=\t%s\n", find_list_write, \
 	{
 	perror ("Couldn't open the directory");		// FIX
 	}
-/*for (lp = 0; lp < find_list_write; lp++)
-	{
-	if (find_list [lp].object_type == FILE_ENTRY)
-		{
-		printf ("O1=%s\t-%s-\n", find_list [lp].filepath, find_list [lp].file_ext);
-		}
-	}
-*/
+
 // Feedback search section
+if (argc > 2)
+{
 while (find_list_read < find_list_write)
 	{
 	chdir (C_W_D);					// go back to the starting directory
@@ -134,10 +125,12 @@ while (find_list_read < find_list_write)
 			while ((dir_ents = readdir (DIR_PATH)))			// get directory listing
 				{
 				lstat (dir_ents->d_name, &file_stat);
+				strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
 				if (file_stat.st_mode & S_IFREG)
 					{
 					strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
-					if (find_list [find_list_write].file_ext != NULL_STRING && strlen (get_gpx_ext (dir_ents->d_name)) < 0 && strstr (gpx_file_ext, find_list [find_list_write].file_ext))
+					ext_match = strstr (gpx_file_ext, find_list [find_list_write].file_ext);
+					if ((ext_match - gpx_file_ext) > 0)
 						{
 						find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
 						}
@@ -187,11 +180,12 @@ while (find_list_read < find_list_write)
 		}
 	find_list_read ++;
 	}
+}
 for (lp = 0; lp < find_list_write; lp++)
 	{
 	if (find_list [lp].object_type == FILE_ENTRY)
 		{
-		printf ("O2=%s\t-%s-\n", find_list [lp].filepath, find_list [lp].file_ext);
+		printf ("%s\t%s\n", find_list [lp].filepath, find_list [lp].file_ext);
 		}
 	}
 /*

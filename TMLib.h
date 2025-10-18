@@ -39,9 +39,6 @@
 #define T_REJ 'r'
 #define DATABASE_INITIAL_SIZE 4096
 #define DATABASE_INCREMENT 4096
-/*#define 
-#define 
-#define */
 
 
 /*Calculation Values*/
