@@ -75,7 +75,7 @@ if (DIR_PATH != NULL)
 			{
 			c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
 			p_d = !strcmp (dir_ents->d_name, DIR_PREV);
-printf ("_%s\tdc=%d=\tdp=%d=\tboth=%d=\n", dir_ents->d_name, c_d, p_d, c_d || p_d);
+//printf ("_%s\tdc=%d=\tdp=%d=\tboth=%d=\n", dir_ents->d_name, c_d, p_d, c_d || p_d);
 			if ((file_stat.st_mode & S_IFDIR) && !(c_d || p_d))
 				{
 				strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
@@ -125,6 +125,7 @@ while (find_list_read < find_list_write)
 		strcpy (path_sub, C_W_D);
 		strcat (path_sub, find_list [find_list_read].filepath);		// compose directory location for search
 		chdir (path_sub);						// move to search directory
+//printf ("BEG\tflfp=%s=\n", find_list [find_list_read].filepath);
 		DIR_PATH = opendir (path_sub);					// open directory
 		if (DIR_PATH != NULL)
 			{
@@ -134,14 +135,16 @@ while (find_list_read < find_list_write)
 				if (file_stat.st_mode & S_IFREG)
 					{
 					ext_match = strstr (gpx_file_ext, get_gpx_ext (dir_ents->d_name));
+					c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
+                        		p_d = !strcmp (dir_ents->d_name, DIR_PREV);
+//printf ("FILE\t%s\tboth=%d=\n", dir_ents->d_name, !(c_d || p_d));
 					if ((ext_match - gpx_file_ext) > 0 && !(c_d || p_d))
 						{
 						strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
-printf ("1=%s=\n", find_list [find_list_write].filepath);
 						strcat (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
-printf ("2=%s=\n", find_list [find_list_write].filepath);
+						strcat (find_list [find_list_write].filepath, "/");
 						strcat (find_list [find_list_write].filepath, dir_ents->d_name);
-printf ("3=%s=\n", find_list [find_list_write].filepath);
+//printf ("NAME=%s=\n", find_list [find_list_write].filepath);
 						find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
 						find_list_write ++;
 						}
@@ -154,14 +157,13 @@ printf ("3=%s=\n", find_list [find_list_write].filepath);
 					{
 					c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
                         		p_d = !strcmp (dir_ents->d_name, DIR_PREV);
-printf ("%s\tdc=%d=\tdp=%d=\tboth=%d=\n", dir_ents->d_name, c_d, p_d, c_d || p_d);
+//printf ("DIRS\t%s\tboth=%d=\n", dir_ents->d_name, !(c_d || p_d));
 					if ((file_stat.st_mode & S_IFDIR) && !(c_d || p_d))
 						{
-printf ("1=%s=\n", find_list [find_list_write].filepath);
 						strcat (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
-printf ("2=%s=\n", find_list [find_list_write].filepath);
+						strcat (find_list [find_list_write].filepath, "/");
 						strcat (find_list [find_list_write].filepath, dir_ents->d_name);
-printf ("3=%s=\n", find_list [find_list_write].filepath);
+//printf ("DIR=%s=\n", find_list [find_list_write].filepath);
 						find_list [find_list_write].object_type = DIR_ENTRY;	// set type to directory
 						find_list_write ++;
 						}
@@ -171,9 +173,9 @@ printf ("3=%s=\n", find_list [find_list_write].filepath);
 						}
 					}
 //fprintf (stderr, "DTP\tN=%s\tT=%c\n", dir_ents->d_name, find_list [find_list_write].object_type);
-				strcpy (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
-				strcat (find_list [find_list_write].filepath, "/");
-				strcat (find_list [find_list_write].filepath, dir_ents->d_name);
+//				strcpy (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
+//				strcat (find_list [find_list_write].filepath, "/");
+//				strcat (find_list [find_list_write].filepath, dir_ents->d_name);
 				if (find_list_write + 1 == find_list_curr_size)			// allocated more memory if needed
 					{
 					find_list_curr_size += DATABASE_INCREMENT;
@@ -200,7 +202,8 @@ for (lp = 0; lp < find_list_write; lp++)
 	{
 	if (find_list [lp].object_type == FILE_ENTRY || find_list [lp].object_type == DIR_ENTRY)
 		{
-		printf ("%d\t%s\t%s\n", lp, find_list [lp].filepath, find_list [lp].file_ext);
+		printf ("%s\t\t%s\n", find_list [lp].filepath, find_list [lp].file_ext);
+//		printf ("%d\t%s\t%s\n", lp, find_list [lp].filepath, find_list [lp].file_ext);
 		}
 	}
 /*
