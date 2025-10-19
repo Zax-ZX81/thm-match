@@ -309,7 +309,7 @@ fp_pos = strlen (fp_string) - 1;
 
 while (fp_pos && fp_string [fp_pos] != '.' && rev_pos < 6)
 	{
-//printf ("1 %d\t%c\n", fp_pos, fp_string [fp_pos]);
+//printf ("1 F=%d\tS=%c\n", fp_pos, fp_string [fp_pos]);
 	rev_ext [rev_pos] = fp_string [fp_pos];
 	fp_pos--;
 	rev_pos++;
@@ -327,6 +327,10 @@ if (ext_pos > 0)
 	gpx_ext [ext_pos++] = ' ';
 	gpx_ext [ext_pos] = '\0';
 	}
-//printf ("%s\t%d\n", gpx_ext, ext_pos);
+/*	else
+	{
+	gpx_ext = "XXXX";
+	}*/
+//printf ("3 E=%s\tP=%d\n", gpx_ext, ext_pos);
 return (gpx_ext);
 }
