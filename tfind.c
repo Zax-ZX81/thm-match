@@ -13,44 +13,48 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-//#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
 
 #define PROG_NAME "Tfind"
-#define PROG_VERSION "0.30"
+#define PROG_VERSION "0.39"
+
+struct tprint_database tprint_return;
+struct tfind_flags tfflags [1] = {0};
+
 
 int main (int argc, char *argv [])
 
 {
-struct rgb_accumulator rgb_return;
-struct maxmin_return limits_return;
-struct colgry_accumulator quad_accum [4] = {{0}};
-struct dimension_return mag_separation;
-struct tprint_flags tpflags [1] = {0};
-struct stat sb;
+struct dirent *dir_ents;
+struct stat file_stat;
+struct find_list_entry *find_list;
+struct tprint_database tprint_return;
 
-char img_name [FILENAME_LENGTH] = NULL_STRING;
-char out_name [FILENAME_LENGTH] = NULL_STRING;
-char cmd_line [FILENAME_LENGTH] = NULL_STRING;
-unsigned char nine_byte_chunk [9];
-unsigned char *thm_buffer;
-unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
-char mag_string [12];
-char hue_print [5] = NULL_STRING;
-char gry_print [5] = NULL_STRING;
 char switch_chr;
+const char gpx_file_ext [90] = GRAPHICS_EXTENSIONS;
+char C_W_D [FILENAME_LENGTH];				// base directory of search
+char path_sub [FILENAME_LENGTH];
+char swap_made = TRUE;					// swap was made on last sort pass
+char sort_need_check = TRUE;
+char *ext_match;
+char c_d, p_d;
 
 int lp = 0;
-int qlp, llp, hlp, olp, rerr, pos, arg_no, switch_pos, nn_len;
+int line_index;
+int find_list_write = 0;			// number of file items found in search
+int find_list_read = 0;
+int find_list_curr_size = 0;
+int arg_no, switch_pos, swap_index, mas_lp;
 
-float hue_value, red_dec, grn_dec, blu_dec, mag_n;
 
-FILE *IMGFILE;
-FILE *rgb_thumbnail;
-FILE *out_thumbnail;
+DIR *DIR_PATH;
 
-tpflags->tprt = FALSE;
-tpflags->verbose = FALSE;
+tfflags->tprt = FALSE;
+tfflags->verbose = FALSE;
+
 
 // Arguments section
 for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
@@ -62,11 +66,17 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
+				case 'r':
+					tfflags->recurse = SW_ON;
+					break;
+				case 's':
+					tfflags->sort = SW_ON;
+					break;
 				case 't':
-					tpflags->tprt = SW_ON;
+					tfflags->tprt = SW_ON;
 					break;
 				case 'v':
-					tpflags->verbose = SW_ON;
+					tfflags->verbose = SW_ON;
 					break;
 				case 'V':
 					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
@@ -79,14 +89,190 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
-		if (strcmp (img_name, "") == 0)
+/*		if (strcmp (img_name, "") == 0)
 			{
 			strncpy (img_name, argv [arg_no], FILENAME_LENGTH);
-			}
+			} */
 		}	// END else if int argv
 	}	// END for arg_no
 
+
+
+
+// Initial search section
+find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
+find_list_curr_size = DATABASE_INITIAL_SIZE;
+getcwd (C_W_D, FILENAME_LENGTH);			// get present working directory
+strcat (C_W_D, SLASH_TERM);
+DIR_PATH = opendir (PATH_CURRENT);			// open directory
+
+if (DIR_PATH != NULL)
+	{
+	while ((dir_ents = readdir (DIR_PATH)))		// get directory listing
+		{
+		lstat (dir_ents->d_name, &file_stat);
+		if (file_stat.st_mode & S_IFREG)
+			{
+			ext_match = strstr (gpx_file_ext, get_gpx_ext (dir_ents->d_name));
+			if ((ext_match - gpx_file_ext) > 0)
+				{
+				strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
+				strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
+				find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+				find_list_write ++;
+				}
+				else
+				{
+				find_list [find_list_write].object_type = T_REJ;
+				}
+			}
+			else
+			{
+			c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
+			p_d = !strcmp (dir_ents->d_name, DIR_PREV);
+			if ((file_stat.st_mode & S_IFDIR) && !(c_d || p_d))
+				{
+				strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
+				find_list [find_list_write].object_type = DIR_ENTRY;	// set type to directory
+				find_list_write ++;
+				}
+				else
+				{
+				find_list [find_list_write].object_type = UNKNOWN_ENTRY;	// mark as unneeded type
+				}
+			}
+		if (find_list_write + 1 == find_list_curr_size)		// allocated more memory if needed
+			{
+			find_list_curr_size += DATABASE_INCREMENT;
+			find_list = (struct find_list_entry *) realloc (find_list, sizeof (struct find_list_entry) * find_list_curr_size);
+			}
+		}
+	(void) closedir (DIR_PATH);
+	}
+	else
+	{
+	perror ("Couldn't open the directory");		// FIX
+	}
+
+// Feedback search section
+if (tfflags->recurse)
+{
+while (find_list_read < find_list_write)
+	{
+	chdir (C_W_D);					// go back to the starting directory
+	if (find_list [find_list_read].object_type == DIR_ENTRY)
+		{
+		strcpy (path_sub, C_W_D);
+		strcat (path_sub, find_list [find_list_read].filepath);		// compose directory location for search
+		chdir (path_sub);						// move to search directory
+		DIR_PATH = opendir (path_sub);					// open directory
+		if (DIR_PATH != NULL)
+			{
+			while ((dir_ents = readdir (DIR_PATH)))			// get directory listing
+				{
+				lstat (dir_ents->d_name, &file_stat);
+				if (file_stat.st_mode & S_IFREG)
+					{
+					ext_match = strstr (gpx_file_ext, get_gpx_ext (dir_ents->d_name));
+					c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
+                        		p_d = !strcmp (dir_ents->d_name, DIR_PREV);
+					if ((ext_match - gpx_file_ext) > 0 && !(c_d || p_d))
+						{
+						strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
+						strcat (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
+						strcat (find_list [find_list_write].filepath, "/");
+						strcat (find_list [find_list_write].filepath, dir_ents->d_name);
+						find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+						find_list_write ++;
+						}
+						else
+						{
+						find_list [find_list_write].object_type = T_REJ;
+						}
+					}
+					else
+					{
+					c_d = !strcmp (dir_ents->d_name, DIR_CURRENT);
+                        		p_d = !strcmp (dir_ents->d_name, DIR_PREV);
+					if ((file_stat.st_mode & S_IFDIR) && !(c_d || p_d))
+						{
+						strcat (find_list [find_list_write].filepath, find_list [find_list_read].filepath);
+						strcat (find_list [find_list_write].filepath, "/");
+						strcat (find_list [find_list_write].filepath, dir_ents->d_name);
+						find_list [find_list_write].object_type = DIR_ENTRY;	// set type to directory
+						find_list_write ++;
+						}
+						else
+						{
+						find_list [find_list_write].object_type = UNKNOWN_ENTRY;	// mark as unneeded type
+						}
+					}
+				if (find_list_write + 1 == find_list_curr_size)			// allocated more memory if needed
+					{
+					find_list_curr_size += DATABASE_INCREMENT;
+					find_list = (struct find_list_entry *) realloc (find_list, sizeof (struct find_list_entry) * find_list_curr_size);
+					}
+				}
+			closedir (DIR_PATH);
+			}
+		}
+	find_list_read ++;
+	}
+}
+
+for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
+	{
+	if (find_list [mas_lp].object_type == FILE_ENTRY)
+		{
+		tprint_return = get_thumbprint (find_list [mas_lp].filepath);
+		printf ("%s %s %c %s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude, tprint_return.filepath);
+		} // end find list lp
+	} // end lp
+
+}
+
+
+struct tprint_database get_thumbprint (char *img_name)
+
+/* * * * * * * * * * * * * *
+ *                         *
+ *       tprint 0.30       *
+ *                         *
+ *       2025-10-08        *
+ *                         *
+ *       Zax               *
+ *                         *
+ * * * * * * * * * * * * * */
+
+
+{
+struct rgb_accumulator rgb_return;
+struct maxmin_return limits_return;
+struct colgry_accumulator quad_accum [4] = {{0}};
+struct dimension_return mag_separation;
+struct stat sb;
+struct tprint_database tprint_return;
+
+char out_name [FILENAME_LENGTH] = NULL_STRING;
+char cmd_line [FILENAME_LENGTH] = NULL_STRING;
+unsigned char nine_byte_chunk [9];
+unsigned char *thm_buffer;
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+char mag_string [12];
+char hue_print [5] = NULL_STRING;
+char gry_print [5] = NULL_STRING;
+
+int lp = 0;
+int qlp, llp, hlp, olp, rerr, pos, nn_len;
+
+float hue_value, red_dec, grn_dec, blu_dec, mag_n;
+
+FILE *IMGFILE;
+FILE *rgb_thumbnail;
+FILE *out_thumbnail;
+
 rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, img_name, RGB_ARGS);
+//printf ("CL=%s=\n", cmd_line);
 rgb_thumbnail = popen (cmd_line, "r");
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 rerr = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
@@ -120,7 +306,7 @@ for (olp = 0; olp < 4; olp += 2)
 
 nn_len = snprintf (out_name, FILENAME_LENGTH, "s/%s%s", img_name, FILE_EXTN);
 //printf ("%s\n", out_name);
-if (tpflags->tprt == SW_ON)
+if (tfflags->tprt == SW_ON)
 	{
 	if (stat ("s", &sb) == -1)
 		{
@@ -199,7 +385,11 @@ if (mag_n < 0)
 	{
 	mag_n = 0;
 	}
-printf ("%s\t%s\t%c\t%s\n", gry_print, hue_print, base_sixfour [(int) mag_n], img_name);
+strcpy (tprint_return.gry_print, gry_print);
+strcpy (tprint_return.hue_print, hue_print);
+tprint_return.magnitude = base_sixfour [(int) mag_n];
+strcpy (tprint_return.filepath, img_name);
+return (tprint_return);
 //nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
 }

@@ -9,7 +9,7 @@
  * * * * * * * * * * * * * */
 
 #define BASE_SIXTYFOUR "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+\0"
-#define GRAPHICS_EXTENSIONS "bmp BMP gif GIF jfif JFIF jpg jpeg JPG JPEG png PNG tif tiff TIF TIFF webp WEBP "
+#define GRAPHICS_EXTENSIONS " bmp BMP gif GIF jfif JFIF jpg jpeg JPG JPEG png PNG tif tiff TIF TIFF webp WEBP "
 #define MAGICK_COMMAND "magick "
 #define RGB_ARGS " -resize '64x64' -background 'gray(50%)' -gravity center -extent 64x64 -depth 6 -compress None rgb:-"
 #define MAG_ARGS "identify -format '%G' "
@@ -115,18 +115,26 @@ struct dimension_return
 
 struct tprint_database
 	{
-	char gry_print [5];             // grey print 4 character code
-	char hue_print [5];             // hue print 4 character code
-	char magnitude [2];             // magnitude 1 character code
+	char gry_print [5];		// grey print 4 character code
+	char hue_print [5];		// hue print 4 character code
+	char magnitude;			// magnitude 1 character code
 	char filepath [FILENAME_LENGTH];
 	};
 
 struct tprint_flags
 	{
-	char sort;                      // sort by either field or not
-	char tprt;                      // write thumbnail file
-	char std_out;                   // print output to stdout, supress file output
-	char verbose;                   // mirror everything to stdout
+	char tprt;		// write thumbnail file
+	char std_out;		// print output to stdout, supress file output
+	char verbose;		// mirror everything to stdout
+};
+
+struct tfind_flags
+	{
+	char recurse;		// go beyond the current directory
+	char sort;		// sort or not
+	char tprt;		// write thumbnail file
+	char std_out;		// print output to stdout, supress file output
+	char verbose;		// mirror everything to stdout
 };
 
 struct find_list_entry
@@ -143,3 +151,4 @@ char *compose_filename (char *img_name, char *img_rename, char *gry_print, char 
 struct file_name_return separate_filename (char *thm_filename);
 struct dimension_return separate_magnitude (char *mag_string);
 char *get_gpx_ext (char *filepath);
+struct tprint_database get_thumbprint (char *img_name);

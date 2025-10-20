@@ -131,3 +131,4 @@ divide differences into four sections of frequency
 	similarity/difference number: 0.12345 = difference of compression artifacts, 56789123.12345 = artifacts plus superimposed text
 Histogram. 
 
+### change so the file extension being searched is surrounded by spaces

@@ -3,16 +3,16 @@
 CC= gcc
 CFLAGS= -I. -Wunused-variable
 
-all: bsf_test3 sbp_test2 1tprint tprint f_test fns_test1 popen_test1 buf_test
-
-1tprint:	1tprint.c TMLib.c
-	$(CC) -o bin/tprint tprint.c TMLib.c -lm $(CFLAGS)
+all: bsf_test3 sbp_test2 tprint tfind f_test fns_test1 popen_test1 buf_test
 
 f_test:	f_test.c TMLib.c
 	$(CC) -o bin/f_test f_test.c TMLib.c $(CFLAGS)
 
 tprint:		tprint.c TMLib.c
 	$(CC) -o bin/tprint tprint.c TMLib.c -lm $(CFLAGS)
+
+tfind:		tfind.c TMLib.c
+	$(CC) -o bin/tfind tfind.c TMLib.c -lm $(CFLAGS)
 
 fns_test1:	fns_test1.c TMLib.c
 	$(CC) -o bin/fns_test1 fns_test1.c TMLib.c $(CFLAGS)
