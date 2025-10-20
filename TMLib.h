@@ -152,3 +152,4 @@ struct file_name_return separate_filename (char *thm_filename);
 struct dimension_return separate_magnitude (char *mag_string);
 char *get_gpx_ext (char *filepath);
 struct tprint_database get_thumbprint (char *img_name);
+char *enquote (char *filepath);

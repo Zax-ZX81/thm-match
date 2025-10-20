@@ -334,3 +334,15 @@ if (ext_pos > 0)
 //printf ("3 E=%s\tP=%d\n", gpx_ext, ext_pos);
 return (gpx_ext);
 }
+
+char *enquote (char *filepath)  // Encapsulate a string in double quotes
+{
+char *out_string = malloc (FILELINE_LENGTH);
+char quote_marks [] = {'"', '\0'};
+
+strcpy (out_string, quote_marks);
+strcat (out_string, filepath);
+strcat (out_string, quote_marks);
+
+return out_string;
+}

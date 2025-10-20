@@ -107,7 +107,7 @@ Compare databases
 
 
 Duplicates
-Sort database by print - 0-9, A-Z, a-z, -+
+Sort database by print - 0-9, a-z, A-Z, -+
 Go down list looking for duplicates in greyprint, hueprint
 Print filenames, prints, and magnitudes of duplicates
 
@@ -124,11 +124,18 @@ Target [192,64] eight bit signed int
 Subtract Compare from Target, so target contains number and amount of distance
 divide differences into four sections of frequency
 	first 16 values - difference of one, to difference of fifteen - makes up fractional portion of similarity number
-	1+ 2^2 3^2 4^2 5^2 ... 15^2 
-	last three sections make up the similarity number to the left of decimal point
-	1+ 2^2 3^2 4^2 5^2 ... 47^2
+	1+ 2^2 2^3 2^4 2^5 ... 2^15 
+	last 16 values make up the similarity number to the left of decimal point
+	1+ 2^2 2^3 2^4 2^5 ... 2^15
 	So a large number of small differences will make the decimal portion large and a small number of large differences will make the left of the decimal point large
 	similarity/difference number: 0.12345 = difference of compression artifacts, 56789123.12345 = artifacts plus superimposed text
-Histogram. 
+Histogram.
+Or the first and last quarters of a histogram
+
+Sixteen divisions of four.  The first division kept as four values.  The highest frequency from the other 15 divisions taken, for a total of 19 frequency numbers.
+First division for the right of the decimal place.  Other fifteen to the left.  Base 10, base 64?
+Or eight divisions of eight.
 
 ### change so the file extension being searched is surrounded by spaces
+
+### enquote filenames
