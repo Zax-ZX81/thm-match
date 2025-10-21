@@ -79,6 +79,13 @@ struct rgb_accumulator
 	float blu_val;
 	};
 
+struct rgb_six_bit
+	{
+	unsigned int red_val : 6;
+	unsigned int grn_val : 6;
+	unsigned int blu_val : 6;
+	};
+
 struct colgry_accumulator
 	{
 	float red_val;
@@ -153,3 +160,5 @@ struct dimension_return separate_magnitude (char *mag_string);
 char *get_gpx_ext (char *filepath);
 struct tprint_database get_thumbprint (char *img_name);
 char *enquote (char *filepath);
+char *twelve_six_bit (unsigned char *nine_byte_string);
+int sixfour_to_dec (char sixfour);

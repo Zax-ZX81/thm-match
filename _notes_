@@ -111,6 +111,8 @@ Sort database by print - 0-9, a-z, A-Z, -+
 Go down list looking for duplicates in greyprint, hueprint
 Print filenames, prints, and magnitudes of duplicates
 
+Three levels of comparison: database only; database plus filesystem info - timestamps, file sizes; thumbnails.
+
 Compare two or three thumbnails side by side
 
 Function quad_cmp (char compare, char target)
