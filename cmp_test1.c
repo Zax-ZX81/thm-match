@@ -36,6 +36,8 @@ int r_pos = 0;
 int ch_a, ch_b, olp, dist;
 unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
+float hscale;
+
 FILE *IMGFILE_A;
 FILE *IMGFILE_B;
 
@@ -85,10 +87,12 @@ for (olp = 0; olp < 9216; olp += 9)
 
 for (olp = 0; olp < 64; olp++)
 	{
-	if (histogram [olp] > 0)
-		{
-		printf ("%c=%4d.  ", base_sixfour [olp], histogram [olp]);
-		}
+//	if (histogram [olp] > 0)
+//		{
+		hscale = 0.00520833333333 * histogram [olp];
+		printf ("%c", base_sixfour [(int) hscale]);
+//		printf ("%c=%c ", base_sixfour [olp], base_sixfour [(int) hscale]);
+//		}
 	}
 printf ("\n");
 

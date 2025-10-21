@@ -105,7 +105,6 @@ char *twelve_six_bit (unsigned char *nine_byte_string)  // Extract 12 6 bit valu
 {
 struct four_six_bit_pixels fsbp;
 
-char *gpx_ext = malloc (FILENAME_LENGTH);
 char *rgb_return = malloc (13);
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 unsigned char tmpa, tmpb;
