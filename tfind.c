@@ -225,7 +225,7 @@ for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	if (find_list [mas_lp].object_type == FILE_ENTRY)
 		{
 		tprint_return = get_thumbprint (find_list [mas_lp].filepath);
-		printf ("%s %s %c %s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude, tprint_return.filepath);
+		printf ("%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude, tprint_return.filepath);
 		} // end find list lp
 	} // end lp
 

@@ -135,6 +135,13 @@ struct tprint_flags
 	char verbose;		// mirror everything to stdout
 };
 
+struct tdiff_flags
+	{
+	char tprt;		// write thumbnail file
+	char std_out;		// print output to stdout, supress file output
+	char verbose;		// mirror everything to stdout
+};
+
 struct tfind_flags
 	{
 	char recurse;		// go beyond the current directory

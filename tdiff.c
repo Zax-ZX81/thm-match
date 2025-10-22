@@ -19,22 +19,21 @@
 int main (int argc, char *argv [])
 
 {
+struct tdiff_flags tcflags [1] = {0};
+
 char rgb_return_a [13] = "";
 char rgb_return_b [13] = "";
 
 char img_name_a [FILENAME_LENGTH] = NULL_STRING;
 char img_name_b [FILENAME_LENGTH] = NULL_STRING;
+char switch_chr;
 unsigned char nine_byte_chunk_a [9];
 unsigned char nine_byte_chunk_b [9];
 unsigned char *thm_buffer_a;
 unsigned char *thm_buffer_b;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
-unsigned char hc;
 
-int lp = 0;
-int pos, r_idx, rerr_a, rerr_b;
-int r_pos = 0;
-int ch_a, ch_b, olp, dist;
+int pos, r_idx, rerr_a, rerr_b, ch_a, ch_b, olp, dist, arg_no, switch_pos;
 int err = FALSE;
 unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
@@ -43,10 +42,50 @@ float hscale;
 FILE *IMGFILE_A;
 FILE *IMGFILE_B;
 
+// Arguments section
+for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
+	{
+	if ((int) argv [arg_no] [0] == '-')
+		{
+		for (switch_pos = 1; switch_pos < strlen (argv[arg_no]); switch_pos++)
+			{
+			switch_chr = (int) argv [arg_no] [switch_pos];
+			switch (switch_chr)
+				{
+				case 't':
+					tcflags->tprt = SW_ON;
+					break;
+				case 'v':
+					tcflags->verbose = SW_ON;
+					break;
+				case 'V':
+					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
+					exit (0);
+				default:
+					printf ("%s# TDiff [pstvV] <image A> <image B>%s\n", TEXT_YELLOW, TEXT_RESET);
+					exit (0);
+				}	// END switch
+			}	// END for switch_pos
+		}	// END if int argv
+		else
+		{
+		if (strcmp (img_name_a, "") == 0)
+			{
+			strncpy (img_name_a, argv [arg_no], FILENAME_LENGTH);
+			}
+			else
+			{
+			if (strcmp (img_name_b, "") == 0)
+				{
+				strncpy (img_name_b, argv [arg_no], FILENAME_LENGTH);
+				}
+			}
+		}	// END else if int argv
+	}	// END for arg_no
 
-strncpy (img_name_a, argv [1], FILENAME_LENGTH);
-strncpy (img_name_b, argv [2], FILENAME_LENGTH);
-printf ("%s, %s\n",img_name_a, img_name_b);
+//strncpy (img_name_a, argv [1], FILENAME_LENGTH);
+//strncpy (img_name_b, argv [2], FILENAME_LENGTH);
+printf ("%s, %s\n\n",img_name_a, img_name_b);
 /*for (olp = 0; olp < 64; olp++)
 	{
 	printf ("%c=%4d.  ", base_sixfour [olp], histogram [olp]);
@@ -101,20 +140,44 @@ for (olp = 0; olp < 9216; olp += 9)
 		}
 	}
 
-for (olp = 0; olp < 64; olp++)
+printf ("Unscaled\n");
+for (olp = 0; olp < 8; olp++)
 	{
-	hscale = 0.00813802083334 * histogram [olp];
-	if (hscale == 0.0)
+	for (pos = 0; pos < 8; pos++)
 		{
-		printf ("  ");
+		if (histogram [(olp * 8) + pos] == 0.0)
+			{
+			printf ("      ");
+			}
+			else
+			{
+			printf ("%5d ", histogram [(olp * 8) + pos]);
+			}
 		}
-		else
-		{
-		printf ("%02d ", (int) hscale);
-		}
+	printf ("|\n");
 	}
-printf ("|\n\n");
+printf ("\n\n");
 
+printf ("Percentage\n");
+for (olp = 0; olp < 8; olp++)
+	{
+	for (pos = 0; pos < 8; pos++)
+		{
+		hscale = 0.00813802083334 * histogram [(olp * 8) + pos];
+		if (hscale == 0.0)
+			{
+			printf ("   ");
+			}
+			else
+			{
+			printf ("%02d ", (int) hscale);
+			}
+		}
+	printf ("|\n");
+	}
+printf ("\n\n");
+
+printf ("Per64age\n");
 for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)
