@@ -29,6 +29,7 @@ unsigned char nine_byte_chunk_b [9];
 unsigned char *thm_buffer_a;
 unsigned char *thm_buffer_b;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+unsigned char hc;
 
 int lp = 0;
 int pos, r_idx, rerr_a, rerr_b;
@@ -85,16 +86,46 @@ for (olp = 0; olp < 9216; olp += 9)
 		}
 	}
 
-for (olp = 0; olp < 64; olp++)
+/*for (olp = 0; olp < 64; olp++)
 	{
 //	if (histogram [olp] > 0)
 //		{
-		hscale = 0.00520833333333 * histogram [olp];
-		printf ("%c", base_sixfour [(int) hscale]);
+		hscale = 0.005126953125 * histogram [olp];
+		hc = base_sixfour [(int) hscale];
+		base_sixfour [0] = '0';
+		printf ("S=%c=D=%d=\tHS=%c=HD=%f=\n", base_sixfour [olp], olp, hc, hscale);
 //		printf ("%c=%c ", base_sixfour [olp], base_sixfour [(int) hscale]);
 //		}
 	}
 printf ("\n");
+
+for (olp = 0; olp < 64; olp++)
+	{
+//	if (histogram [olp] > 0)
+//		{
+		hscale = 0.00813802083334 * histogram [olp];
+		printf ("%02d ", (int) hscale);
+//		printf ("%c=%c ", base_sixfour [olp], base_sixfour [(int) hscale]);
+//		}
+	}
+printf ("\n");
+*/
+for (olp = 0; olp < 8; olp++)
+	{
+	for (pos = 0; pos < 8; pos++)
+		{
+		hscale = 0.005126953125 * histogram [(olp * 8) + pos];
+		if (hscale == 0.0)
+			{
+			printf ("  ");
+			}
+			else
+			{
+	                printf ("%c ", base_sixfour [(int) hscale]);
+			}
+		}
+	printf ("|\n");
+	}
 
 free (thm_buffer_a);
 free (thm_buffer_b);
