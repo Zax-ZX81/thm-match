@@ -152,6 +152,7 @@ struct find_list_entry
 };
 
 void exit_error (char *message_a, char *message_b);
+void error_mess (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);

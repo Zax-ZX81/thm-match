@@ -35,6 +35,7 @@ int lp = 0;
 int pos, r_idx, rerr_a, rerr_b;
 int r_pos = 0;
 int ch_a, ch_b, olp, dist;
+int err = FALSE;
 unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
 float hscale;
@@ -58,6 +59,20 @@ thm_buffer_b = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 //printf ("2\n");
 IMGFILE_A = fopen (img_name_a, "r");
 IMGFILE_B = fopen (img_name_b, "r");
+if (IMGFILE_A == NULL)
+	{
+	error_mess ("Error opening file: ", img_name_a);
+	err = TRUE;
+	}
+if (IMGFILE_B == NULL)
+	{
+	error_mess ("Error opening file: ", img_name_b);
+	err = TRUE;
+	}
+if (err == TRUE)
+	{
+	return 1;
+	}
 //printf ("3\n");
 rerr_a = fread (thm_buffer_a, 1, THUMBNAIL_BYTES, IMGFILE_A);
 rerr_b = fread (thm_buffer_b, 1, THUMBNAIL_BYTES, IMGFILE_B);
@@ -86,30 +101,20 @@ for (olp = 0; olp < 9216; olp += 9)
 		}
 	}
 
-/*for (olp = 0; olp < 64; olp++)
-	{
-//	if (histogram [olp] > 0)
-//		{
-		hscale = 0.005126953125 * histogram [olp];
-		hc = base_sixfour [(int) hscale];
-		base_sixfour [0] = '0';
-		printf ("S=%c=D=%d=\tHS=%c=HD=%f=\n", base_sixfour [olp], olp, hc, hscale);
-//		printf ("%c=%c ", base_sixfour [olp], base_sixfour [(int) hscale]);
-//		}
-	}
-printf ("\n");
-
 for (olp = 0; olp < 64; olp++)
 	{
-//	if (histogram [olp] > 0)
-//		{
-		hscale = 0.00813802083334 * histogram [olp];
+	hscale = 0.00813802083334 * histogram [olp];
+	if (hscale == 0.0)
+		{
+		printf ("  ");
+		}
+		else
+		{
 		printf ("%02d ", (int) hscale);
-//		printf ("%c=%c ", base_sixfour [olp], base_sixfour [(int) hscale]);
-//		}
+		}
 	}
-printf ("\n");
-*/
+printf ("|\n\n");
+
 for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)

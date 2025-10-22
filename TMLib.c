@@ -20,6 +20,11 @@ fprintf (stderr, "%s%s%s%s\n", TEXT_ORANGE, message_a, message_b, TEXT_RESET);
 exit (1);
 }
 
+void error_mess (char *message_a, char *message_b)	// Print two strings as error messages in orange
+{
+fprintf (stderr, "%s%s%s%s\n", TEXT_ORANGE, message_a, message_b, TEXT_RESET);
+}
+
 
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string)  // Extract 3 6 bit values from 9 bytes
 {
