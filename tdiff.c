@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       cmp_test1         *
+ *       tdiff             *
  *                         *
- *       2025-10-08        *
+ *       2025-10-22        *
  *                         *
  *       Zax               *
  *                         *
@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PROG_NAME "Cmp_Test"
+#define PROG_NAME "TDiff"
 #define PROG_VERSION "0.30"
 
 int main (int argc, char *argv [])
