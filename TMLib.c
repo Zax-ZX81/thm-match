@@ -483,3 +483,42 @@ if ((int) sixfour > 96)
 
 return dec_ret;
 }
+
+
+char tpdb_verify (char *fileline)
+{
+int char_index = 0;
+char *char_pos;
+
+do
+	{
+	char_pos = strchr (BASE_SIXTYFOUR, fileline [char_index]);
+	if (char_pos == 0)
+		{
+		return (0);
+		}
+	} while (++char_index < 4);
+if (fileline [char_index++] != TAB_CHAR)
+	{
+	return (0);
+	}
+do
+	{
+	char_pos = strchr (BASE_SIXTYFOUR, fileline [char_index]);
+	if (char_pos == 0)
+		{
+		return (0);
+		}
+	} while (++char_index < 9);
+if (fileline [char_index++] != TAB_CHAR)
+	{
+	return (0);
+	}
+char_pos = strchr (BASE_SIXTYFOUR, fileline [char_index]);
+if (char_pos == 0)
+	{
+	return (0);
+	}
+
+return (1);
+}

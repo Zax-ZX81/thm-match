@@ -22,6 +22,7 @@
 #define FILE_EXTN ".rgb"
 
 #define NULL_STRING ""
+#define TAB_CHAR 9
 #define FILENAME_LENGTH 256
 #define THUMBNAIL_BYTES 9216
 #define TRUE (1==1)
@@ -124,7 +125,7 @@ struct tprint_database
 	{
 	char gry_print [5];		// grey print 4 character code
 	char hue_print [5];		// hue print 4 character code
-	char magnitude;			// magnitude 1 character code
+	char magnitude [1];			// magnitude 1 character code
 	char filepath [FILENAME_LENGTH];
 	};
 
@@ -170,3 +171,4 @@ struct tprint_database get_thumbprint (char *img_name);
 char *enquote (char *filepath);
 char *twelve_six_bit (unsigned char *nine_byte_string);
 int sixfour_to_dec (char sixfour);
+char tpdb_verify (char *fileline);
