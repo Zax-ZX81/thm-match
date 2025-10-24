@@ -221,11 +221,11 @@ while (find_list_read < find_list_write)
 	find_list_read ++;
 	}
 }
-
 for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	{
 	if (find_list [mas_lp].object_type == FILE_ENTRY)
 		{
+printf ("F=%s\n", find_list [mas_lp].filepath);
 		tprint_return = thumbprint (find_list [mas_lp].filepath);
 		printf ("%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
 		} // end find list lp

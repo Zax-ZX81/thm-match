@@ -19,6 +19,9 @@ struct tprint_database tprint_return;
 
 char out_name [FILENAME_LENGTH] = NULL_STRING;
 char cmd_line [FILENAME_LENGTH] = NULL_STRING;
+char file_name [FILENAME_LENGTH] = NULL_STRING;
+char file_path [FILENAME_LENGTH] = NULL_STRING;
+char out_path [FILENAME_LENGTH] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
@@ -62,19 +65,32 @@ for (olp = 0; olp < 4; olp += 2)
 				quad_accum[olp + llp].gry_val = quad_accum[olp + llp].gry_val + (rgb_return.red_val + rgb_return.grn_val + rgb_return.blu_val) / 3;
 				base_sixfour [0] = '0';
 //printf ("%c%c%c ", base_sixfour [(int) rgb_return.red_val], base_sixfour [(int) rgb_return.grn_val], base_sixfour [(int) rgb_return.blu_val]);
-//printf ("\n%f  %f  %f\n", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
+//				base_sixfour [0] = '0';
+//printf ("%1.1f %1.1f %1.1f O%d H%d L%d Q%d  ", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val, olp, hlp, llp, qlp);
 				}	// end qlp
+//printf ("\n");
 			}	// end llp
 		}	// end hlp
 	}	// end olp
 
-nn_len = snprintf (out_name, FILENAME_LENGTH, "s/%s%s", img_name, FILE_EXTN);
-//printf ("%s\n", out_name);
 if (tpflags.tprt == SW_ON)
 	{
-	if (stat ("s", &sb) == -1)
+	if (strrchr (img_name, 47))
 		{
-		mkdir ("s", 0700);
+		strcpy (file_name, strrchr (img_name, 47) + 1);
+		strncpy (file_path, img_name, strrchr (img_name, 47) - img_name + 1);
+		nn_len = snprintf (out_path, FILENAME_LENGTH, "%s%s", file_path, "s/");
+		nn_len = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", out_path, file_name, FILE_EXTN);
+		}
+		else
+		{
+		strcpy (out_path, "s/");
+		strcpy (out_name, img_name);
+		}
+//printf ("FILE_PATH=%s\tFILE_NAME=%s\n", file_path, file_name);
+	if (stat (out_path, &sb) == -1)
+		{
+		mkdir (out_path, 0700);
 		}
 	out_thumbnail = fopen (out_name, "wb");
 	rerr = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);

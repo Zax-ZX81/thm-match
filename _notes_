@@ -141,3 +141,25 @@ Or eight divisions of eight.
 ### change so the file extension being searched is surrounded by spaces
 
 ### enquote filenames
+
+for (size_t i = 0; i < size; i++) {
+    double diff = array[i] - mean;
+    sum += diff * diff;
+}
+To calculate the Variance, take each difference, square it, and then average the result:
+Variance
+σ2	=	206^2 + 76^2 + (−224)^2 + 36^2 + (−94)^2
+				5
+	=	42436 + 5776 + 50176 + 1296 + 8836
+				5
+	=	108520
+		  5
+	=	21704
+
+So the Variance is 21,704
+
+And the Standard Deviation is just the square root of Variance, so:
+Standard Deviation
+σ	=	√21704
+	=	147.32...
+	=	147 (to the nearest mm)
