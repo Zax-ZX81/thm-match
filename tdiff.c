@@ -16,11 +16,11 @@
 #define PROG_NAME "TDiff"
 #define PROG_VERSION "0.30"
 
+struct tprint_flags tpflags [1] = {0};
+
 int main (int argc, char *argv [])
 
 {
-struct tdiff_flags tcflags [1] = {0};
-
 char rgb_return_a [13] = "";
 char rgb_return_b [13] = "";
 
@@ -53,10 +53,10 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch (switch_chr)
 				{
 				case 't':
-					tcflags->tprt = SW_ON;
+					tpflags->tprt = SW_ON;
 					break;
 				case 'v':
-					tcflags->verbose = SW_ON;
+					tpflags->verbose = SW_ON;
 					break;
 				case 'V':
 					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);

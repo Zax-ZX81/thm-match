@@ -9,11 +9,13 @@
  * * * * * * * * * * * * * */
 
 #include <stdio.h>
+#include "TMLib.h"
 #include <stdlib.h>
 #include <string.h>
-#include "TMLib.h"
 
 #define PROG_VERSION "0.10"
+
+struct tprint_flags tpflags [1] = {0};
 
 int main (int argc, char *argv [])
 

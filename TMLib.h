@@ -134,14 +134,7 @@ struct tprint_flags
 	char tprt;		// write thumbnail file
 	char std_out;		// print output to stdout, supress file output
 	char verbose;		// mirror everything to stdout
-};
-
-struct tdiff_flags
-	{
-	char tprt;		// write thumbnail file
-	char std_out;		// print output to stdout, supress file output
-	char verbose;		// mirror everything to stdout
-};
+	};
 
 struct tfind_flags
 	{
@@ -150,14 +143,15 @@ struct tfind_flags
 	char tprt;		// write thumbnail file
 	char std_out;		// print output to stdout, supress file output
 	char verbose;		// mirror everything to stdout
-};
+	};
 
 struct find_list_entry
-{
+	{
 	char object_type;
 	char filepath [FILENAME_LENGTH];
 	char file_ext [6];
-};
+	};
+
 
 void exit_error (char *message_a, char *message_b);
 void error_mess (char *message_a, char *message_b);
@@ -172,3 +166,4 @@ char *enquote (char *filepath);
 char *twelve_six_bit (unsigned char *nine_byte_string);
 int sixfour_to_dec (char sixfour);
 char tpdb_verify (char *fileline);
+struct tprint_database thumbprint (char *img_name);
