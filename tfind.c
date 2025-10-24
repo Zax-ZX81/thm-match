@@ -9,7 +9,6 @@
  * * * * * * * * * * * * * */
 
 #include <stdio.h>
-#include "TMLib.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -17,6 +16,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
+#include "TMLib.h"
+#include "thumbprint.h"
 
 #define PROG_NAME "Tfind"
 #define PROG_VERSION "0.39"

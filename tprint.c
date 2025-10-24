@@ -10,10 +10,9 @@
 
 #include <stdio.h>
 #include "TMLib.h"
+#include "thumbprint.h"
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #define PROG_NAME "Thumbprint"
 #define PROG_VERSION "0.30"

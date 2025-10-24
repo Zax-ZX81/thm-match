@@ -166,4 +166,3 @@ char *enquote (char *filepath);
 char *twelve_six_bit (unsigned char *nine_byte_string);
 int sixfour_to_dec (char sixfour);
 char tpdb_verify (char *fileline);
-struct tprint_database thumbprint (char *img_name);
