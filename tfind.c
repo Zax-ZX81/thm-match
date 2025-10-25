@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       tfind 0.30        *
+ *       tfind 0.32        *
  *                         *
  *       2025-10-18        *
  *                         *
@@ -20,7 +20,7 @@
 #include "thumbprint.h"
 
 #define PROG_NAME "Tfind"
-#define PROG_VERSION "0.39"
+#define PROG_VERSION "0.32"
 
 struct tprint_database tprint_return;
 struct tprint_flags tpflags [1] = {0};
@@ -29,10 +29,10 @@ struct tprint_flags tpflags [1] = {0};
 int main (int argc, char *argv [])
 
 {
+struct tfind_database *tfind_db;
 struct dirent *dir_ents;
 struct stat file_stat;
 struct find_list_entry *find_list;
-struct tfind_database *tfind_db;
 struct tprint_database tprint_return;
 struct tfind_flags tfflags [1] = {0};
 
@@ -48,6 +48,7 @@ char c_d, p_d;
 
 int lp = 0;
 int line_index;
+int db_count = 0;
 int find_list_write = 0;			// number of file items found in search
 int find_list_read = 0;
 int find_list_curr_size = 0;
@@ -238,17 +239,25 @@ if (tfflags->std_out == SW_OFF)
 		exit_error ("Can't open database for output: ", db_name);
 		}
 	}
+
+tfind_db = (struct tfind_database *) malloc (sizeof (struct tfind_database) * DATABASE_INITIAL_SIZE);
 for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	{
 	if (find_list [mas_lp].object_type == FILE_ENTRY)
 		{
 //printf ("F=%s\n", find_list [mas_lp].filepath);
 		tprint_return = thumbprint (find_list [mas_lp].filepath);
-		if (tfflags->std_out == SW_OFF)
+		strcpy (tfind_db [db_count].gry_print, tprint_return.gry_print);
+		strcpy (tfind_db [db_count].hue_print, tprint_return.hue_print);
+		strcpy (tfind_db [db_count].magnitude, tprint_return.magnitude);
+		strcpy (tfind_db [db_count].filepath, tprint_return.filepath);
+		tfind_db [db_count].index = db_count;
+/*		if (tfflags->std_out == SW_OFF)
 			{
 			fprintf (DB_OUT, "%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
-			}
-		printf ("%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
+			}*/
+		printf ("%s\t%s\t%c\t%s\t%d\n", tfind_db [db_count].gry_print, tfind_db [db_count].hue_print, tfind_db [db_count].magnitude [0], tfind_db [db_count].filepath, db_count);
+		db_count++;
 		} // end find list lp
 	} // end lp
 
@@ -263,7 +272,7 @@ if (tfflags->std_out == SW_OFF)
 while (swap_made == TRUE && tfflags->sort == SORT_DB)
 	{
 	swap_made = FALSE;
-	for (line_index = 0; line_index < database_index - 1; line_index ++)
+	for (line_index = 0; line_index < db_count - 1; line_index ++)
 		{
 		if (strcmp (tfind_db [tfind_db [line_index].index].sha, tfind_db [tfind_db [line_index + 1].index].sha) > 0)
 			{
