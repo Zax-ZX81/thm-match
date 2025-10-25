@@ -30,7 +30,8 @@ char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
 
 int lp = 0;
-int qlp, llp, hlp, olp, rerr, pos, nn_len;
+int qlp, llp, hlp, olp, rd_err, pos, n_chrs;
+int wr_items = 0;
 
 float hue_value, red_dec, grn_dec, blu_dec, mag_n;
 
@@ -38,11 +39,11 @@ FILE *IMGFILE;
 FILE *rgb_thumbnail;
 FILE *out_thumbnail;
 
-rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote (img_name), RGB_ARGS);
-printf ("CL=%s=\n", cmd_line);
+n_chrs = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote (img_name), RGB_ARGS);
+//printf ("CL=%s=W=%d=\n", cmd_line, wr_items);
 rgb_thumbnail = popen (cmd_line, "r");
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
-rerr = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
+rd_err = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
 
 for (olp = 0; olp < 4; olp += 2)
 	{
@@ -79,13 +80,16 @@ if (tpflags.tprt == SW_ON)
 		{
 		strcpy (file_name, strrchr (img_name, 47) + 1);
 		strncpy (file_path, img_name, strrchr (img_name, 47) - img_name + 1);
-		nn_len = snprintf (out_path, FILENAME_LENGTH, "%s%s", file_path, "s/");
-		nn_len = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", out_path, file_name, FILE_EXTN);
+		n_chrs = snprintf (out_path, FILENAME_LENGTH, "%s%s", file_path, "s/");
+		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", out_path, file_name, FILE_EXTN);
+//printf ("Sub: I=%s=\tN=%s=\tP=%s=\n", img_name, out_name, out_path);
 		}
 		else
 		{
 		strcpy (out_path, "s/");
-		strcpy (out_name, img_name);
+		strcat (out_name, img_name);
+		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s%s", file_path, "s/", img_name, FILE_EXTN);
+//printf ("NoSub: I=%s=\tN=%s=\n", img_name, out_name);
 		}
 //printf ("FILE_PATH=%s\tFILE_NAME=%s\n", file_path, file_name);
 	if (stat (out_path, &sb) == -1)
@@ -93,7 +97,8 @@ if (tpflags.tprt == SW_ON)
 		mkdir (out_path, 0700);
 		}
 	out_thumbnail = fopen (out_name, "wb");
-	rerr = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);
+//printf ("Writing =%s=\n", out_name);
+	wr_items = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);
 	fclose (out_thumbnail);
 	}
 
@@ -155,9 +160,9 @@ for (olp = 0; olp < 4; olp++)
 	}
 base_sixfour [0] = '0';
 
-rerr = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
+n_chrs = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
 IMGFILE = popen (cmd_line, "r");
-rerr = (long) fgets (mag_string, 12, IMGFILE);
+rd_err = (long) fgets (mag_string, 12, IMGFILE);
 fclose (IMGFILE);
 mag_separation = separate_magnitude (mag_string);
 mag_n = (powf ((float) (mag_separation.width * mag_separation.height), EXPONENT) / DIVIDER) - SUBTRACTOR;
@@ -169,7 +174,12 @@ strcpy (tprint_return.gry_print, gry_print);
 strcpy (tprint_return.hue_print, hue_print);
 tprint_return.magnitude [0] = base_sixfour [(int) mag_n];
 strcpy (tprint_return.filepath, img_name);
+if (wr_items)
+	{
+	printf ("%s*%s ", TEXT_RED, TEXT_RESET);
+	}
+
 return (tprint_return);
-//nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
+//n_chrs = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
 }
