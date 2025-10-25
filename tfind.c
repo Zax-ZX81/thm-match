@@ -32,6 +32,7 @@ int main (int argc, char *argv [])
 struct dirent *dir_ents;
 struct stat file_stat;
 struct find_list_entry *find_list;
+struct tfind_database *tfind_db;
 struct tprint_database tprint_return;
 struct tfind_flags tfflags [1] = {0};
 
@@ -256,3 +257,27 @@ if (tfflags->std_out == SW_OFF)
 	fclose (DB_OUT);
 	}
 }
+/*
+
+// Sort section
+while (swap_made == TRUE && tfflags->sort == SORT_DB)
+	{
+	swap_made = FALSE;
+	for (line_index = 0; line_index < database_index - 1; line_index ++)
+		{
+		if (strcmp (tfind_db [tfind_db [line_index].index].sha, tfind_db [tfind_db [line_index + 1].index].sha) > 0)
+			{
+			swap_index = tfind_db [line_index + 1].index;
+			tfind_db [line_index + 1].index = tfind_db [line_index].index;
+			tfind_db [line_index].index = swap_index;
+			swap_made = TRUE;
+			}
+		}
+	if (sort_start)
+		{
+		printf ("# %sSorting...%s\n", TEXT_YELLOW, TEXT_RESET);
+		sort_start = FALSE;
+		}
+	}
+
+*/

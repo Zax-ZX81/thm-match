@@ -29,6 +29,8 @@
 #define FALSE !TRUE
 #define SW_ON TRUE
 #define SW_OFF FALSE
+#define SORT_DB TRUE
+#define NO_SORT_DB FALSE
 
 #define SLASH_TERM "/"
 #define PATH_CURRENT "./"
@@ -40,7 +42,6 @@
 #define T_REJ 'r'
 #define DATABASE_INITIAL_SIZE 4096
 #define DATABASE_INCREMENT 4096
-
 
 /*Calculation Values*/
 #define SIXBIT_MULTIPLIER 10.5
@@ -127,6 +128,16 @@ struct tprint_database
 	char hue_print [5];		// hue print 4 character code
 	char magnitude [1];			// magnitude 1 character code
 	char filepath [FILENAME_LENGTH];
+	};
+
+struct tfind_database
+	{
+	char gry_print [5];		// grey print 4 character code
+	char hue_print [5];		// hue print 4 character code
+	char magnitude [1];			// magnitude 1 character code
+	char filepath [FILENAME_LENGTH];
+	unsigned long filesize;
+	int index;
 	};
 
 struct tprint_flags
