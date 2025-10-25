@@ -42,25 +42,24 @@ char C_W_D [FILENAME_LENGTH];				// base directory of search
 char db_name [FILENAME_LENGTH];
 char path_sub [FILENAME_LENGTH];
 char swap_made = TRUE;					// swap was made on last sort pass
-char sort_need_check = TRUE;
 char *ext_match;
 char c_d, p_d;
 
-int lp = 0;
 int line_index;
 int db_count = 0;
 int find_list_write = 0;			// number of file items found in search
 int find_list_read = 0;
 int find_list_curr_size = 0;
 int arg_no, switch_pos, swap_index, mas_lp;
+int sort_start = TRUE;
 
 DIR *DIR_PATH;
 FILE *DB_OUT;
 
 tfflags->tprt = FALSE;
 tfflags->verbose = FALSE;
-tfflags->std_out = SW_ON;
-
+tfflags->std_out = SW_OFF;
+tfflags->sort = SORT_DB;
 
 // Arguments section
 for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
@@ -73,7 +72,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch (switch_chr)
 				{
 				case 'd':
-					tfflags->sort = SW_OFF;
+					tfflags->sort = NO_SORT_DB;
 					break;
 				case 'r':
 					tfflags->recurse = SW_ON;
@@ -108,7 +107,10 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 if (strcmp (db_name, "") != 0)
 	{
 	strcat (db_name, ".tpdb");
-	tfflags->std_out = SW_OFF;
+	}
+	else
+	{
+	tfflags->std_out = SW_ON;
 	}
 
 // Initial search section
@@ -231,15 +233,8 @@ while (find_list_read < find_list_write)
 	find_list_read ++;
 	}
 }
-if (tfflags->std_out == SW_OFF)
-        {
-	DB_OUT = fopen (db_name, "w");           // open output database
-	if (DB_OUT == NULL)
-		{
-		exit_error ("Can't open database for output: ", db_name);
-		}
-	}
 
+//Load database
 tfind_db = (struct tfind_database *) malloc (sizeof (struct tfind_database) * DATABASE_INITIAL_SIZE);
 for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	{
@@ -252,29 +247,19 @@ for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 		strcpy (tfind_db [db_count].magnitude, tprint_return.magnitude);
 		strcpy (tfind_db [db_count].filepath, tprint_return.filepath);
 		tfind_db [db_count].index = db_count;
-/*		if (tfflags->std_out == SW_OFF)
-			{
-			fprintf (DB_OUT, "%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
-			}*/
-		printf ("%s\t%s\t%c\t%s\t%d\n", tfind_db [db_count].gry_print, tfind_db [db_count].hue_print, tfind_db [db_count].magnitude [0], tfind_db [db_count].filepath, db_count);
+//		printf ("%s\t%s\t%c\t%s\t%d\n", tfind_db [db_count].gry_print, tfind_db [db_count].hue_print, tfind_db [db_count].magnitude [0], tfind_db [db_count].filepath, db_count);
 		db_count++;
 		} // end find list lp
 	} // end lp
 
-if (tfflags->std_out == SW_OFF)
-        {
-	fclose (DB_OUT);
-	}
-}
-/*
-
 // Sort section
-while (swap_made == TRUE && tfflags->sort == SORT_DB)
+while (swap_made && tfflags->sort)
 	{
 	swap_made = FALSE;
 	for (line_index = 0; line_index < db_count - 1; line_index ++)
 		{
-		if (strcmp (tfind_db [tfind_db [line_index].index].sha, tfind_db [tfind_db [line_index + 1].index].sha) > 0)
+		if (strcmp (tfind_db [tfind_db [line_index].index].gry_print, \
+				tfind_db [tfind_db [line_index + 1].index].gry_print) > 0)
 			{
 			swap_index = tfind_db [line_index + 1].index;
 			tfind_db [line_index + 1].index = tfind_db [line_index].index;
@@ -282,11 +267,44 @@ while (swap_made == TRUE && tfflags->sort == SORT_DB)
 			swap_made = TRUE;
 			}
 		}
-	if (sort_start)
+	if (sort_start && tfflags->std_out == SW_OFF)
 		{
 		printf ("# %sSorting...%s\n", TEXT_YELLOW, TEXT_RESET);
 		sort_start = FALSE;
 		}
 	}
 
-*/
+//Write database
+if (tfflags->std_out == SW_OFF)
+        {
+	DB_OUT = fopen (db_name, "w");           // open output database
+	if (DB_OUT == NULL)
+		{
+		exit_error ("Can't open database for output: ", db_name);
+		}
+	}
+
+for (line_index = 0; line_index < db_count; line_index++)
+	{
+	if (tfflags->std_out == SW_OFF)
+		{
+		fprintf (DB_OUT, "%s\t%s\t%c\t%s\n", tfind_db [tfind_db [line_index].index].gry_print, \
+							tfind_db [tfind_db [line_index].index].hue_print, \
+							tfind_db [tfind_db [line_index].index].magnitude [0], \
+							tfind_db [tfind_db [line_index].index].filepath);
+		}
+		else
+		{
+		printf ("%s\t%s\t%c\t%s\n", tfind_db [tfind_db [line_index].index].gry_print, \
+					tfind_db [tfind_db [line_index].index].hue_print, \
+					tfind_db [tfind_db [line_index].index].magnitude [0], \
+					tfind_db [tfind_db [line_index].index].filepath);
+		}
+	} // end find list lp
+
+if (tfflags->std_out == SW_OFF)
+        {
+	printf ("%d lines written to %s%s%s\n", db_count, TEXT_BLUE, db_name, TEXT_RESET);
+	fclose (DB_OUT);
+	}
+}
