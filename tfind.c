@@ -38,6 +38,7 @@ struct tfind_flags tfflags [1] = {0};
 char switch_chr;
 const char gpx_file_ext [90] = GRAPHICS_EXTENSIONS;
 char C_W_D [FILENAME_LENGTH];				// base directory of search
+char db_name [FILENAME_LENGTH];
 char path_sub [FILENAME_LENGTH];
 char swap_made = TRUE;					// swap was made on last sort pass
 char sort_need_check = TRUE;
@@ -51,11 +52,12 @@ int find_list_read = 0;
 int find_list_curr_size = 0;
 int arg_no, switch_pos, swap_index, mas_lp;
 
-
 DIR *DIR_PATH;
+FILE *DB_OUT;
 
 tfflags->tprt = FALSE;
 tfflags->verbose = FALSE;
+tfflags->std_out = SW_ON;
 
 
 // Arguments section
@@ -68,11 +70,14 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
+				case 'd':
+					tfflags->sort = SW_OFF;
+					break;
 				case 'r':
 					tfflags->recurse = SW_ON;
 					break;
 				case 's':
-					tfflags->sort = SW_ON;
+					tfflags->std_out = SW_ON;
 					break;
 				case 't':
 					tpflags->tprt = SW_ON;
@@ -84,22 +89,25 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
 					exit (0);
 				default:
-					printf ("%s# Thumbprint [pstvV] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
+					printf ("%s# Thumbprint [rstvV] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
 					exit (0);
 				}	// END switch
 			}	// END for switch_pos
 		}	// END if int argv
 		else
 		{
-/*		if (strcmp (img_name, "") == 0)
+		if (strcmp (db_name, "") == 0)
 			{
-			strncpy (img_name, argv [arg_no], FILENAME_LENGTH);
-			} */
+			strncpy (db_name, argv [arg_no], FILENAME_LENGTH);
+			}
 		}	// END else if int argv
 	}	// END for arg_no
 
-
-
+if (strcmp (db_name, "") != 0)
+	{
+	strcat (db_name, ".tpdb");
+	tfflags->std_out = SW_OFF;
+	}
 
 // Initial search section
 find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
@@ -221,14 +229,30 @@ while (find_list_read < find_list_write)
 	find_list_read ++;
 	}
 }
+if (tfflags->std_out == SW_OFF)
+        {
+	DB_OUT = fopen (db_name, "w");           // open output database
+	if (DB_OUT == NULL)
+		{
+		exit_error ("Can't open database for output: ", db_name);
+		}
+	}
 for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	{
 	if (find_list [mas_lp].object_type == FILE_ENTRY)
 		{
 //printf ("F=%s\n", find_list [mas_lp].filepath);
 		tprint_return = thumbprint (find_list [mas_lp].filepath);
+		if (tfflags->std_out == SW_OFF)
+			{
+			fprintf (DB_OUT, "%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
+			}
 		printf ("%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
 		} // end find list lp
 	} // end lp
 
+if (tfflags->std_out == SW_OFF)
+        {
+	fclose (DB_OUT);
+	}
 }

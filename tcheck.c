@@ -25,6 +25,7 @@ FILE *DB_FP;
 
 int arg_no, switch_pos;		// args section
 int database_ferr, db_err;		// database file error
+int cnt = 0;
 
 char switch_chr;		// args section
 char database_filename [FILENAME_LENGTH] = "";
@@ -84,8 +85,9 @@ if (DB_FP == NULL)
 	}
 
 // Search section
-do
+while (!feof (DB_FP))
 	{
+	cnt++;
 	database_ferr = (long)fgets (fileline, FILENAME_LENGTH, DB_FP);
 	if (database_first_line)		// if database first line, sha_verify
 		{
@@ -101,9 +103,9 @@ do
 	if (fileline != NULL && database_ferr)
 		{
 		sscanf (fileline, "%s\t%s\t%c\t%s", tp_db.gry_print, tp_db.hue_print, tp_db.magnitude, tp_db.filepath);
+		printf ("G=%s\tH=%s\tM=%c\tF=%s\tC=%d\n", tp_db.gry_print, tp_db.hue_print, tp_db.magnitude [0], tp_db.filepath, cnt);
 		}
-	printf ("G=%s\tH=%s\tM=%c\tF=%s\n", tp_db.gry_print, tp_db.hue_print, tp_db.magnitude [0], tp_db.filepath);
-	} while (!feof (DB_FP));
+	}
 
 // Clean up section
 fclose (DB_FP);
