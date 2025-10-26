@@ -12,6 +12,7 @@
 #include "TMLib.h"
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define PROG_NAME "TDiff"
 #define PROG_VERSION "0.30"
@@ -33,11 +34,14 @@ unsigned char *thm_buffer_a;
 unsigned char *thm_buffer_b;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
-int pos, r_idx, rerr_a, rerr_b, ch_a, ch_b, olp, dist, arg_no, switch_pos;
+int pos, r_idx, rerr_a, rerr_b, olp, dist, arg_no, switch_pos;
+int ch_a, ch_b, ch_r, ch_g, pix_idx;
 int err = FALSE;
+int grey_tot, variance_tot;
+unsigned int *grey_val = (unsigned int *) calloc (4096, sizeof (unsigned int));
 unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
-float hscale;
+float hscale, grey_mean;
 
 FILE *IMGFILE_A;
 FILE *IMGFILE_B;
@@ -138,9 +142,25 @@ for (olp = 0; olp < 9216; olp += 9)
 //printf ("LP=%4d\tSa=%c\tSb=%c\t%4d\n", olp, rgb_return_a [r_idx], rgb_return_b [r_idx], dist);
 		histogram [dist] = histogram [dist] + 1;
 		}
+	for (r_idx = 0; r_idx < 12 ; r_idx += 3)
+		{
+		ch_r = sixfour_to_dec (rgb_return_a [r_idx]);
+		ch_g = sixfour_to_dec (rgb_return_a [r_idx + 1]);
+		ch_b = sixfour_to_dec (rgb_return_a [r_idx + 2]);
+		grey_val [pix_idx] = (ch_r + ch_g + ch_b) / 3;
+		grey_tot = grey_tot + grey_val [pix_idx];
+//printf ("LP=%4d\tP=%4d\tG=%2d\t%d\n", olp, pix_idx, grey_val [pix_idx], grey_tot);
+		pix_idx++;
+		}
+	}
+grey_mean = grey_tot / 4096;
+for (olp = 0; olp < 4096; olp++)
+	{
+	variance_tot = variance_tot + abs (grey_val [olp] - grey_mean) ^ 2;
 	}
 
-printf ("Unscaled\n");
+printf ("STDEV=%f\n", sqrt (variance_tot / 4096));
+/*printf ("\nUnscaled\n");
 for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)
@@ -170,11 +190,11 @@ for (olp = 0; olp < 8; olp++)
 			}
 			else
 			{
-			printf ("%02d ", (int) hscale);
+			printf ("%3d", (int) hscale);
 			}
 		}
 	printf ("|\n");
-	}
+	}*/
 printf ("\n\n");
 
 printf ("Per64age\n");

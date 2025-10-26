@@ -179,8 +179,25 @@ Print version information.
 .PP
 Thumbprints consist of four fields: 1, the greyprint; 2, the hueprint; 3, the image magnitude; 4, the image name with full path.
 .TP
-The thumbnail of an image is divided into quadrants, and each quadrant has its average grey and hue values calculated - these are expressed as four character base 64 words.  The number of pixels in the original image is recorded as a magnitude in a single base 64 character.
+The thumbnail of an image is divided into quadrants, and each quadrant has its average grey and hue values calculated.  The number of pixels in the original image is recorded as a magnitude in a single base 64 character.
 eg. vyBK cZIE V
+.PP
+.TS
+left;
+L L.
+ _______________
+|       |       |    0 1 2 3 4 5 6 7
+|       |       |    8 9 a b c d e f
+|       |       |    g h i j k l m n
+|_______|_______|    o p q r s t u v
+|       |       |    w x y z A B C D
+|       |       |    E F G H I J L K
+|       |       |    M N O P Q R S T
+|_______|_______|    U V W X Y Z - +
+
+Average greyscale and hue of quadrants
+in 6 bit expressed as base 64 characters
+.TE
 .PP
 .SH FILES
 .TP
