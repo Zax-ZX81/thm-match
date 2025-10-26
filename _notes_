@@ -165,3 +165,5 @@ Standard Deviation
 	=	147 (to the nearest mm)
 
 ### there's a conflict between the thumbnail generation indicator in thumbnail.c and the stdout mode in tfind.c
+
+### add modified date, thumbnail present, to tdiff struct
