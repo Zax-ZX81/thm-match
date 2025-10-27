@@ -18,6 +18,7 @@
 #define PROG_VERSION "0.30"
 
 struct tprint_flags tpflags [1] = {0};
+struct thumbprint_histogram tprint_hist [1] = {0};
 
 int main (int argc, char *argv [])
 
@@ -37,11 +38,28 @@ unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 int pos, r_idx, rerr_a, rerr_b, olp, dist, arg_no, switch_pos;
 int ch_a, ch_b, ch_r, ch_g, pix_idx;
 int err = FALSE;
-unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
-float hscale, grey_mean, grey_tot, variance_tot;
-float *grey_val = (float *) calloc (4096, sizeof (float));
-float *cont_mult = (float *) calloc (1, sizeof (float));
+
+/*struct thumbprint_histogram
+        {
+        unsigned int histogram [64];
+        float hscale;
+        float grey_mean;
+        float grey_tot;
+        float vari_tot;
+        float cont_mult;
+        float std_dev;
+        float grey_val [4096];
+        };
+*/
+
+
+//unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
+
+//float hscale, grey_mean, grey_tot, variance_tot;
+//float *grey_val = (float *) calloc (4096, sizeof (float));
+//float *cont_mult = (float *) calloc (1, sizeof (float));
+//float *std_dev = (float *) calloc (1, sizeof (float));
 
 FILE *IMGFILE_A;
 FILE *IMGFILE_B;
@@ -92,7 +110,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 printf ("%s, %s\n\n",img_name_a, img_name_b);
 /*for (olp = 0; olp < 64; olp++)
 	{
-	printf ("%c=%4d.  ", base_sixfour [olp], histogram [olp]);
+	printf ("%c=%4d.  ", base_sixfour [olp], tprint_hist->histogram [olp]);
 	}
 printf ("\n");*/
 
@@ -140,41 +158,42 @@ for (olp = 0; olp < 9216; olp += 9)
 		ch_b = sixfour_to_dec (rgb_return_b [r_idx]);
 		dist = abs (ch_a - ch_b);
 //printf ("LP=%4d\tSa=%c\tSb=%c\t%4d\n", olp, rgb_return_a [r_idx], rgb_return_b [r_idx], dist);
-		histogram [dist] = histogram [dist] + 1;
+		tprint_hist->histogram [dist] = tprint_hist->histogram [dist] + 1;
 		}
 	for (r_idx = 0; r_idx < 12 ; r_idx += 3)
 		{
 		ch_r = sixfour_to_dec (rgb_return_a [r_idx]);
 		ch_g = sixfour_to_dec (rgb_return_a [r_idx + 1]);
 		ch_b = sixfour_to_dec (rgb_return_a [r_idx + 2]);
-		grey_val [pix_idx] = (ch_r + ch_g + ch_b) / 3;
-		grey_tot = grey_tot + grey_val [pix_idx];
-//printf ("LP=%4d\tP=%4d\tG=%8.3f\tT=%8.3f\n", olp, pix_idx, grey_val [pix_idx], grey_tot);
+		tprint_hist->grey_val [pix_idx] = (ch_r + ch_g + ch_b) / 3;
+		tprint_hist->grey_tot = tprint_hist->grey_tot + tprint_hist->grey_val [pix_idx];
+//printf ("LP=%4d\tP=%4d\tG=%8.3f\tT=%8.3f\n", olp, pix_idx, tprint_hist->grey_val [pix_idx], tprint_hist->grey_tot);
 		pix_idx++;
 		}
 	}
-grey_mean = grey_tot / 4096.0;
+tprint_hist->grey_mean = tprint_hist->grey_tot / 4096.0;
+//exit (0);
 
 for (olp = 0; olp < 4096; olp++)
 	{
-	variance_tot = variance_tot + pow (grey_val [olp] - grey_mean, 2);
-//printf ("G=%8.3f\tD=%8.3f\tS=%8.3f\tT=%8.3f\n", grey_val [olp], grey_val [olp] - grey_mean, pow (grey_val [olp] - grey_mean, 2), variance_tot);
+	tprint_hist->vari_tot = tprint_hist->vari_tot + pow (tprint_hist->grey_val [olp] - tprint_hist->grey_mean, 2);
+//printf ("G=%8.3f\tD=%8.3f\tS=%8.3f\tT=%8.3f\n", tprint_hist->grey_val [olp], tprint_hist->grey_val [olp] - tprint_hist->grey_mean, pow (tprint_hist->grey_val [olp] - tprint_hist->grey_mean, 2), tprint_hist->vari_tot);
 	}
-cont_mult [0] = 3.0 - sqrt (variance_tot / 4096.0);
-printf ("GM=%8.3f\tSTDEV=%8.3f\tCM=%8.3f\n", grey_mean, sqrt (variance_tot / 4096.0), cont_mult [0]);
-
+tprint_hist->std_dev = sqrt (tprint_hist->vari_tot / 4096.0);
+tprint_hist->cont_mult = 3.0 - tprint_hist->std_dev;
+printf ("GM=%8.3f\tSTDEV=%8.3f\tCM=%8.3f\n", tprint_hist->grey_mean, tprint_hist->std_dev, tprint_hist->cont_mult);
 /*printf ("\nUnscaled\n");
 for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)
 		{
-		if (histogram [(olp * 8) + pos] == 0.0)
+		if (tprint_hist->histogram [(olp * 8) + pos] == 0.0)
 			{
 			printf ("      ");
 			}
 			else
 			{
-			printf ("%5d ", histogram [(olp * 8) + pos]);
+			printf ("%5d ", tprint_hist->histogram [(olp * 8) + pos]);
 			}
 		}
 	printf ("|\n");
@@ -186,14 +205,14 @@ for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)
 		{
-		hscale = 0.00813802083334 * histogram [(olp * 8) + pos];
-		if (hscale == 0.0)
+		tprint_hist->hscale = 0.00813802083334 * tprint_hist->histogram [(olp * 8) + pos];
+		if (tprint_hist->hscale == 0.0)
 			{
 			printf ("   ");
 			}
 			else
 			{
-			printf ("%3d", (int) hscale);
+			printf ("%3d", (int) tprint_hist->hscale);
 			}
 		}
 	printf ("|\n");
@@ -205,14 +224,21 @@ for (olp = 0; olp < 8; olp++)
 	{
 	for (pos = 0; pos < 8; pos++)
 		{
-		hscale = 0.005126953125 * histogram [(olp * 8) + pos];
-		if (hscale == 0.0)
+		tprint_hist->hscale = 0.005126953125 * tprint_hist->histogram [(olp * 8) + pos];
+		if (tprint_hist->std_dev < 2.0 && tprint_hist->hscale == 0)
 			{
-			printf ("  ");
+			printf (". ");
 			}
 			else
 			{
-	                printf ("%c ", base_sixfour [(int) hscale]);
+			if (tprint_hist->hscale != 0.0)
+				{
+				printf ("%c ", base_sixfour [(int) tprint_hist->hscale]);
+				}
+				else
+				{
+				printf ("  ");
+				}
 			}
 		}
 	printf ("|\n");
@@ -220,5 +246,4 @@ for (olp = 0; olp < 8; olp++)
 
 free (thm_buffer_a);
 free (thm_buffer_b);
-free (histogram);
 }

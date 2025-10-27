@@ -163,6 +163,18 @@ struct find_list_entry
 	char file_ext [6];
 	};
 
+struct thumbprint_histogram
+	{
+	unsigned int histogram [64];
+	float hscale;
+	float grey_mean;
+	float grey_tot;
+	float vari_tot;
+	float cont_mult;
+	float std_dev;
+	float grey_val [4096];
+	};
+
 
 void exit_error (char *message_a, char *message_b);
 void error_mess (char *message_a, char *message_b);
