@@ -37,11 +37,11 @@ unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 int pos, r_idx, rerr_a, rerr_b, olp, dist, arg_no, switch_pos;
 int ch_a, ch_b, ch_r, ch_g, pix_idx;
 int err = FALSE;
-int grey_tot, variance_tot;
-unsigned int *grey_val = (unsigned int *) calloc (4096, sizeof (unsigned int));
 unsigned int *histogram = (unsigned int *) calloc (64, sizeof (unsigned int));
 
-float hscale, grey_mean;
+float hscale, grey_mean, grey_tot, variance_tot;
+//float hscale, grey_mean, grey_tot, variance_tot, contrast_mult;
+float *grey_val = (float *) calloc (4096, sizeof (float));
 
 FILE *IMGFILE_A;
 FILE *IMGFILE_B;
@@ -149,17 +149,22 @@ for (olp = 0; olp < 9216; olp += 9)
 		ch_b = sixfour_to_dec (rgb_return_a [r_idx + 2]);
 		grey_val [pix_idx] = (ch_r + ch_g + ch_b) / 3;
 		grey_tot = grey_tot + grey_val [pix_idx];
-//printf ("LP=%4d\tP=%4d\tG=%2d\t%d\n", olp, pix_idx, grey_val [pix_idx], grey_tot);
+printf ("LP=%4d\tP=%4d\tG=%8.3f\tT=%8.3f\n", olp, pix_idx, grey_val [pix_idx], grey_tot);
 		pix_idx++;
 		}
 	}
-grey_mean = grey_tot / 4096;
+grey_mean = grey_tot / 4096.0;
+//contrast_mult = 3 - sqrt (variance_tot / 4096.0);
+printf ("GM=%8.3f\n", grey_mean);
+//printf ("GM=%8.3f\tCM=%8.3f\n", grey_mean, contrast_mult);
+
 for (olp = 0; olp < 4096; olp++)
 	{
-	variance_tot = variance_tot + abs (grey_val [olp] - grey_mean) ^ 2;
+	variance_tot = variance_tot + pow (grey_val [olp] - grey_mean, 2);
+printf ("G=%8.3f\tD=%8.3f\tS=%8.3f\tT=%8.3f\n", grey_val [olp], grey_val [olp] - grey_mean, pow (grey_val [olp] - grey_mean, 2), variance_tot);
 	}
 
-printf ("STDEV=%f\n", sqrt (variance_tot / 4096));
+printf ("STDEV=%f\n", sqrt (variance_tot / 4096.0));
 /*printf ("\nUnscaled\n");
 for (olp = 0; olp < 8; olp++)
 	{
