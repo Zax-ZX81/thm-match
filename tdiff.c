@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       tdiff             *
+ *       tdiff 0.35        *
  *                         *
  *       2025-10-22        *
  *                         *
@@ -15,7 +15,7 @@
 #include <math.h>
 
 #define PROG_NAME "TDiff"
-#define PROG_VERSION "0.30"
+#define PROG_VERSION "0.35"
 
 struct tprint_flags tpflags [1] = {0};
 struct thumbprint_histogram tprint_hist [1] = {0};

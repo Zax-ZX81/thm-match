@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       tfind 0.32        *
+ *       tfind 0.35        *
  *                         *
  *       2025-10-18        *
  *                         *
@@ -20,7 +20,7 @@
 #include "thumbprint.h"
 
 #define PROG_NAME "Tfind"
-#define PROG_VERSION "0.32"
+#define PROG_VERSION "0.35"
 
 struct tprint_database tprint_return;
 struct tprint_flags tpflags [1] = {0};

@@ -25,7 +25,8 @@ FILE *DB_FP;
 
 int arg_no, switch_pos;		// args section
 int database_ferr, db_err;		// database file error
-int cnt = 0;
+int db_cnt = 0, olp;
+int db_alloc = DATABASE_INCREMENT;
 
 char switch_chr;		// args section
 char database_filename [FILENAME_LENGTH] = "";
@@ -34,14 +35,19 @@ char fileline [FILENAME_LENGTH];			// input line
 char match_found = FALSE;				// if match is found
 char database_good = FALSE;				// has database passed sha_verify?
 
-struct tprint_database tp_db;
+struct tprint_database *tp_db;
 
-/*tp_db = (struct tprint_database *) malloc (sizeof (struct tprint_database) * searchlist_alloc_size);
-if (searchlist_lines + 1 == searchlist_alloc_size)              // check memory usage, reallocate
-	{
-	searchlist_alloc_size += DATABASE_INCREMENT;
-	ssort_db = (struct sha_sort_database *) realloc (ssort_db, sizeof (struct sha_sort_database) * searchlist_alloc_size);
-	}*/
+tp_db = (struct tprint_database *) malloc (sizeof (struct tprint_database) * db_alloc);
+
+/*
+
+find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
+if (find_list_write + 1 == find_list_curr_size)		// allocated more memory if needed
+{
+find_list = (struct find_list_entry *) realloc (find_list, sizeof (struct find_list_entry) * find_list_curr_size);
+}
+
+*/
 
 
 // Arguments section
@@ -87,7 +93,6 @@ if (DB_FP == NULL)
 // Search section
 while (!feof (DB_FP))
 	{
-	cnt++;
 	database_ferr = (long)fgets (fileline, FILENAME_LENGTH, DB_FP);
 	if (database_first_line)		// if database first line, sha_verify
 		{
@@ -102,12 +107,22 @@ while (!feof (DB_FP))
 		}
 	if (fileline != NULL && database_ferr)
 		{
-		sscanf (fileline, "%s\t%s\t%c\t%s", tp_db.gry_print, tp_db.hue_print, tp_db.magnitude, tp_db.filepath);
-		printf ("G=%s\tH=%s\tM=%c\tF=%s\tC=%d\n", tp_db.gry_print, tp_db.hue_print, tp_db.magnitude [0], tp_db.filepath, cnt);
+		sscanf (fileline, "%s\t%s\t%c\t%s", tp_db[db_cnt].gry_print, tp_db[db_cnt].hue_print, tp_db[db_cnt].magnitude, tp_db[db_cnt].filepath);
 		}
+	if (db_cnt + 1 == db_alloc)              // check memory usage, reallocate
+		{
+		db_alloc += DATABASE_INCREMENT;
+		tp_db = (struct tprint_database *) realloc (tp_db, sizeof (struct tprint_database) * db_alloc);
+		}
+	db_cnt++;
 	}
+db_cnt--;
 
 // Clean up section
 fclose (DB_FP);
 
+for (olp = 0;olp < db_cnt; olp++)
+	{
+	printf ("%s\t%s\t%c\t%s\n", tp_db[olp].gry_print, tp_db[olp].hue_print, tp_db[olp].magnitude [0], tp_db[olp].filepath, olp);
+	}
 }
