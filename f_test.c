@@ -27,19 +27,15 @@ struct find_list_entry *find_list;
 
 DIR *DIR_PATH;
 
-int line_index;
 int find_list_write = 0;			// number of file items found in search
 int find_list_read = 0;
 int find_list_curr_size = 0;
-int swap_index, lp;
+int lp;
 
 const char gpx_file_ext [90] = GRAPHICS_EXTENSIONS;
 char C_W_D [FILENAME_LENGTH];				// base directory of search
 char path_sub [FILENAME_LENGTH];
-char swap_made = TRUE;					// swap was made on last sort pass
-char sort_need_check = TRUE;
 char *ext_match;
-char header = TRUE;
 char c_d, p_d;
 
 // Initial search section

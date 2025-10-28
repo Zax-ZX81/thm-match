@@ -175,6 +175,12 @@ struct thumbprint_histogram
 	float grey_val [4096];
 	};
 
+struct tprint_db_lookup
+	{
+	int start;
+	int ents;
+	};
+
 
 void exit_error (char *message_a, char *message_b);
 void error_mess (char *message_a, char *message_b);

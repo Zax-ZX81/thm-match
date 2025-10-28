@@ -25,30 +25,31 @@ FILE *DB_FP;
 
 int arg_no, switch_pos;		// args section
 int database_ferr, db_err;		// database file error
-int db_cnt = 0, olp;
+int db_cnt = 0, olp, slp;
 int db_alloc = DATABASE_INCREMENT;
+int idx;
 
 char switch_chr;		// args section
 char database_filename [FILENAME_LENGTH] = "";
 char database_first_line = SW_ON;
 char fileline [FILENAME_LENGTH];			// input line
-char match_found = FALSE;				// if match is found
-char database_good = FALSE;				// has database passed sha_verify?
 
 struct tprint_database *tp_db;
-
+struct tprint_db_lookup *db_lookup;
 tp_db = (struct tprint_database *) malloc (sizeof (struct tprint_database) * db_alloc);
+db_lookup = (struct tprint_db_lookup *) malloc (sizeof (struct tprint_db_lookup) * 64);
 
 /*
 
-find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
-if (find_list_write + 1 == find_list_curr_size)		// allocated more memory if needed
-{
-find_list = (struct find_list_entry *) realloc (find_list, sizeof (struct find_list_entry) * find_list_curr_size);
-}
+sixfour_to_dec
 
 */
 
+for (idx = 0; idx < 64; idx ++)             // initialise lookup table
+{
+	db_lookup [idx].start = -1;
+	db_lookup [idx].ents = 0;
+}
 
 // Arguments section
 for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
@@ -107,7 +108,12 @@ while (!feof (DB_FP))
 		}
 	if (fileline != NULL && database_ferr)
 		{
-		sscanf (fileline, "%s\t%s\t%c\t%s", tp_db[db_cnt].gry_print, tp_db[db_cnt].hue_print, tp_db[db_cnt].magnitude, tp_db[db_cnt].filepath);
+		sscanf (fileline, "%s\t%s\t%c\t%s", tp_db [db_cnt].gry_print, tp_db [db_cnt].hue_print, tp_db [db_cnt].magnitude, tp_db [db_cnt].filepath);
+		if (db_lookup [sixfour_to_dec (tp_db [db_cnt].gry_print [0])].start < 0)
+			{
+			db_lookup [sixfour_to_dec (tp_db [db_cnt].gry_print [0])].start = db_cnt;
+			}
+		db_lookup [sixfour_to_dec (tp_db [db_cnt].gry_print [0])].ents++;
 		}
 	if (db_cnt + 1 == db_alloc)              // check memory usage, reallocate
 		{
@@ -121,8 +127,26 @@ db_cnt--;
 // Clean up section
 fclose (DB_FP);
 
-for (olp = 0;olp < db_cnt; olp++)
+olp = db_lookup [20].start;
+for (slp = 0; slp < db_lookup [20].ents + 1; slp++)
 	{
-	printf ("%s\t%s\t%c\t%s\n", tp_db[olp].gry_print, tp_db[olp].hue_print, tp_db[olp].magnitude [0], tp_db[olp].filepath, olp);
+//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tSC=%d\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, tp_db [olp + slp].gry_print);
+	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tGP=%s\tSC=%d\n", db_cnt, olp, slp, olp + slp, tp_db [olp + slp].gry_print, strcmp (tp_db [olp + slp].gry_print, "JOAD"));
+//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tSC=%d\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, strcmp (tp_db [olp + slp].gry_print, "JQAD"));
+//	printf ("%s\n", tp_db [db_lookup [olp + slp].start].gry_print);
+	if (strcmp (tp_db [olp + slp].gry_print, "JOAD") == 0)
+		{
+		printf ("##### %s\n", tp_db [olp + slp].gry_print);
+//		printf ("%s\t%s\t%c\t%s\n", tp_db [olp].gry_print, tp_db [olp].hue_print, tp_db [olp].magnitude  [0], tp_db [olp].filepath, olp);
+		}
 	}
+/*for (olp = 0;olp < db_cnt; olp++)
+	{
+	printf ("%s\t%s\t%c\t%s\n", tp_db [olp].gry_print, tp_db [olp].hue_print, tp_db [olp].magnitude  [0], tp_db [olp].filepath, olp);
+	}
+
+for (olp = 0;olp < 64; olp++)
+	{
+	printf ("%d\t%d\t%d\n", olp, db_lookup [olp].start, db_lookup [olp].ents);
+	}*/
 }
