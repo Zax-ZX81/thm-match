@@ -195,3 +195,4 @@ char *enquote (char *filepath);
 char *twelve_six_bit (unsigned char *nine_byte_string);
 int sixfour_to_dec (char sixfour);
 char tpdb_verify (char *fileline);
+char fuzz_search (char *tgt_prnt, char *srch_prnt);

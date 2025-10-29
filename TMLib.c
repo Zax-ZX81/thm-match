@@ -522,3 +522,43 @@ if (char_pos == 0)
 
 return (1);
 }
+
+
+char fuzz_search (char *tgt_prnt, char *srch_prnt)
+{
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+
+int char_index = 0;
+int ret_code = 0;
+int t_val, s_val;
+
+do
+	{
+	if (tgt_prnt [char_index] == srch_prnt [char_index])
+		{
+printf ("%c ", tgt_prnt [char_index]);
+		ret_code++;
+		}
+	} while (++char_index < 4);
+if (ret_code > 3)
+	{
+	return (1);
+	}
+char_index = 0;
+do
+	{
+	t_val = sixfour_to_dec (tgt_prnt [char_index]);
+	s_val = sixfour_to_dec (srch_prnt [char_index]);
+	if ((t_val < 63 && t_val + 1 == s_val) || (t_val > 0 && t_val - 1 == s_val))
+		{
+		ret_code++;
+printf ("%c-%c ", base_sixfour [t_val + 1], base_sixfour [t_val - 1]);
+		}
+	} while (++char_index < 4);
+if (ret_code > 3)
+	{
+	return (2);
+	}
+
+return (FALSE);
+}

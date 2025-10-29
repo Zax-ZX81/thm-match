@@ -27,10 +27,11 @@ int arg_no, switch_pos;		// args section
 int database_ferr, db_err;		// database file error
 int db_cnt = 0, olp, slp;
 int db_alloc = DATABASE_INCREMENT;
-int idx;
+int idx, s_res;
 
 char switch_chr;		// args section
 char database_filename [FILENAME_LENGTH] = "";
+char srch_print [5] = "";
 char database_first_line = SW_ON;
 char fileline [FILENAME_LENGTH];			// input line
 
@@ -39,11 +40,6 @@ struct tprint_db_lookup *db_lookup;
 tp_db = (struct tprint_database *) malloc (sizeof (struct tprint_database) * db_alloc);
 db_lookup = (struct tprint_db_lookup *) malloc (sizeof (struct tprint_db_lookup) * 64);
 
-/*
-
-sixfour_to_dec
-
-*/
 
 for (idx = 0; idx < 64; idx ++)             // initialise lookup table
 {
@@ -72,6 +68,10 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
+		if (strcmp (database_filename, "") && !strcmp (srch_print, ""))
+			{
+			strncpy (srch_print, argv [arg_no], 5);
+			}
 		if (!strcmp (database_filename, ""))
 			{
 			strncpy (database_filename, argv [arg_no], FILENAME_LENGTH);
@@ -83,7 +83,7 @@ if (!strcmp (database_filename, ""))
 	printf ("%s# TCheck [V] <database file>\n%s", TEXT_YELLOW, TEXT_RESET);
 	exit (0);
 	}
-printf ("%s\n", database_filename);
+printf ("%s\t%s\n", database_filename, srch_print);
 // File open section
 DB_FP = fopen (database_filename, "r");
 if (DB_FP == NULL)
@@ -126,18 +126,26 @@ db_cnt--;
 
 // Clean up section
 fclose (DB_FP);
-
-olp = db_lookup [20].start;
-for (slp = 0; slp < db_lookup [20].ents + 1; slp++)
+//for (slp = 0; slp < 64; slp++)
+//	{
+//	printf ("%d", );
+//	}
+olp = db_lookup [sixfour_to_dec (srch_print [0])].start;
+//printf ("SP=%c\tSC=%s\tST=%d\tE=%d\n", srch_print [0], srch_print, olp, db_lookup [srch_print [0]].ents);
+for (slp = 0; slp < db_lookup [sixfour_to_dec (srch_print [0])].ents + 1; slp++)
 	{
-//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tSC=%d\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, tp_db [olp + slp].gry_print);
-	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tGP=%s\tSC=%d\n", db_cnt, olp, slp, olp + slp, tp_db [olp + slp].gry_print, strcmp (tp_db [olp + slp].gry_print, "JOAD"));
+	s_res = fuzz_search (srch_print, tp_db [olp + slp].gry_print);
+//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tGP=%s\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, tp_db [olp + slp].gry_print);
+//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tGP=%s\tSC=%d\n", db_cnt, olp, slp, olp + slp, tp_db [olp + slp].gry_print, strcmp (tp_db [olp + slp].gry_print, "JOAD"));
 //	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tSC=%d\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, strcmp (tp_db [olp + slp].gry_print, "JQAD"));
 //	printf ("%s\n", tp_db [db_lookup [olp + slp].start].gry_print);
-	if (strcmp (tp_db [olp + slp].gry_print, "JOAD") == 0)
+	if (s_res == 1)
 		{
-		printf ("##### %s\n", tp_db [olp + slp].gry_print);
-//		printf ("%s\t%s\t%c\t%s\n", tp_db [olp].gry_print, tp_db [olp].hue_print, tp_db [olp].magnitude  [0], tp_db [olp].filepath, olp);
+		printf ("---- %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+		}
+	if (s_res == 2)
+		{
+		printf ("#### %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
 		}
 	}
 /*for (olp = 0;olp < db_cnt; olp++)
