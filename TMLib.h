@@ -147,6 +147,13 @@ struct tprint_flags
 	char verbose;		// mirror everything to stdout
 	};
 
+struct tdup_flags
+	{
+	char fuzzy;		// fuzzy search
+	char std_out;		// print output to stdout, supress file output
+	char verbose;		// mirror everything to stdout
+	};
+
 struct tfind_flags
 	{
 	char recurse;		// go beyond the current directory
@@ -195,4 +202,5 @@ char *enquote (char *filepath);
 char *twelve_six_bit (unsigned char *nine_byte_string);
 int sixfour_to_dec (char sixfour);
 char tpdb_verify (char *fileline);
-char fuzz_search (char *tgt_prnt, char *srch_prnt);
+int fuzz_search (char *srch_prnt, char *tgt_prnt);
+int exact_search (char *srch_prnt, char *tgt_prnt);

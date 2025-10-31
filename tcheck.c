@@ -27,7 +27,7 @@ int arg_no, switch_pos;		// args section
 int database_ferr, db_err;		// database file error
 int db_cnt = 0, olp, slp;
 int db_alloc = DATABASE_INCREMENT;
-int idx, s_res;
+int idx, s_res, fuzz_ents;
 
 char switch_chr;		// args section
 char database_filename [FILENAME_LENGTH] = "";
@@ -35,11 +35,12 @@ char srch_print [5] = "";
 char database_first_line = SW_ON;
 char fileline [FILENAME_LENGTH];			// input line
 
+struct tdup_flags tdflags [1] = {0};
 struct tprint_database *tp_db;
 struct tprint_db_lookup *db_lookup;
 tp_db = (struct tprint_database *) malloc (sizeof (struct tprint_database) * db_alloc);
 db_lookup = (struct tprint_db_lookup *) malloc (sizeof (struct tprint_db_lookup) * 64);
-
+tdflags->fuzzy = SW_OFF;
 
 for (idx = 0; idx < 64; idx ++)             // initialise lookup table
 {
@@ -57,6 +58,9 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
+				case 'f':
+					tdflags->fuzzy = SW_ON;
+					break;
 				case 'V':
 					printf ("TCheck version %s\n", PROG_VERSION);
 					exit (0);
@@ -132,20 +136,39 @@ fclose (DB_FP);
 //	}
 olp = db_lookup [sixfour_to_dec (srch_print [0])].start;
 //printf ("SP=%c\tSC=%s\tST=%d\tE=%d\n", srch_print [0], srch_print, olp, db_lookup [srch_print [0]].ents);
-for (slp = 0; slp < db_lookup [sixfour_to_dec (srch_print [0])].ents + 1; slp++)
+if (tdflags->fuzzy == SW_OFF)
 	{
-	s_res = fuzz_search (srch_print, tp_db [olp + slp].gry_print);
-//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tGP=%s\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, tp_db [olp + slp].gry_print);
-//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tGP=%s\tSC=%d\n", db_cnt, olp, slp, olp + slp, tp_db [olp + slp].gry_print, strcmp (tp_db [olp + slp].gry_print, "JOAD"));
-//	printf ("DC=%d\tO=%d\tS=%d\tC=%d\tLE=%d\tSC=%d\n", db_cnt, olp, slp, olp + slp, db_lookup [sixfour_to_dec (tp_db [olp + slp].gry_print [0])].ents, strcmp (tp_db [olp + slp].gry_print, "JQAD"));
-//	printf ("%s\n", tp_db [db_lookup [olp + slp].start].gry_print);
-	if (s_res == 1)
+	for (slp = 0; slp < db_lookup [sixfour_to_dec (srch_print [0])].ents + 1; slp++)
 		{
-		printf ("---- %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+		s_res = exact_search (srch_print, tp_db [olp + slp].gry_print);
+		if (s_res == 1)
+			{
+			printf ("---- %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+			}
 		}
-	if (s_res == 2)
+	}
+	else
+	{
+	if (db_lookup [sixfour_to_dec (srch_print [0]) - 1].start > 0)
 		{
-		printf ("#### %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+		olp = db_lookup [sixfour_to_dec (srch_print [0]) - 1].start;
+		fuzz_ents = db_lookup [sixfour_to_dec (srch_print [0])].ents + \
+			db_lookup [sixfour_to_dec (srch_print [0]) - 1].ents;
+		}
+	if (db_lookup [sixfour_to_dec (srch_print [0]) + 1].start > 0)
+		{
+		olp = db_lookup [sixfour_to_dec (srch_print [0]) - 1].start;
+		fuzz_ents = db_lookup [sixfour_to_dec (srch_print [0])].ents + \
+			db_lookup [sixfour_to_dec (srch_print [0]) + 1].ents;
+		}
+//printf ("O=%d\tE=%d\t", olp, fuzz_ents);
+	for (slp = 0; slp < fuzz_ents + 1; slp++)
+		{
+		s_res = fuzz_search (srch_print, tp_db [olp + slp].gry_print);
+		if (s_res == 2)
+			{
+			printf ("#### %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+			}
 		}
 	}
 /*for (olp = 0;olp < db_cnt; olp++)

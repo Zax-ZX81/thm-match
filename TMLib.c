@@ -446,7 +446,7 @@ int sixfour_to_dec (char sixfour)  // Convert base sixty-four to decimal
 {
 int dec_ret;
 
-//printf ("S=%c\tA=%d\t", sixfour, sixfour);
+//printf ("S=%c\tA=%d\n", sixfour, sixfour);
 if ((int) sixfour > 96)
 	{
 	dec_ret = (int) sixfour - 60;
@@ -455,7 +455,7 @@ if ((int) sixfour > 96)
 	{
 	if ((int) sixfour > 64)
 		{
-		dec_ret = (int) sixfour - 54;
+		dec_ret = (int) sixfour - 55;
 		}
 		else
 		{
@@ -524,37 +524,61 @@ return (1);
 }
 
 
-char fuzz_search (char *tgt_prnt, char *srch_prnt)
+int exact_search (char *srch_prnt, char *tgt_prnt)
 {
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
-int char_index = 0;
+int pos = 0;
 int ret_code = 0;
-int t_val, s_val;
 
-do
+//printf ("Exact search\n");
+while (pos < 4)
 	{
-	if (tgt_prnt [char_index] == srch_prnt [char_index])
+	if (srch_prnt [pos] == tgt_prnt [pos])
 		{
-printf ("%c ", tgt_prnt [char_index]);
 		ret_code++;
 		}
-	} while (++char_index < 4);
+//printf ("Exact\tP=%d\tS=%c\tT=%c\tR=%d\n", pos, srch_prnt [pos], tgt_prnt [pos], ret_code);
+	pos++;
+	}
+//printf ("R=%d\n", ret_code);
 if (ret_code > 3)
 	{
 	return (1);
 	}
-char_index = 0;
-do
+
+return (FALSE);
+}
+
+
+int fuzz_search (char *srch_prnt, char *tgt_prnt)
+{
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+
+int pos = 0;
+int ret_code = 0;
+int t_val, s_val;
+
+//printf ("Fuzz search\n");
+while (pos < 4)
 	{
-	t_val = sixfour_to_dec (tgt_prnt [char_index]);
-	s_val = sixfour_to_dec (srch_prnt [char_index]);
-	if ((t_val < 63 && t_val + 1 == s_val) || (t_val > 0 && t_val - 1 == s_val))
+	s_val = sixfour_to_dec (srch_prnt [pos]);
+	t_val = sixfour_to_dec (tgt_prnt [pos]);
+//printf ("S=%d\tT=%d\n", s_val, t_val);
+	if (s_val == t_val || s_val < 63 && s_val + 1 == t_val || s_val > 0 && s_val - 1 == t_val)
 		{
 		ret_code++;
-printf ("%c-%c ", base_sixfour [t_val + 1], base_sixfour [t_val - 1]);
 		}
-	} while (++char_index < 4);
+//printf ("Fuzzy\tP=%d\tS=%c\tB=%c\tA=%c\tT=%c\tR=%d\t", pos, base_sixfour [sixfour_to_dec (srch_prnt [pos])], \
+							base_sixfour [s_val - 1], \
+							base_sixfour [s_val + 1], \
+							tgt_prnt [pos], ret_code);
+//printf ("lt63=%d\t+1=%d\tgt0=%d\t-1=%d\n", s_val < 63, s_val + 1 == t_val, s_val > 0, s_val - 1 == t_val);
+//printf ("Fuzzy\tP=%d\tt=%d\tb=%d\ta=%d\ts=%d\tR=%d\n", pos, t_val, t_val - 1, t_val + 1, \
+//							s_val, ret_code);
+	pos++;
+	}
+//printf ("R=%d\n", ret_code);
 if (ret_code > 3)
 	{
 	return (2);
