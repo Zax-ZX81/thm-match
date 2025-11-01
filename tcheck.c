@@ -90,6 +90,7 @@ if (!strcmp (database_filename, ""))
 	exit (0);
 	}
 printf ("%s\t%s\n", database_filename, srch_print);
+
 // File open section
 DB_FP = fopen (database_filename, "r");
 if (DB_FP == NULL)
@@ -97,7 +98,7 @@ if (DB_FP == NULL)
 	exit_error ("Can't find Database: ", database_filename);
 	}
 
-// Search section
+// Database load section
 while (!feof (DB_FP))
 	{
 	database_ferr = (long)fgets (fileline, FILENAME_LENGTH, DB_FP);
@@ -132,6 +133,9 @@ db_cnt--;
 
 // Clean up section
 fclose (DB_FP);
+
+// Search section
+
 //for (slp = 0; slp < 64; slp++)
 //	{
 //	printf ("%d", );

@@ -23,6 +23,7 @@
 
 #define NULL_STRING ""
 #define TAB_CHAR 9
+#define CGE_RET 13
 #define FILENAME_LENGTH 256
 #define THUMBNAIL_BYTES 9216
 #define TRUE (1==1)
@@ -168,6 +169,7 @@ struct find_list_entry
 	char object_type;
 	char filepath [FILENAME_LENGTH];
 	char file_ext [6];
+	unsigned long filesize;
 	};
 
 struct thumbprint_histogram

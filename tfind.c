@@ -52,6 +52,11 @@ int find_list_read = 0;
 int find_list_curr_size = 0;
 int arg_no, switch_pos, swap_index, mas_lp;
 int sort_start = TRUE;
+unsigned long file_size_total = 0;
+unsigned long file_size_accum = 0;
+
+double file_size_mult = 0;
+double file_progress = 0;
 
 DIR *DIR_PATH;
 FILE *DB_OUT;
@@ -197,6 +202,8 @@ while (find_list_read < find_list_write)
 						strcat (find_list [find_list_write].filepath, "/");
 						strcat (find_list [find_list_write].filepath, dir_ents->d_name);
 						find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+						find_list [find_list_write].filesize = file_stat.st_size;
+						file_size_total += find_list [find_list_write].filesize;
 						find_list_write ++;
 						}
 						else
@@ -236,17 +243,22 @@ while (find_list_read < find_list_write)
 
 //Load database
 tfind_db = (struct tfind_database *) malloc (sizeof (struct tfind_database) * DATABASE_INITIAL_SIZE);
+file_size_mult = 100.0 / (float)file_size_total;
 for (mas_lp = 0; mas_lp < find_list_write; mas_lp++)
 	{
 	if (find_list [mas_lp].object_type == FILE_ENTRY)
 		{
 //printf ("F=%s\n", find_list [mas_lp].filepath);
+		file_size_accum += find_list [mas_lp].filesize;
+		file_progress = file_size_mult * (float)file_size_accum;
 		tprint_return = thumbprint (find_list [mas_lp].filepath);
 		strcpy (tfind_db [db_count].gry_print, tprint_return.gry_print);
 		strcpy (tfind_db [db_count].hue_print, tprint_return.hue_print);
 		strcpy (tfind_db [db_count].magnitude, tprint_return.magnitude);
 		strcpy (tfind_db [db_count].filepath, tprint_return.filepath);
 		tfind_db [db_count].index = db_count;
+		fprintf (stderr, "%c%6.2f%%", CGE_RET, file_progress);
+//		fprintf (stderr, "%c%d\t%ld\t%6.2f%%", CGE_RET, db_count, file_size_accum, file_progress);
 //		printf ("%s\t%s\t%c\t%s\t%d\n", tfind_db [db_count].gry_print, tfind_db [db_count].hue_print, tfind_db [db_count].magnitude [0], tfind_db [db_count].filepath, db_count);
 		db_count++;
 		} // end find list lp
