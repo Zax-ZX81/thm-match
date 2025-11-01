@@ -9,9 +9,11 @@
  * * * * * * * * * * * * * */
 
 #include <stdio.h>
-#include "TMLib.h"
 #include <stdlib.h>
 #include <string.h>
+#include "TMLib.h"
+#include "search.h"
+#include "six_sixfour.h"
 
 #define PROG_VERSION "0.10"
 

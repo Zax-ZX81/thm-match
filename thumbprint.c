@@ -1,9 +1,21 @@
+/* * * * * * * * * * * * * * *
+ *                           *
+ *     thumbprint.c 0.35     *
+ *                           *
+ *     2025-10-18            *
+ *                           *
+ *     Zax                   *
+ *                           *
+ * * * * * * * * * * * * * * */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <sys/stat.h>
 #include "TMLib.h"
+#include "print.h"
+#include "six_sixfour.h"
 
 struct tprint_database thumbprint (char *img_name)
 

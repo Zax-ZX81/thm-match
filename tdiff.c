@@ -9,10 +9,11 @@
  * * * * * * * * * * * * * */
 
 #include <stdio.h>
-#include "TMLib.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "TMLib.h"
+#include "six_sixfour.h"
 
 #define PROG_NAME "TDiff"
 #define PROG_VERSION "0.35"
