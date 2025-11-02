@@ -27,6 +27,7 @@
 #define CGE_RET 13
 #define FILENAME_LENGTH 256
 #define FILELINE_LENGTH 1024
+#define FILEPATH_LENGTH 1024
 #define MAG_SUM_LEN 12
 #define THUMBNAIL_BYTES 9216
 #define TRUE (1==1)
@@ -66,6 +67,7 @@
 #define TEXT_ORANGE "\33[33m"
 #define TEXT_RED "\33[1m\33[91m"
 
+// Pixels and images
 struct four_six_bit_pixels
         {
 	unsigned int red_a : 6;
@@ -117,6 +119,24 @@ struct image_print
 	char hue;
 	};
 
+struct dimension_return
+	{
+	int width;
+	int height;
+	};
+
+struct thumbprint_histogram
+	{
+	unsigned int histogram [64];
+	float hscale;
+	float grey_mean;
+	float grey_tot;
+	float vari_tot;
+	float cont_mult;
+	float std_dev;
+	float grey_val [4096];
+	};
+
 struct file_name_return
 	{
 	char name [FILENAME_LENGTH];
@@ -124,30 +144,56 @@ struct file_name_return
 	int height;
 	};
 
-struct dimension_return
-	{
-	int width;
-	int height;
-	};
 
+// Database
 struct tprint_database
 	{
-	char gry_print [5];		// grey print 4 character code
-	char hue_print [5];		// hue print 4 character code
+	char gry_print [5];			// grey print 4 character code
+	char hue_print [5];			// hue print 4 character code
 	char magnitude [1];			// magnitude 1 character code
-	char filepath [FILENAME_LENGTH];
+	char filepath [FILEPATH_LENGTH];
 	};
 
 struct tfind_database
 	{
-	char gry_print [5];		// grey print 4 character code
-	char hue_print [5];		// hue print 4 character code
+	char gry_print [5];			// grey print 4 character code
+	char hue_print [5];			// hue print 4 character code
 	char magnitude [1];			// magnitude 1 character code
-	char filepath [FILENAME_LENGTH];
+	char filepath [FILEPATH_LENGTH];
 	unsigned long filesize;
 	int index;
 	};
 
+struct tmatch_database
+	{
+	char gry_print [5];			// grey print 4 character code
+	char hue_print [5];			// hue print 4 character code
+	char magnitude [1];			// magnitude 1 character code
+	char filepath [FILEPATH_LENGTH];
+	unsigned long filesize;
+	int timestamp;
+	int fuzz_match;				// is fuzzy match?
+	int dup_num;
+	int thumb_pres;				// is thumbnail present?
+	int index;
+	};
+
+struct find_list_entry
+	{
+	char object_type;
+	char filepath [FILEPATH_LENGTH];
+	char file_ext [6];
+	unsigned long filesize;
+	};
+
+struct tprint_db_lookup
+	{
+	int start;
+	int ents;
+	};
+
+
+// Flags
 struct tprint_flags
 	{
 	char tprt;		// write thumbnail file
@@ -171,33 +217,8 @@ struct tfind_flags
 	char verbose;		// mirror everything to stdout
 	};
 
-struct find_list_entry
-	{
-	char object_type;
-	char filepath [FILENAME_LENGTH];
-	char file_ext [6];
-	unsigned long filesize;
-	};
 
-struct thumbprint_histogram
-	{
-	unsigned int histogram [64];
-	float hscale;
-	float grey_mean;
-	float grey_tot;
-	float vari_tot;
-	float cont_mult;
-	float std_dev;
-	float grey_val [4096];
-	};
-
-struct tprint_db_lookup
-	{
-	int start;
-	int ents;
-	};
-
-
+// Functions
 void error_message (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);

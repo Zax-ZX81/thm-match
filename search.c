@@ -60,10 +60,10 @@ while (pos < 4)
 		{
 		ret_code++;
 		}
-//printf ("Fuzzy\tP=%d\tS=%c\tB=%c\tA=%c\tT=%c\tR=%d\t", pos, base_sixfour [sixfour_to_dec (srch_prnt [pos])], \
+/*printf ("Fuzzy\tP=%d\tS=%c\tB=%c\tA=%c\tT=%c\tR=%d\t", pos, base_sixfour [sixfour_to_dec (srch_prnt [pos])], \
 							base_sixfour [s_val - 1], \
 							base_sixfour [s_val + 1], \
-							tgt_prnt [pos], ret_code);
+							tgt_prnt [pos], ret_code);*/
 //printf ("lt63=%d\t+1=%d\tgt0=%d\t-1=%d\n", s_val < 63, s_val + 1 == t_val, s_val > 0, s_val - 1 == t_val);
 //printf ("Fuzzy\tP=%d\tt=%d\tb=%d\ta=%d\ts=%d\tR=%d\n", pos, t_val, t_val - 1, t_val + 1, \
 //							s_val, ret_code);
