@@ -14,15 +14,7 @@
 #include "TMLib.h"
 
 
-void exit_error (char *message_a, char *message_b)	// Print two strings as error messages in orange
-
-{
-fprintf (stderr, "%s%s%s%s\n", TEXT_ORANGE, message_a, message_b, TEXT_RESET);
-exit (1);
-}
-
-
-void error_mess (char *message_a, char *message_b)	// Print two strings as error messages in orange
+void error_message (char *message_a, char *message_b)	// Print two strings as error messages in orange
 
 {
 fprintf (stderr, "%s%s%s%s\n", TEXT_ORANGE, message_a, message_b, TEXT_RESET);
@@ -140,7 +132,7 @@ while (rev_pos + 1 && fp_pos > 1)
 	}
 if (ext_pos > 0)
 	{
-	gpx_ext [ext_pos++] = ' ';
+	gpx_ext [ext_pos++] = ' ';		// Put space after extension to prevent false positives
 	gpx_ext [ext_pos] = '\0';
 	}
 /*	else

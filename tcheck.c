@@ -32,10 +32,10 @@ int db_alloc = DATABASE_INCREMENT;
 int idx, s_res, fuzz_ents;
 
 char switch_chr;		// args section
-char database_filename [FILENAME_LENGTH] = "";
-char srch_print [5] = "";
+char database_filename [FILENAME_LENGTH] = NULL_STRING;
+char srch_print [5] = NULL_STRING;
 char database_first_line = SW_ON;
-char fileline [FILENAME_LENGTH];			// input line
+char fileline [FILELINE_LENGTH];			// input line
 
 struct tdup_flags tdflags [1] = {0};
 struct tprint_database *tp_db;
@@ -74,17 +74,17 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
-		if (strcmp (database_filename, "") && !strcmp (srch_print, ""))
+		if (strcmp (database_filename, NULL_STRING) && !strcmp (srch_print, NULL_STRING))
 			{
 			strncpy (srch_print, argv [arg_no], 5);
 			}
-		if (!strcmp (database_filename, ""))
+		if (!strcmp (database_filename, NULL_STRING))
 			{
 			strncpy (database_filename, argv [arg_no], FILENAME_LENGTH);
 			}
 		}	// END else if int argv
 	}	// END for arg_no
-if (!strcmp (database_filename, ""))
+if (!strcmp (database_filename, NULL_STRING))
 	{
 	printf ("%s# TCheck [V] <database file>\n%s", TEXT_YELLOW, TEXT_RESET);
 	exit (0);
@@ -92,16 +92,17 @@ if (!strcmp (database_filename, ""))
 printf ("%s\t%s\n", database_filename, srch_print);
 
 // File open section
-DB_FP = fopen (database_filename, "r");
+DB_FP = fopen (database_filename, FOR_READ);
 if (DB_FP == NULL)
 	{
-	exit_error ("Can't find Database: ", database_filename);
+	error_message ("Can't find Database: ", database_filename);
+	exit (1);
 	}
 
 // Database load section
 while (!feof (DB_FP))
 	{
-	database_ferr = (long)fgets (fileline, FILENAME_LENGTH, DB_FP);
+	database_ferr = (long)fgets (fileline, FILELINE_LENGTH, DB_FP);
 	if (database_first_line)		// if database first line, sha_verify
 		{
 		db_err = tpdb_verify (fileline);
@@ -109,7 +110,8 @@ while (!feof (DB_FP))
 		if (db_err == 0)
 			{
 			fclose (DB_FP);
-			exit_error ("# Unrecognised file type: ", database_filename);
+			error_message ("# Unrecognised file type: ", database_filename);
+			exit (1);
 			}
 		database_first_line = SW_OFF;
 		}

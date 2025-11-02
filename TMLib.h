@@ -20,11 +20,14 @@
 
 #define FILE_ARG 2
 #define FILE_EXTN ".rgb"
+#define DB_EXTN ".tpdb"
 
 #define NULL_STRING ""
 #define TAB_CHAR 9
 #define CGE_RET 13
 #define FILENAME_LENGTH 256
+#define FILELINE_LENGTH 1024
+#define MAG_SUM_LEN 12
 #define THUMBNAIL_BYTES 9216
 #define TRUE (1==1)
 #define FALSE !TRUE
@@ -41,6 +44,10 @@
 #define DIR_ENTRY 'd'
 #define UNKNOWN_ENTRY 'x'
 #define T_REJ 'r'
+#define FOR_READ "r"
+#define READ_BINARY "rb"
+#define FOR_WRITE "w"
+#define WRITE_BINARY "wb"
 #define DATABASE_INITIAL_SIZE 4096
 #define DATABASE_INCREMENT 4096
 
@@ -191,8 +198,7 @@ struct tprint_db_lookup
 	};
 
 
-void exit_error (char *message_a, char *message_b);
-void error_mess (char *message_a, char *message_b);
+void error_message (char *message_a, char *message_b);
 struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string);
 struct maxmin_return find_limits (float red_value, float grn_value, float blu_value);
 char *compose_filename (char *img_name, char *img_rename, char *gry_print, char *hue_print);

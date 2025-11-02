@@ -30,14 +30,14 @@ struct stat sb;
 struct tprint_database tprint_return;
 
 char out_name [FILENAME_LENGTH] = NULL_STRING;
-char cmd_line [FILENAME_LENGTH] = NULL_STRING;
+char cmd_line [FILELINE_LENGTH] = NULL_STRING;
 char file_name [FILENAME_LENGTH] = NULL_STRING;
-char file_path [FILENAME_LENGTH] = NULL_STRING;
-char out_path [FILENAME_LENGTH] = NULL_STRING;
+char file_path [FILELINE_LENGTH] = NULL_STRING;
+char out_path [FILELINE_LENGTH] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
-char mag_string [12];
+char mag_string [MAG_SUM_LEN];
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
 
@@ -51,9 +51,9 @@ FILE *IMGFILE;
 FILE *rgb_thumbnail;
 FILE *out_thumbnail;
 
-n_chrs = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote (img_name), RGB_ARGS);
+n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote (img_name), RGB_ARGS);
 //printf ("CL=%s=W=%d=\n", cmd_line, wr_items);
-rgb_thumbnail = popen (cmd_line, "r");
+rgb_thumbnail = popen (cmd_line, FOR_READ);
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 rd_err = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
 
@@ -65,7 +65,7 @@ for (olp = 0; olp < 4; olp += 2)
 			{
 			for (qlp = 1; qlp < 9; qlp++)
 				{
-				for (pos = 0; pos <10 ; pos++)
+				for (pos = 0; pos < 9 ; pos++)
 					{
 					nine_byte_chunk [pos] = thm_buffer [lp];
 					lp++;
@@ -92,7 +92,7 @@ if (tpflags.tprt == SW_ON)
 		{
 		strcpy (file_name, strrchr (img_name, 47) + 1);
 		strncpy (file_path, img_name, strrchr (img_name, 47) - img_name + 1);
-		n_chrs = snprintf (out_path, FILENAME_LENGTH, "%s%s", file_path, "s/");
+		n_chrs = snprintf (out_path, FILELINE_LENGTH, "%s%s", file_path, "s/");
 		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", out_path, file_name, FILE_EXTN);
 //printf ("Sub: I=%s=\tN=%s=\tP=%s=\n", img_name, out_name, out_path);
 		}
@@ -108,7 +108,7 @@ if (tpflags.tprt == SW_ON)
 		{
 		mkdir (out_path, 0700);
 		}
-	out_thumbnail = fopen (out_name, "wb");
+	out_thumbnail = fopen (out_name, WRITE_BINARY);
 //printf ("Writing =%s=\n", out_name);
 	wr_items = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);
 	fclose (out_thumbnail);
@@ -172,8 +172,8 @@ for (olp = 0; olp < 4; olp++)
 	}
 base_sixfour [0] = '0';
 
-n_chrs = snprintf (cmd_line, FILENAME_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
-IMGFILE = popen (cmd_line, "r");
+n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
+IMGFILE = popen (cmd_line, FOR_READ);
 rd_err = (long) fgets (mag_string, 12, IMGFILE);
 fclose (IMGFILE);
 mag_separation = separate_magnitude (mag_string);
@@ -192,6 +192,6 @@ if (wr_items)
 	}
 
 return (tprint_return);
-//n_chrs = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
+//n_chrs = snprintf (new_name, FILELINE_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
 }

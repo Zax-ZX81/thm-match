@@ -1,4 +1,0 @@
-bin/bsf TestPat-R.png.rgb
-bin/bsf TestPat-G.png.rgb
-bin/bsf TestPat-B.png.rgb
-bin/bsf TestPat-T.png.rgb

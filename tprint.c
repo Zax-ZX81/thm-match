@@ -59,7 +59,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
-		if (strcmp (img_name, "") == 0)
+		if (strcmp (img_name, NULL_STRING) == 0)
 			{
 			strncpy (img_name, argv [arg_no], FILENAME_LENGTH);
 			}

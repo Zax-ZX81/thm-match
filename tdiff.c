@@ -24,8 +24,8 @@ struct thumbprint_histogram tprint_hist [1] = {0};
 int main (int argc, char *argv [])
 
 {
-char rgb_return_a [13] = "";
-char rgb_return_b [13] = "";
+char rgb_return_a [13] = NULL_STRING;
+char rgb_return_b [13] = NULL_STRING;
 
 char img_name_a [FILENAME_LENGTH] = NULL_STRING;
 char img_name_b [FILENAME_LENGTH] = NULL_STRING;
@@ -92,13 +92,13 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
-		if (strcmp (img_name_a, "") == 0)
+		if (strcmp (img_name_a, NULL_STRING) == 0)
 			{
 			strncpy (img_name_a, argv [arg_no], FILENAME_LENGTH);
 			}
 			else
 			{
-			if (strcmp (img_name_b, "") == 0)
+			if (strcmp (img_name_b, NULL_STRING) == 0)
 				{
 				strncpy (img_name_b, argv [arg_no], FILENAME_LENGTH);
 				}
@@ -119,16 +119,16 @@ thm_buffer_a = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 thm_buffer_b = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 //printf ("1\n");
 //printf ("2\n");
-IMGFILE_A = fopen (img_name_a, "r");
-IMGFILE_B = fopen (img_name_b, "r");
+IMGFILE_A = fopen (img_name_a, FOR_READ);
+IMGFILE_B = fopen (img_name_b, FOR_READ);
 if (IMGFILE_A == NULL)
 	{
-	error_mess ("Error opening file: ", img_name_a);
+	error_message ("Error opening file: ", img_name_a);
 	err = TRUE;
 	}
 if (IMGFILE_B == NULL)
 	{
-	error_mess ("Error opening file: ", img_name_b);
+	error_message ("Error opening file: ", img_name_b);
 	err = TRUE;
 	}
 if (err == TRUE)
@@ -142,7 +142,7 @@ rerr_b = fread (thm_buffer_b, 1, THUMBNAIL_BYTES, IMGFILE_B);
 fclose (IMGFILE_A);
 fclose (IMGFILE_B);
 
-for (olp = 0; olp < 9216; olp += 9)
+for (olp = 0; olp < THUMBNAIL_BYTES; olp += 9)
 	{
 	for (pos = 0; pos < 9 ; pos++)
 		{

@@ -58,7 +58,7 @@ struct dimension_return separate_magnitude (char *mag_string)
 {
 struct dimension_return mag_return;
 
-char mag_sum [FILENAME_LENGTH] = NULL_STRING;
+char mag_sum [MAG_SUM_LEN] = NULL_STRING;
 
 int pos, wid, hig;
 int digit = 1;

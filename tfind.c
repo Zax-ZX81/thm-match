@@ -38,12 +38,14 @@ struct tfind_flags tfflags [1] = {0};
 
 char switch_chr;
 const char gpx_file_ext [90] = GRAPHICS_EXTENSIONS;
-char C_W_D [FILENAME_LENGTH];				// base directory of search
+char C_W_D [FILELINE_LENGTH];				// base directory of search
 char db_name [FILENAME_LENGTH];
-char path_sub [FILENAME_LENGTH];
+char path_sub [FILELINE_LENGTH];
 char swap_made = TRUE;					// swap was made on last sort pass
-char *ext_match;
+char *ext_match;					// graphics file extention match
 char c_d, p_d;
+char f_err;
+char *s_err;
 
 int line_index;
 int db_count = 0;
@@ -102,16 +104,16 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 		}	// END if int argv
 		else
 		{
-		if (strcmp (db_name, "") == 0)
+		if (strcmp (db_name, NULL_STRING) == 0)
 			{
 			strncpy (db_name, argv [arg_no], FILENAME_LENGTH);
 			}
 		}	// END else if int argv
 	}	// END for arg_no
 
-if (strcmp (db_name, "") != 0)
+if (strcmp (db_name, NULL_STRING) != 0)
 	{
-	strcat (db_name, ".tpdb");
+	strcat (db_name, DB_EXTN);
 	}
 	else
 	{
@@ -121,7 +123,7 @@ if (strcmp (db_name, "") != 0)
 // Initial search section
 find_list = (struct find_list_entry *) malloc (sizeof (struct find_list_entry) * DATABASE_INITIAL_SIZE);
 find_list_curr_size = DATABASE_INITIAL_SIZE;
-getcwd (C_W_D, FILENAME_LENGTH);			// get present working directory
+s_err = getcwd (C_W_D, FILELINE_LENGTH);			// get present working directory
 strcat (C_W_D, SLASH_TERM);
 DIR_PATH = opendir (PATH_CURRENT);			// open directory
 
@@ -138,6 +140,8 @@ if (DIR_PATH != NULL)
 				strcpy (find_list [find_list_write].file_ext, get_gpx_ext (dir_ents->d_name));
 				strcpy (find_list [find_list_write].filepath, dir_ents->d_name);
 				find_list [find_list_write].object_type = FILE_ENTRY;	// set type to file
+				find_list [find_list_write].filesize = file_stat.st_size;
+				file_size_total += find_list [find_list_write].filesize;
 				find_list_write ++;
 				}
 				else
@@ -178,12 +182,12 @@ if (tfflags->recurse)
 {
 while (find_list_read < find_list_write)
 	{
-	chdir (C_W_D);					// go back to the starting directory
+	f_err = chdir (C_W_D);					// go back to the starting directory
 	if (find_list [find_list_read].object_type == DIR_ENTRY)
 		{
 		strcpy (path_sub, C_W_D);
 		strcat (path_sub, find_list [find_list_read].filepath);		// compose directory location for search
-		chdir (path_sub);						// move to search directory
+		f_err = chdir (path_sub);						// move to search directory
 		DIR_PATH = opendir (path_sub);					// open directory
 		if (DIR_PATH != NULL)
 			{
@@ -289,10 +293,11 @@ while (swap_made && tfflags->sort)
 //Write database
 if (tfflags->std_out == SW_OFF)
         {
-	DB_OUT = fopen (db_name, "w");           // open output database
+	DB_OUT = fopen (db_name, FOR_WRITE);           // open output database
 	if (DB_OUT == NULL)
 		{
-		exit_error ("Can't open database for output: ", db_name);
+		error_message ("Can't open database for output: ", db_name);
+		exit (1);
 		}
 	}
 
