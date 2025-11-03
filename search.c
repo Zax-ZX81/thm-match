@@ -49,6 +49,7 @@ int fuzz_search (char *srch_prnt, char *tgt_prnt)
 int pos = 0;
 int ret_code = 0;
 int t_val, s_val;
+int exact = TRUE;
 
 //printf ("Fuzz search\n");
 while (pos < 4)
@@ -56,9 +57,14 @@ while (pos < 4)
 	s_val = sixfour_to_dec (srch_prnt [pos]);
 	t_val = sixfour_to_dec (tgt_prnt [pos]);
 //printf ("S=%d\tT=%d\n", s_val, t_val);
-	if (s_val == t_val || s_val < 63 && s_val + 1 == t_val || s_val > 0 && s_val - 1 == t_val)
+	if (s_val == t_val)
 		{
 		ret_code++;
+		}
+	if (s_val < 63 && s_val + 1 == t_val || s_val > 0 && s_val - 1 == t_val)
+		{
+		ret_code++;
+		exact = FALSE;
 		}
 /*printf ("Fuzzy\tP=%d\tS=%c\tB=%c\tA=%c\tT=%c\tR=%d\t", pos, base_sixfour [sixfour_to_dec (srch_prnt [pos])], \
 							base_sixfour [s_val - 1], \
@@ -72,7 +78,14 @@ while (pos < 4)
 //printf ("R=%d\n", ret_code);
 if (ret_code > 3)
 	{
-	return (2);
+	if (exact)
+		{
+		return (1);
+		}
+		else
+		{
+		return (2);
+		}
 	}
 
 return (FALSE);

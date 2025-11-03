@@ -159,18 +159,19 @@ if (tdflags->fuzzy == SW_OFF)
 		s_res = exact_search (srch_print, tp_db [olp + slp].gry_print);
 		if (s_res == 1)
 			{
-			printf ("---- %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+//			printf ("---- %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
 			strcpy (dup_db [db_cnt].gry_print, tp_db [olp + slp].gry_print);
 			strcpy (dup_db [db_cnt].hue_print, tp_db [olp + slp].hue_print);
 			dup_db [db_cnt].magnitude [0] = tp_db [olp + slp].magnitude [0];
 			strcpy (dup_db [db_cnt].filepath, tp_db [olp + slp].filepath);
+			dup_db [db_cnt].fuzz_match = FALSE;
+			db_cnt++;
 			}
 		if (db_cnt + 1 == dup_db_alloc)              // check memory usage, reallocate
 			{
 			dup_db_alloc += DATABASE_INCREMENT;
 			dup_db = (struct tmatch_database *) realloc (dup_db, sizeof (struct tmatch_database) * dup_db_alloc);
 			}
-		db_cnt++;
 		}
 	}
 	else
@@ -195,28 +196,36 @@ if (tdflags->fuzzy == SW_OFF)
 		{
 //printf ("SP=%s\tTP=%s\n", srch_print, tp_db [olp + slp].gry_print);
 		s_res = fuzz_search (srch_print, tp_db [olp + slp].gry_print);
-		if (s_res == 2)
+		if (s_res > 0)
 			{
-			printf ("#### %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
+//			printf ("#### %s %s %c   %s\n", tp_db [olp + slp].gry_print, tp_db [olp + slp].hue_print, tp_db [olp + slp].magnitude [0], tp_db [olp + slp].filepath);
 			strcpy (dup_db [db_cnt].gry_print, tp_db [olp + slp].gry_print);
 			strcpy (dup_db [db_cnt].hue_print, tp_db [olp + slp].hue_print);
 			dup_db [db_cnt].magnitude [0] = tp_db [olp + slp].magnitude [0];
 			strcpy (dup_db [db_cnt].filepath, tp_db [olp + slp].filepath);
+			if (s_res == 2)
+				{
+				dup_db [db_cnt].fuzz_match = TRUE;
+				}
+				else
+				{
+				dup_db [db_cnt].fuzz_match = FALSE;
+				}
+			db_cnt++;
 			}
 		if (db_cnt + 1 == dup_db_alloc)              // check memory usage, reallocate
 			{
 			dup_db_alloc += DATABASE_INCREMENT;
 			dup_db = (struct tmatch_database *) realloc (dup_db, sizeof (struct tmatch_database) * dup_db_alloc);
 			}
-		db_cnt++;
 		}
 	}
-/*for (olp = 0;olp < db_cnt; olp++)
+for (olp = 0;olp < db_cnt; olp++)
 	{
-	printf ("%s\t%s\t%c\t%s\n", tp_db [olp].gry_print, tp_db [olp].hue_print, tp_db [olp].magnitude  [0], tp_db [olp].filepath, olp);
+	printf ("%2d\t%s\t%s\t%c\t%s\t%d\n", olp, dup_db [olp].gry_print, dup_db [olp].hue_print, dup_db [olp].magnitude  [0], dup_db [olp].filepath, dup_db [olp].fuzz_match);
 	}
 
-for (olp = 0;olp < 64; olp++)
+/*for (olp = 0;olp < 64; olp++)
 	{
 	printf ("%d\t%d\t%d\n", olp, db_lookup [olp].start, db_lookup [olp].ents);
 	}*/
