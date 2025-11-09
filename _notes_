@@ -168,17 +168,53 @@ Standard Deviation
 
 ### add modified date, thumbnail present, to tdiff struct
 
-
  _______________                
 |       |       |  0 1 2 3 4 5 6 7
-|       |       |  8 9 a b c d e f
-|       |       |  g h i j k l m n
-|_______|_______|  o p q r s t u v
-|       |       |  w x y z A B C D
-|       |       |  E F G H I J L K
-|       |       |  M N O P Q R S T
-|_______|_______|  U V W X Y Z - +
+|       |       |  8 9 A B C D E F
+|       |       |  G H I J L K M N
+|_______|_______|  O P Q R S T U V
+|       |       |  W X Y Z a b c d
+|       |       |  e f g h i j k l
+|       |       |  m n o p q r s t
+|_______|_______|  u v w x y z - +
 
 Average greyscale and hue of 
 quadrants in 6 bit expressed as 
 base 64 characters
+
+
+tdup
+array of unsigned char [num images] [num images]
+each print would be compared to every other and the result (exact, fuzzy) would be recorded in the matrix
+
+0 = not checked
+1 = no match
+2 = exact match
+3 = fuzzy match
+
+skip comparing print to itself
+fill bottom half of matrix from already checked pairs - if 12-56 is fuzzy then 56-12 will be fuzzy
+refer tm_calc
+
+The thresholds for 6 bit colour boundaries is not determined solely by ImageMagick - but by some other library.
+So different builds of IM will produce different thumbnails. 
+
+#include <stdio.h>
+ 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+ 
+const size_t NUM_PIXELS_TO_PRINT = 10U;
+ 
+int main(void) {
+    int width, height, comp;
+    unsigned char *data = stbi_load("image.jpg", &width, &height, &comp, 0);
+    if (data) {
+        printf("width = %d, height = %d, comp = %d (channels)\n", width, height, comp);
+        for (size_t i = 0; i < NUM_PIXELS_TO_PRINT * comp; i++) {
+            printf("%02x%s", data[i], ((i + 1) % comp) ? "" : "\n");
+        }
+        printf("\n");
+    }
+    return 0;
+}

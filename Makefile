@@ -6,6 +6,12 @@ CFLAGS= -I. -Wunused-variable
 all: tprint tfind tcheck tdiff
 #all: bsf_test3 sbp_test2 tprint tfind tcheck f_test fns_test1 popen_test1 buf_test tdiff
 
+i_read:		i_read.c
+	$(CC) -o bin/i_read i_read.c -lm $(CFLAGS)
+
+lm_test1:	lm_test1.c
+	$(CC) -o bin/lm_test1 lm_test1.c $(CFLAGS)
+
 tdiff:		tdiff.c TMLib.c six_sixfour.c
 	$(CC) -o bin/tdiff tdiff.c TMLib.c six_sixfour.c -lm $(CFLAGS)
 
