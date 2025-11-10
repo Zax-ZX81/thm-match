@@ -7,38 +7,85 @@
 
 struct rgb_return get_pixel (unsigned char *data, int anch, int width, int y_max, int x_max);
 
-int main (void)
+int main (int argc, char *argv [])
 {
 int width, height, comp;
-int rlp, olp, wid_mod;
+int rlp, olp, wid_div, wid_mod;
 long racc = 0, gacc = 0, bacc = 0;
-unsigned char *data = stbi_load("img/PJH.png", &width, &height, &comp, 0);
+char img_name [FILENAME_LENGTH] = NULL_STRING;
+unsigned char *data;
 struct rgb_return pix_return;
 
+strncpy (img_name, argv [1], FILENAME_LENGTH);
+data = stbi_load (img_name, &width, &height, &comp, 0);
 FILE *out_thumbnail;
-out_thumbnail = fopen ("img/P.rgb", WRITE_BINARY);
+out_thumbnail = fopen ("p.rgb", WRITE_BINARY);
+wid_div = width / 64;
 wid_mod = width % 64;
-for (olp = 0; olp < 64; olp++)
+/*###############################################*/
+if (!wid_mod)
 	{
-	for (rlp = 0; rlp < 63; rlp++)
+	printf ("Clean divide\n");
+	for (olp = 0; olp < 64; olp++)
 		{
-		pix_return = get_pixel (data, (olp * (width * 3) * (width / 64)) + (rlp * (width / 64) * 3), width, width / 64, width / 64);
+		for (rlp = 0; rlp < 64; rlp++)
+			{
+			pix_return = get_pixel (data, (olp * (width * 3) * wid_div) + (rlp * wid_div * 3), width, wid_div, wid_div);
+			racc = racc + pix_return.red_val;
+			gacc = gacc + pix_return.grn_val;
+			bacc = bacc + pix_return.blu_val;
+			fputc (pix_return.red_val / pow (wid_div, 2), out_thumbnail);
+			fputc (pix_return.grn_val / pow (wid_div, 2), out_thumbnail);
+			fputc (pix_return.blu_val / pow (wid_div, 2), out_thumbnail);
+//printf ("O=%5d\tR=%2d, G=%2d, R=%2d\n", olp, pix_return.red_val / 1296, pix_return.grn_val / 1296, pix_return.blu_val / 1296);
+			}
+		}
+	}
+	else
+	{
+/*###############################################*/
+/*###############################################*/
+	printf ("Remainder\n");
+	for (olp = 0; olp < 63; olp++)
+		{
+		for (rlp = 0; rlp < 63; rlp++)
+			{
+			pix_return = get_pixel (data, (olp * (width * 3) * wid_div) + (rlp * wid_div * 3), width, wid_div, wid_div);
+			racc = racc + pix_return.red_val;
+			gacc = gacc + pix_return.grn_val;
+			bacc = bacc + pix_return.blu_val;
+			fputc (pix_return.red_val / pow (wid_div, 2), out_thumbnail);
+			fputc (pix_return.grn_val / pow (wid_div, 2), out_thumbnail);
+			fputc (pix_return.blu_val / pow (wid_div, 2), out_thumbnail);
+//printf ("O=%5d\tR=%2d, G=%2d, R=%2d\n", olp, pix_return.red_val / 1296, pix_return.grn_val / 1296, pix_return.blu_val / 1296);
+			}
+		pix_return = get_pixel (data, (olp * (width * 3) * wid_div) + (63 * wid_div * 3), width, wid_div, wid_div + wid_mod);
 		racc = racc + pix_return.red_val;
 		gacc = gacc + pix_return.grn_val;
 		bacc = bacc + pix_return.blu_val;
-		fputc (pix_return.red_val / (int) pow (width / 64, 2), out_thumbnail);
-		fputc (pix_return.grn_val / (int) pow (width / 64, 2), out_thumbnail);
-		fputc (pix_return.blu_val / (int) pow (width / 64, 2), out_thumbnail);
+		fputc (pix_return.red_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
+		fputc (pix_return.grn_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
+		fputc (pix_return.blu_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
+		}
+	for (rlp = 0; rlp < 63; rlp++)
+		{
+		pix_return = get_pixel (data, (63 * (width * 3) * wid_div) + (rlp * wid_div * 3), width, wid_div + wid_mod, wid_div);
+		racc = racc + pix_return.red_val;
+		gacc = gacc + pix_return.grn_val;
+		bacc = bacc + pix_return.blu_val;
+		fputc (pix_return.red_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
+		fputc (pix_return.grn_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
+		fputc (pix_return.blu_val / (wid_div * (wid_div + wid_mod)), out_thumbnail);
 //printf ("O=%5d\tR=%2d, G=%2d, R=%2d\n", olp, pix_return.red_val / 1296, pix_return.grn_val / 1296, pix_return.blu_val / 1296);
 		}
-	pix_return = get_pixel (data, (olp * (width * 3) * (width / 64)) + (63 * (width / 64) * 3), width, width / 64, width / 64 + wid_mod);
-	racc = racc + pix_return.red_val;
-	gacc = gacc + pix_return.grn_val;
-	bacc = bacc + pix_return.blu_val;
-	fputc (pix_return.red_val / (width / 64 * (width / 64 + wid_mod)), out_thumbnail);
-	fputc (pix_return.grn_val / (width / 64 * (width / 64 + wid_mod)), out_thumbnail);
-	fputc (pix_return.blu_val / (width / 64 * (width / 64 + wid_mod)), out_thumbnail);
+	pix_return = get_pixel (data, (63 * (width * 3) * wid_div) + (63 * wid_div * 3), width, wid_div + wid_mod, wid_div + wid_mod);
+	printf ("R=%d, G=%d, B=%d\n", pix_return.red_val, pix_return.grn_val, pix_return.blu_val);
+	fputc (pix_return.red_val / ((wid_div + wid_mod) * (wid_div + wid_mod)), out_thumbnail);
+	fputc (pix_return.grn_val / ((wid_div + wid_mod) * (wid_div + wid_mod)), out_thumbnail);
+	fputc (pix_return.blu_val / ((wid_div + wid_mod) * (wid_div + wid_mod)), out_thumbnail);
 	}
+/*###############################################*/
+
 printf ("R=%2ld, G=%2ld, R=%2ld\tWM=%d\n", racc, gacc, bacc, wid_mod);
 
 fclose (out_thumbnail);
