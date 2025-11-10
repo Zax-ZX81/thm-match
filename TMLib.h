@@ -144,6 +144,13 @@ struct file_name_return
 	int height;
 	};
 
+struct rgb_return
+	{
+	int red_val;
+	int grn_val;
+	int blu_val;
+	};
+
 
 // Database
 struct tprint_database
