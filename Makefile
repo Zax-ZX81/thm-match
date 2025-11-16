@@ -9,6 +9,9 @@ all: tprint tfind tcheck tdiff
 i_read:		i_read.c
 	$(CC) -o bin/i_read i_read.c -lm $(CFLAGS)
 
+1-i_read:		1-i_read.c
+	$(CC) -o bin/1-i_read 1-i_read.c -lm $(CFLAGS)
+
 lm_test1:	lm_test1.c
 	$(CC) -o bin/lm_test1 lm_test1.c $(CFLAGS)
 

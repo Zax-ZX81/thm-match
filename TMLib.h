@@ -36,6 +36,9 @@
 #define SW_OFF FALSE
 #define SORT_DB TRUE
 #define NO_SORT_DB FALSE
+#define SQUARE 1
+#define LANDSC 2
+#define PORTRAIT 3
 
 #define SLASH_TERM "/"
 #define PATH_CURRENT "./"
