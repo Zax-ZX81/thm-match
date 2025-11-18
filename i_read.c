@@ -11,7 +11,7 @@ int main (int argc, char *argv [])
 {
 int width, height, comp;
 int rlp, olp, scl_div, scl_mod, pix_cnt, max_side, y_scl_rmd, x_scl_rmd;
-int pix_ofs = 0, ir_pos = 0, y_inc = 0, x_inc = 0, y_acc = 0, x_acc = 0;
+int pix_ofs = 0, ir_pos = 0, y_inc = 0, x_inc = 0, y_acc = 0, x_acc = 0, y_tot = 0, x_tot = 0;
 long racc = 0, gacc = 0, bacc = 0;
 float scl_div_fp;
 char img_name [FILENAME_LENGTH] = NULL_STRING;
@@ -89,13 +89,14 @@ switch (aspect)
 		printf ("Square\n");
 		for (olp = 0;olp < pix_cnt;olp++)
 			{
+//printf (".");
 			img_buff [olp].red_val = img_raw [ir_pos++];
 			img_buff [olp].grn_val = img_raw [ir_pos++];
 			img_buff [olp].blu_val = img_raw [ir_pos++];
 			}
 		break;
 	}
-//printf ("W=%d, H=%d, C=%d, A=%d\n", width, height, comp, aspect);
+printf ("\nW=%d, H=%d, C=%d, A=%d\n", width, height, comp, aspect);
 
 if (!scl_mod)
 	{
@@ -121,46 +122,46 @@ printf ("O=%2d, R=%2d, A=%7d, M=%5d\t", olp, rlp, (olp * max_side * scl_div) + (
 	printf ("Remainder\n");
 	for (olp = 0; olp < 64; olp++)
 		{
-		if ((float) (scl_div_fp * olp) > (float) (scl_div * olp + 0.5 + y_acc))
+		if ((float) (scl_div_fp * olp) > (float) (scl_div * olp + 0.5 + y_acc) && olp != 63)
 			{
-//printf ("y\n");
+printf ("\t\t\t\t\t\tYYY\n");
 			y_inc++;
 			y_acc++;
-			y_scl_rmd--;
 			}
 		for (rlp = 0; rlp < 64; rlp++)
 			{
-			if (((float) scl_div_fp * rlp) > (float) (scl_div * rlp + 0.5 + x_acc))
+			if ((float) (scl_div_fp * rlp) > (float) (scl_div * rlp + 0.5 + x_acc))
 				{
-/*printf ("x\tOf=%5.3f, Oi=%5.3f, Rf=%5.3f, Ri=%6.3f\n", (float) (scl_div_fp * olp), \
-						(float) (scl_div * olp + 0.5), \
-						(float) (scl_div_fp * rlp), \
-						(float) (scl_div * rlp + 0.5+ x_acc));*/
+printf ("\t\t\t\t\t\tX\n");
 				x_inc++;
 				x_acc++;
-				x_scl_rmd--;
 				}
-			pix_return = get_pixel (img_buff, (olp * max_side * scl_div) + (rlp * scl_div), max_side, scl_div + y_inc, scl_div + x_inc);
-printf ("O=%2d, R=%2d, A=%7d, M=%5d, Y=%3d, X=%3d\t", olp, rlp, (olp * max_side * scl_div) + \
-								(rlp * scl_div), max_side, \
-								scl_div + y_inc, scl_div + x_inc);
-printf ("Yi=%1d, Yr=%2d, Xi=%1d, Xr=%2d\n", y_inc, y_scl_rmd, x_inc, x_scl_rmd);
-			racc = racc + pix_return.red_val;
-			gacc = gacc + pix_return.grn_val;
-			bacc = bacc + pix_return.blu_val;
+			pix_return = get_pixel (img_buff, (olp * max_side * scl_div) + (max_side * y_acc) + rlp * scl_div + x_acc, max_side, scl_div + y_inc, scl_div + x_inc);
+//			pix_return = get_pixel (img_buff, olp * max_side * scl_div + rlp * scl_div + x_acc, max_side, scl_div_fp + y_inc, scl_div_fp + x_inc);
+//			pix_return = get_pixel (img_buff,(float) (olp * max_side * scl_div_fp) + (float) (rlp * scl_div_fp), max_side, scl_div_fp + y_acc, scl_div_fp + x_acc);
+			racc = racc + (pix_return.red_val / ((scl_div + y_inc) * (scl_div + x_inc)));
+			gacc = gacc + (pix_return.grn_val / ((scl_div + y_inc) * (scl_div + x_inc)));
+			bacc = bacc + (pix_return.blu_val / ((scl_div + y_inc) * (scl_div + x_inc)));
+printf ("O=%2d, R=%2d, A=%7d, M=%4d, Y=%2d, X=%2d, YA=%7d, XA=%7d\tR=%ld\n", olp, rlp, olp * max_side * scl_div + \
+								rlp * scl_div, max_side, \
+								scl_div + y_inc, scl_div + x_inc, y_acc, x_acc, racc);
 			fputc (pix_return.red_val / ((scl_div + y_inc) * (scl_div + x_inc)), out_thumbnail);
 			fputc (pix_return.grn_val / ((scl_div + y_inc) * (scl_div + x_inc)), out_thumbnail);
 			fputc (pix_return.blu_val / ((scl_div + y_inc) * (scl_div + x_inc)), out_thumbnail);
 //printf ("O=%5d\tR=%2d, G=%2d, R=%2d\n", olp, pix_return.red_val / 1296, pix_return.grn_val / 1296, pix_return.blu_val / 1296);
-x_inc = 0;
+			x_tot = x_tot + scl_div + x_inc;
+			x_inc = 0;
 			}
-y_inc = 0;
-x_acc = 0;
-x_scl_rmd = scl_mod;
+		y_tot = y_tot + scl_div + y_inc;
+		y_inc = 0;
+printf ("XTOT=%d\n", x_tot);
+		x_acc= 0;
+		x_tot= 0;
 		}
 	}
+printf ("YTOT=%d\n", y_tot);
 
-printf ("R=%2ld, G=%2ld, R=%2ld\tWM=%d\n", racc, gacc, bacc, scl_mod);
+printf ("R=%ld, G=%ld, B=%ld\tSM=%d\n", racc, gacc, bacc, scl_mod);
 
 fclose (out_thumbnail);
 return 0;
@@ -183,7 +184,7 @@ for (yl = 0; yl < y_max; yl++)
 //		printf ("Y=%2d   X=%2d   %2x %2x %2x\n", yl, xl, rc, gc, bc);
 		}
 	}
-printf ("YM=%d, XM=%d, PixCnt=%d\n", y_max, x_max, y_max * x_max);
+//printf ("YM=%d, XM=%d, PixCnt=%d\n", y_max, x_max, y_max * x_max);
 pix_return.red_val = rc;
 pix_return.grn_val = gc;
 pix_return.blu_val = bc;
