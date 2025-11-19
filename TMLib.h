@@ -244,3 +244,4 @@ int sixfour_to_dec (char sixfour);
 char tpdb_verify (char *fileline);
 int fuzz_search (char *srch_prnt, char *tgt_prnt);
 int exact_search (char *srch_prnt, char *tgt_prnt);
+struct rgb_return get_pixel (struct rgb_return *in_img_buff, int anch, int width, int y_max, int x_max);

@@ -194,3 +194,28 @@ if (char_pos == 0)
 
 return (1);
 }
+
+struct rgb_return get_pixel (struct rgb_return *in_img_buff, int anch, int width, int y_max, int x_max)
+{
+int yl, xl, px, rc = 0, gc = 0, bc = 0;
+struct rgb_return pix_return;
+
+for (yl = 0; yl < y_max; yl++)
+	{
+	for (xl = 0; xl < x_max; xl++)
+		{
+		px = anch + (yl * width) + xl;
+		rc = rc + in_img_buff [px].red_val;
+		gc = gc + in_img_buff [px].grn_val;
+		bc = bc + in_img_buff [px].blu_val;
+		//printf ("%2x%2x%2x ", rp, gp, bp);
+//		printf ("Y=%2d   X=%2d   %2x %2x %2x\n", yl, xl, rc, gc, bc);
+		}
+	}
+//printf ("YM=%d, XM=%d, PixCnt=%d\n", y_max, x_max, y_max * x_max);
+pix_return.red_val = rc;
+pix_return.grn_val = gc;
+pix_return.blu_val = bc;
+
+return (pix_return);
+}
