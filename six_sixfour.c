@@ -105,48 +105,7 @@ return rgb_return;
 }
 
 
-int sixfour_to_dec (char sixfour)  // Convert base sixty-four to decimal
-{
-int dec_ret;
-
-//printf ("S=%c\tA=%d\n", sixfour, sixfour);
-if ((int) sixfour > 96)
-	{
-	dec_ret = (int) sixfour - 60;
-	}
-	else
-	{
-	if ((int) sixfour > 64)
-		{
-		dec_ret = (int) sixfour - 55;
-		}
-		else
-		{
-		if ((int) sixfour > 47)
-			{
-			dec_ret = (int) sixfour - 48;
-			}
-			else
-			{
-			if ((int) sixfour == '-')
-				{
-				dec_ret = 62;
-				}
-				else
-				{
-				if ((int) sixfour == '+')
-					{
-					dec_ret = 63;
-					}
-				}
-			}
-		}
-	}
-//printf ("D=%3d\n", dec_ret);
-
-return dec_ret;
-}
-struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string)  // Extract 3 6 bit values from 9 bytes
+struct rgb_accumulator get_nine_six (unsigned char *nine_byte_string)  // Average 3 6 bit values from 9 bytes
 {
 struct four_six_bit_pixels fsbp;
 struct rgb_accumulator rgb_return;
@@ -224,3 +183,93 @@ rgb_return.blu_val = (float) (fsbp.blu_a + fsbp.blu_b + fsbp.blu_c + fsbp.blu_d)
 
 return rgb_return;
 }
+
+
+int sixfour_to_dec (char sixfour)  // Convert base sixty-four to decimal
+{
+int dec_ret;
+
+//printf ("S=%c\tA=%d\n", sixfour, sixfour);
+if ((int) sixfour > 96)
+	{
+	dec_ret = (int) sixfour - 60;
+	}
+	else
+	{
+	if ((int) sixfour > 64)
+		{
+		dec_ret = (int) sixfour - 55;
+		}
+		else
+		{
+		if ((int) sixfour > 47)
+			{
+			dec_ret = (int) sixfour - 48;
+			}
+			else
+			{
+			if ((int) sixfour == '-')
+				{
+				dec_ret = 62;
+				}
+				else
+				{
+				if ((int) sixfour == '+')
+					{
+					dec_ret = 63;
+					}
+				}
+			}
+		}
+	}
+//printf ("D=%3d\n", dec_ret);
+
+return dec_ret;
+}
+
+unsigned char *twelveight_to_nine_six (unsigned char *twelve_byte_string)
+{
+unsigned char *nine_six = malloc (10);
+unsigned char tempa, tempb;
+//					        <2  >4  <4    >2   <6   0       <2        >4   <4   >2   <6   0       <2        >4   <4   >2    <6   0
+tempa = (twelve_byte_string [0] / 4) << 2;	//..000000 ..11 1111 ..2222 22 ..333333 ..444444 ..55 5555 ..6666 66 ..777777 ..000000 ..11 1111 ..2222 22 ..333333
+tempb = (twelve_byte_string [1] / 4) >> 4;	//00000011  11112222  22333333 44444455 55556666  66777777  00000011 11112222 22333333
+nine_six [0] = tempa + tempb;
+
+tempa = (twelve_byte_string [1] / 4) << 4;
+tempb = (twelve_byte_string [2] / 4) >> 2;
+nine_six [1] = tempa + tempb;
+
+tempa = (twelve_byte_string [2] / 4) << 6;
+tempb = (twelve_byte_string [3] / 4);
+nine_six [2] = tempa + tempb;
+
+tempa = (twelve_byte_string [4] / 4) << 2;
+tempb = (twelve_byte_string [5] / 4) >> 4;
+nine_six [3] = tempa + tempb;
+
+tempa = (twelve_byte_string [5] / 4) << 4;
+tempb = (twelve_byte_string [6] / 4) >> 2;
+nine_six [4] = tempa + tempb;
+
+tempa = (twelve_byte_string [6] / 4) << 6;
+tempb = (twelve_byte_string [7] / 4);
+nine_six [5] = tempa + tempb;
+
+tempa = (twelve_byte_string [8] / 4) << 2;
+tempb = (twelve_byte_string [9] / 4) >> 4;
+nine_six [6] = tempa + tempb;
+
+tempa = (twelve_byte_string [9] / 4) << 4;
+tempb = (twelve_byte_string [10] / 4) >> 2;
+nine_six [7] = tempa + tempb;
+
+tempa = (twelve_byte_string [10] / 4) << 6;
+tempb = (twelve_byte_string [11] / 4);
+nine_six [8] = tempa + tempb;
+
+return (nine_six);
+}
+
+/*
+*/

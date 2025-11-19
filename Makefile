@@ -7,7 +7,7 @@ all: tprint tfind tcheck tdiff
 #all: bsf_test3 sbp_test2 tprint tfind tcheck f_test fns_test1 popen_test1 buf_test tdiff
 
 i_read:		i_read.c
-	$(CC) -o bin/i_read i_read.c -lm $(CFLAGS)
+	$(CC) -o bin/i_read i_read.c six_sixfour.c -lm $(CFLAGS)
 
 1-i_read:		1-i_read.c
 	$(CC) -o bin/1-i_read 1-i_read.c -lm $(CFLAGS)

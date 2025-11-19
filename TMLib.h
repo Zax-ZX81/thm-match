@@ -30,6 +30,7 @@
 #define FILEPATH_LENGTH 1024
 #define MAG_SUM_LEN 12
 #define THUMBNAIL_BYTES 9216
+#define THUMBNAIL_PIXELS 4096
 #define TRUE (1==1)
 #define FALSE !TRUE
 #define SW_ON TRUE
