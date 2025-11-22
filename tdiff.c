@@ -37,7 +37,7 @@ unsigned char *thm_buffer_b;
 unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
 int pos, r_idx, rerr_a, rerr_b, olp, dist, arg_no, switch_pos;
-int ch_a, ch_b, ch_r, ch_g, pix_idx;
+int ch_a, ch_b, ch_r, ch_g, pix_idx = 0;
 int err = FALSE;
 
 
@@ -158,8 +158,9 @@ for (olp = 0; olp < THUMBNAIL_BYTES; olp += 9)
 		ch_a = sixfour_to_dec (rgb_return_a [r_idx]);
 		ch_b = sixfour_to_dec (rgb_return_b [r_idx]);
 		dist = abs (ch_a - ch_b);
-//printf ("LP=%4d\tSa=%c\tSb=%c\t%4d\n", olp, rgb_return_a [r_idx], rgb_return_b [r_idx], dist);
+//printf ("LP=%4d\tSa=%c\tSb=%c\tD=%2d\tR=%d\tH=%4d\n", olp, rgb_return_a [r_idx], rgb_return_b [r_idx], dist, r_idx, tprint_hist->histogram [dist]);
 		tprint_hist->histogram [dist] = tprint_hist->histogram [dist] + 1;
+//printf (".");
 		}
 	for (r_idx = 0; r_idx < 12 ; r_idx += 3)
 		{
@@ -182,7 +183,7 @@ for (olp = 0; olp < 4096; olp++)
 	}
 tprint_hist->std_dev = sqrt (tprint_hist->vari_tot / 4096.0);
 tprint_hist->cont_mult = 3.0 - tprint_hist->std_dev;
-printf ("GM=%8.3f\tSTDEV=%8.3f\tCM=%8.3f\n", tprint_hist->grey_mean, tprint_hist->std_dev, tprint_hist->cont_mult);
+printf ("GreyMean=%8.3f\tSTDEV=%8.3f\tContrastMultiplier=%8.3f\n", tprint_hist->grey_mean, tprint_hist->std_dev, tprint_hist->cont_mult);
 /*printf ("\nUnscaled\n");
 for (olp = 0; olp < 8; olp++)
 	{

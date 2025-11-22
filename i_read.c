@@ -9,27 +9,65 @@
 int main (int argc, char *argv [])
 {
 int width, height, comp;
-int rlp, olp, scl_div, scl_mod, pix_cnt, max_side, y_scl_rmd, x_scl_rmd, pos, mag_n;
+int rlp, olp, scl_div, scl_mod, pix_cnt, max_side, y_scl_rmd, x_scl_rmd, pos, mag_n, arg_no, switch_pos;
+int lp = 0, qlp, llp, hlp;
 int pix_ofs = 0, ir_pos = 0, y_inc = 0, x_inc = 0, y_acc = 0, x_acc = 0, y_tot = 0, x_tot = 0, ebo_vals = 0, thmb_vals = 0;
-long racc = 0, gacc = 0, bacc = 0;
-float scl_div_fp;
+long racc = 0, gacc = 0, bacc = 0, wr_items = 0;
+float scl_div_fp, red_dec, grn_dec, blu_dec, hue_value;
+
 char img_name [FILENAME_LENGTH] = NULL_STRING;
 unsigned char *img_raw;				// Image input buffer via stbl_load
 unsigned char *eightbit_thmb_buff;		// 8 bit per channel thumbnail buffer
 unsigned char *thmb_buff;			// 6 bit per channel thumbnail buffer
 unsigned char twelve_vals [13] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 char aspect = 0;
-unsigned char nine_byte_chunk [9];
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
+char switch_chr;
 
 struct rgb_return pix_return;			// Thumbnail pixel info
 struct rgb_return *in_img_buff;			// Square padded 8 bit per channel input buffer
 struct colgry_accumulator quad_accum [4] = {{0}};
 struct maxmin_return limits_return;
+struct rgb_accumulator rgb_return;
 
-strncpy (img_name, argv [1], FILENAME_LENGTH);
+// Arguments section
+for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
+	{
+	if ((int) argv [arg_no] [0] == '-')
+		{
+		for (switch_pos = 1; switch_pos < strlen (argv[arg_no]); switch_pos++)
+			{
+			switch_chr = (int) argv [arg_no] [switch_pos];
+			switch (switch_chr)
+				{
+				case 't':
+//					tpflags->tprt = SW_ON;
+					break;
+				case 'v':
+//					tpflags->verbose = SW_ON;
+					break;
+				case 'V':
+//					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
+					exit (0);
+				default:
+					printf ("%s# i_read [] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
+					exit (0);
+				}	// END switch
+			}	// END for switch_pos
+		}	// END if int argv
+		else
+		{
+		if (strcmp (img_name, NULL_STRING) == 0)
+			{
+			strncpy (img_name, argv [arg_no], FILENAME_LENGTH);
+			}
+		}	// END else if int argv
+	}	// END for arg_no
+
+//strncpy (img_name, argv [1], FILENAME_LENGTH);
 img_raw = stbi_load (img_name, &width, &height, &comp, 0);
 FILE *out_thumbnail;
 out_thumbnail = fopen ("p.rgb", WRITE_BINARY);
@@ -136,7 +174,7 @@ if (!scl_mod)
 	printf ("Remainder\n");
 	for (olp = 0; olp < 64; olp++)
 		{
-		if ((float) (scl_div_fp * olp) > (float) (scl_div * olp + 0.5 + y_acc) && olp != 63)
+		if ((float) (scl_div_fp * olp) > (float) (scl_div * olp + 0.5 + y_acc) && olp != 63)		// kludgy workaround, better test needed
 			{
 //printf ("\t\t\t\t\t\tYYY\n");
 			y_inc++;
@@ -210,6 +248,7 @@ for (olp = 0; olp < 4; olp += 2)
 				{
 				for (pos = 0; pos < 9 ; pos++)
 					{
+//printf ("O=%d H=%d L=%d, Q=%d, P=%d\n", olp, hlp, llp, qlp, pos);
 					nine_byte_chunk [pos] = thmb_buff [lp];
 					lp++;
 					}
@@ -282,6 +321,7 @@ if (mag_n < 0)
 	mag_n = 0;
 	}
 
+printf ("%s %s %c\n", gry_print, hue_print, base_sixfour [mag_n]);
 
 return 0;
 }
