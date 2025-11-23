@@ -32,6 +32,11 @@ struct rgb_return *in_img_buff;			// Square padded 8 bit per channel input buffe
 struct colgry_accumulator quad_accum [4] = {{0}};
 struct maxmin_return limits_return;
 struct rgb_accumulator rgb_return;
+struct tprint_flags tpflags;
+
+FILE *out_thumbnail;
+
+tpflags.tprt = SW_OFF;
 
 // Arguments section
 for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
@@ -44,7 +49,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch (switch_chr)
 				{
 				case 't':
-//					tpflags->tprt = SW_ON;
+					tpflags.tprt = SW_ON;
 					break;
 				case 'v':
 //					tpflags->verbose = SW_ON;
@@ -53,7 +58,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 //					printf ("%s version %s\n", PROG_NAME, PROG_VERSION);
 					exit (0);
 				default:
-					printf ("%s# i_read [] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
+					printf ("%s# i_read [t] <image file>%s\n", TEXT_YELLOW, TEXT_RESET);
 					exit (0);
 				}	// END switch
 			}	// END for switch_pos
@@ -68,10 +73,6 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 	}	// END for arg_no
 
 img_raw = stbi_load (img_name, &width, &height, &comp, 0);
-FILE *out_thumbnail;
-strcat (thumb_name, img_name);
-strcat (thumb_name, ".irgb");
-out_thumbnail = fopen (thumb_name, WRITE_BINARY);
 if (width < height)
 	{
 	aspect = PORTRAIT;
@@ -204,6 +205,12 @@ if (!scl_mod)
 printf ("R=%ld, G=%ld, B=%ld\tSM=%d\n", racc, gacc, bacc, scl_mod);
 printf ("OP=%d\n", ebo_vals);
 
+if (tpflags.tprt)
+	{
+	strcat (thumb_name, img_name);
+	strcat (thumb_name, ".irgb");
+	out_thumbnail = fopen (thumb_name, WRITE_BINARY);
+	}
 for (olp = 0;olp < ebo_vals; olp += 12)
 	{
 	for (rlp = 0;rlp < 12;rlp++)
@@ -216,10 +223,11 @@ for (olp = 0;olp < ebo_vals; olp += 12)
 		thmb_buff [thmb_vals++] = nine_byte_chunk [pos];
 		}
 	}
-wr_items = fwrite (thmb_buff, THUMBNAIL_BYTES, 1, out_thumbnail);
-
-fclose (out_thumbnail);
-
+if (tpflags.tprt)
+	{
+	wr_items = fwrite (thmb_buff, THUMBNAIL_BYTES, 1, out_thumbnail);
+	fclose (out_thumbnail);
+	}
 
 /*for (olp = 0; olp < 64; olp++)
 	{
