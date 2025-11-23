@@ -13,13 +13,13 @@
 #include <string.h>
 #include "TMLib.h"
 
+unsigned char dec_to_sixfour (int dec_value);
 
 char *twelve_six_bit (unsigned char *nine_byte_string)  // Extract 12 6 bit values from 9 bytes
 {
 struct four_six_bit_pixels fsbp;
 
 char *rgb_return = malloc (13);
-unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 unsigned char tmpa, tmpb;
 
 tmpa = nine_byte_string [0];
@@ -87,18 +87,18 @@ fsbp.blu_d = (tmpb >> 2);
 
 //printf ("\tr%2d g%2d b%2d\tr%2d g%2d b%2d\tr%2d g%2d b%2d\tr%2d g%2d b%2d\n", fsbp.red_a, fsbp.grn_a, fsbp.blu_a, fsbp.red_b, fsbp.grn_b, fsbp.blu_b, fsbp.red_c, fsbp.grn_c, fsbp.blu_c, fsbp.red_d, fsbp.grn_d, fsbp.blu_d);
 
-rgb_return [0] = base_sixfour [(int) fsbp.red_a];
-rgb_return [1] = base_sixfour [(int) fsbp.grn_a];
-rgb_return [2] = base_sixfour [(int) fsbp.blu_a];
-rgb_return [3] = base_sixfour [(int) fsbp.red_b];
-rgb_return [4] = base_sixfour [(int) fsbp.grn_b];
-rgb_return [5] = base_sixfour [(int) fsbp.blu_b];
-rgb_return [6] = base_sixfour [(int) fsbp.red_c];
-rgb_return [7] = base_sixfour [(int) fsbp.grn_c];
-rgb_return [8] = base_sixfour [(int) fsbp.blu_c];
-rgb_return [9] = base_sixfour [(int) fsbp.red_d];
-rgb_return [10] = base_sixfour [(int) fsbp.grn_d];
-rgb_return [11] = base_sixfour [(int) fsbp.blu_d];
+rgb_return [0] = dec_to_sixfour ((int) fsbp.red_a);
+rgb_return [1] = dec_to_sixfour ((int) fsbp.grn_a);
+rgb_return [2] = dec_to_sixfour ((int) fsbp.blu_a);
+rgb_return [3] = dec_to_sixfour ((int) fsbp.red_b);
+rgb_return [4] = dec_to_sixfour ((int) fsbp.grn_b);
+rgb_return [5] = dec_to_sixfour ((int) fsbp.blu_b);
+rgb_return [6] = dec_to_sixfour ((int) fsbp.red_c);
+rgb_return [7] = dec_to_sixfour ((int) fsbp.grn_c);
+rgb_return [8] = dec_to_sixfour ((int) fsbp.blu_c);
+rgb_return [9] = dec_to_sixfour ((int) fsbp.red_d);
+rgb_return [10] = dec_to_sixfour ((int) fsbp.grn_d);
+rgb_return [11] = dec_to_sixfour ((int) fsbp.blu_d);
 rgb_return [12] = '\0';
 //printf ("%s", rgb_return);
 return rgb_return;
@@ -273,3 +273,13 @@ return (nine_six);
 
 /*
 */
+
+unsigned char dec_to_sixfour (int dec_value)
+{
+unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+unsigned char sf_return;
+
+sf_return = base_sixfour [dec_value];
+
+return (sf_return);
+}

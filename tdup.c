@@ -1,8 +1,8 @@
 /* * * * * * * * * * * * * *
  *                         *
- *       tcheck 0.10       *
+ *       tdup 0.25         *
  *                         *
- *       2025-10-01        *
+ *       2025-11-04        *
  *                         *
  *       Zax               *
  *                         *
@@ -15,7 +15,8 @@
 #include "search.h"
 #include "six_sixfour.h"
 
-#define PROG_VERSION "0.10"
+#define PROG_NAME "Tdup"
+#define PROG_VERSION "0.25"
 
 struct tprint_flags tpflags [1] = {0};
 
@@ -31,6 +32,7 @@ int db_cnt = 0, olp, slp;
 int tp_db_alloc = DATABASE_INCREMENT;
 int dup_db_alloc = DATABASE_INCREMENT;
 int idx, s_res, fuzz_ents;
+int dup_count = 0;
 
 char switch_chr;					// args section
 char database_filename [FILENAME_LENGTH] = NULL_STRING;
@@ -176,7 +178,7 @@ if (tdflags->fuzzy == SW_OFF)
 	else
 	{
 //printf ("BC=%c\tBS=%d\tAC=%c\tAS=%d\n", dec_to_sixfour (sixfour_to_dec (srch_print [0]) - 1), \
-			db_lookup [sixfour_to_dec (srch_print [0]) - 1].star, \
+			db_lookup [sixfour_to_dec (srch_print [0]) - 1].start, \
 			dec_to_sixfour (sixfour_to_dec (srch_print [0]) + 1), \
 			db_lookup [sixfour_to_dec (srch_print [0]) + 1].start);
 //printf ("O=%d\tE=%d\n", olp, fuzz_ents);
@@ -219,12 +221,47 @@ if (tdflags->fuzzy == SW_OFF)
 			}
 		}
 	}
-for (olp = 0;olp < db_cnt; olp++)
+
+
+
+/*
+// Mark duplicates section
+for (db_idx = 1; db_idx < db_cnt - 2; db_idx ++)
+	{
+	if (!strcmp (sdup_db [sdup_db [db_idx - 1].index].sha, sdup_db [sdup_db [db_idx].index].sha))   // SHA256SUMs match
+		{
+		if (dup_count == 0)
+			{
+			sdup_db [sdup_db [db_idx - 1].index].dup_num = 1;
+			sdup_db [sdup_db [db_idx].index].dup_num = 2;
+			dup_count = 2;
+			}
+			else
+			{
+			sdup_db [sdup_db [db_idx].index].dup_num = ++dup_count;
+			}
+		}
+		else
+		{
+		dup_count = 0;
+		}
+	}
+*/
+
+
+
+
+
+
+
+
+
+/*for (olp = 0;olp < db_cnt; olp++)
 	{
 	printf ("%2d\t%s\t%s\t%c\t%s\t%d\n", olp, dup_db [olp].gry_print, dup_db [olp].hue_print, dup_db [olp].magnitude  [0], dup_db [olp].filepath, dup_db [olp].fuzz_match);
 	}
 
-/*for (olp = 0;olp < 64; olp++)
+for (olp = 0;olp < 64; olp++)
 	{
 	printf ("%d\t%d\t%d\n", olp, db_lookup [olp].start, db_lookup [olp].ents);
 	}*/

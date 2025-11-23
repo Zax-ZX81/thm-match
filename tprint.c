@@ -68,6 +68,6 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 tprint_return = thumbprint (img_name);
 
 printf ("%s\t%s\t%c\t%s\n", tprint_return.gry_print, tprint_return.hue_print, tprint_return.magnitude [0], tprint_return.filepath);
-//nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
+//nn_len = snprintf (new_name, FILENAME_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, dec_to_sixfour ((int) mag_n), FILE_EXTN);
 //printf ("%s\t%s\n", img_name, new_name);
 }

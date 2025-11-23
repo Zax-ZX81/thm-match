@@ -36,7 +36,7 @@ char file_path [FILELINE_LENGTH] = NULL_STRING;
 char out_path [FILELINE_LENGTH] = NULL_STRING;
 unsigned char nine_byte_chunk [9];
 unsigned char *thm_buffer;
-unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
+//char *tmp_return = malloc (13);
 char mag_string [MAG_SUM_LEN];
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
@@ -52,7 +52,6 @@ FILE *rgb_thumbnail;
 FILE *out_thumbnail;
 
 n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote (img_name), RGB_ARGS);
-//printf ("CL=%s=W=%d=\n", cmd_line, wr_items);
 rgb_thumbnail = popen (cmd_line, FOR_READ);
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 rd_err = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
@@ -72,18 +71,16 @@ for (olp = 0; olp < 4; olp += 2)
 					}
 				lp = lp - 1;
 				rgb_return = get_nine_six (nine_byte_chunk);
+//printf ("%c%c%c ", dec_to_sixfour ((int) rgb_return.red_val), dec_to_sixfour ((int) rgb_return.grn_val), dec_to_sixfour ((int) rgb_return.blu_val));
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
 				quad_accum[olp + llp].gry_val = quad_accum[olp + llp].gry_val + (rgb_return.red_val + rgb_return.grn_val + rgb_return.blu_val) / 3;
-				base_sixfour [0] = '0';
-//printf ("%c%c%c ", base_sixfour [(int) rgb_return.red_val], base_sixfour [(int) rgb_return.grn_val], base_sixfour [(int) rgb_return.blu_val]);
-//				base_sixfour [0] = '0';
-//printf ("%1.1f %1.1f %1.1f O%d H%d L%d Q%d  ", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val, olp, hlp, llp, qlp);
+//printf ("%1.1f %1.1f %1.1f  ", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
 				}	// end qlp
-//printf ("\n");
 			}	// end llp
 		}	// end hlp
+//printf ("\n");
 	}	// end olp
 
 if (tpflags.tprt == SW_ON)
@@ -92,24 +89,22 @@ if (tpflags.tprt == SW_ON)
 		{
 		strcpy (file_name, strrchr (img_name, 47) + 1);
 		strncpy (file_path, img_name, strrchr (img_name, 47) - img_name + 1);
-		n_chrs = snprintf (out_path, FILELINE_LENGTH, "%s%s", file_path, "s/");
+		n_chrs = snprintf (out_path, FILELINE_LENGTH, "%s", file_path);
+//		n_chrs = snprintf (out_path, FILELINE_LENGTH, "%s%s", file_path, "s/");
 		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", out_path, file_name, FILE_EXTN);
-//printf ("Sub: I=%s=\tN=%s=\tP=%s=\n", img_name, out_name, out_path);
 		}
 		else
 		{
-		strcpy (out_path, "s/");
+//		strcpy (out_path, "s/");
 		strcat (out_name, img_name);
-		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s%s", file_path, "s/", img_name, FILE_EXTN);
-//printf ("NoSub: I=%s=\tN=%s=\n", img_name, out_name);
+		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s", file_path, img_name, FILE_EXTN);
+//		n_chrs = snprintf (out_name, FILENAME_LENGTH, "%s%s%s%s", file_path, "s/", img_name, FILE_EXTN);
 		}
-//printf ("FILE_PATH=%s\tFILE_NAME=%s\n", file_path, file_name);
 	if (stat (out_path, &sb) == -1)
 		{
 		mkdir (out_path, 0700);
 		}
 	out_thumbnail = fopen (out_name, WRITE_BINARY);
-//printf ("Writing =%s=\n", out_name);
 	wr_items = fwrite (thm_buffer, THUMBNAIL_BYTES, 1, out_thumbnail);
 	fclose (out_thumbnail);
 	}
@@ -119,6 +114,7 @@ free (thm_buffer);
 
 for (olp = 0; olp < 4; olp++)
 	{
+//printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
 	quad_accum[olp].red_val = quad_accum[olp].red_val / QUADRANT_DIVIDER;
 	quad_accum[olp].grn_val = quad_accum[olp].grn_val / QUADRANT_DIVIDER;
 	quad_accum[olp].blu_val = quad_accum[olp].blu_val / QUADRANT_DIVIDER;
@@ -163,14 +159,10 @@ for (olp = 0; olp < 4; olp++)
 		{
 		hue_value = (4 + ((red_dec - grn_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
 		}
-//	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, base_sixfour [(int) hue_value]);
-	base_sixfour [0] = '0';
-	hue_print [olp] = base_sixfour [(int) hue_value];
-	base_sixfour [0] = '0';
-	gry_print[olp] = base_sixfour [(int) quad_accum[olp].gry_val];
-//printf ("%f\n", quad_accum[olp].gry_val);
+//	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, dec_to_sixfour ((int) hue_value));
+	hue_print [olp] = dec_to_sixfour ((int) hue_value);
+	gry_print[olp] = dec_to_sixfour ((int) quad_accum[olp].gry_val);
 	}
-base_sixfour [0] = '0';
 
 n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
 IMGFILE = popen (cmd_line, FOR_READ);
@@ -184,7 +176,7 @@ if (mag_n < 0)
 	}
 strcpy (tprint_return.gry_print, gry_print);
 strcpy (tprint_return.hue_print, hue_print);
-tprint_return.magnitude [0] = base_sixfour [(int) mag_n];
+tprint_return.magnitude [0] = dec_to_sixfour ((int) mag_n);
 strcpy (tprint_return.filepath, img_name);
 if (wr_items)
 	{
@@ -192,6 +184,4 @@ if (wr_items)
 	}
 
 return (tprint_return);
-//n_chrs = snprintf (new_name, FILELINE_LENGTH, "%s_%s%s%c%s", img_name, gry_print, hue_print, base_sixfour [(int) mag_n], FILE_EXTN);
-//printf ("%s\t%s\n", img_name, new_name);
 }

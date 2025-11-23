@@ -34,7 +34,6 @@ unsigned char nine_byte_chunk_a [9];
 unsigned char nine_byte_chunk_b [9];
 unsigned char *thm_buffer_a;
 unsigned char *thm_buffer_b;
-unsigned char base_sixfour [65] = BASE_SIXTYFOUR;
 
 int pos, r_idx, rerr_a, rerr_b, olp, dist, arg_no, switch_pos;
 int ch_a, ch_b, ch_r, ch_g, pix_idx = 0;
@@ -111,7 +110,7 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 printf ("%s, %s\n\n",img_name_a, img_name_b);
 /*for (olp = 0; olp < 64; olp++)
 	{
-	printf ("%c=%4d.  ", base_sixfour [olp], tprint_hist->histogram [olp]);
+	printf ("%c=%4d.  ", dec_to_sixfour (olp), tprint_hist->histogram [olp]);
 	}
 printf ("\n");*/
 
@@ -235,7 +234,7 @@ for (olp = 0; olp < 8; olp++)
 			{
 			if (tprint_hist->hscale != 0.0)
 				{
-				printf ("%c ", base_sixfour [(int) tprint_hist->hscale]);
+				printf ("%c ", dec_to_sixfour ((int) tprint_hist->hscale));
 				}
 				else
 				{
