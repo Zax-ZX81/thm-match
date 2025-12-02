@@ -29,6 +29,7 @@ char switch_chr;
 
 int arg_no, switch_pos;
 
+tpflags->asc = SW_OFF;
 tpflags->tprt = FALSE;
 tpflags->verbose = FALSE;
 
@@ -42,6 +43,9 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
+				case 'a':
+					tpflags->asc = SW_ON;
+					break;
 				case 't':
 					tpflags->tprt = SW_ON;
 					break;

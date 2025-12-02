@@ -11,7 +11,7 @@ int main (int argc, char *argv [])
 int width, height, comp;
 int rlp, olp, scl_div, scl_mod, pix_cnt, max_side, y_scl_rmd, x_scl_rmd, pos, mag_n, arg_no, switch_pos;
 int lp = 0, qlp, llp, hlp;
-int pix_ofs = 0, ir_pos = 0, y_inc = 0, x_inc = 0, y_acc = 0, x_acc = 0, y_tot = 0, x_tot = 0, ebo_vals = 0, thmb_vals = 0;
+int pix_ofs = 0, ir_pos = 0, y_inc = 0, x_inc = 0, y_acc = 0, x_acc = 0, y_tot = 0, x_tot = 0, ebo_vals = 0, thmb_vals = 0, poc = 0;
 long racc = 0, gacc = 0, bacc = 0, wr_items = 0;
 float scl_div_fp, red_dec, grn_dec, blu_dec, hue_value;
 
@@ -37,6 +37,7 @@ struct tprint_flags tpflags;
 FILE *out_thumbnail;
 
 tpflags.tprt = SW_OFF;
+tpflags.asc = SW_OFF;
 
 // Arguments section
 for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
@@ -48,6 +49,9 @@ for (arg_no = 1; arg_no < argc; arg_no++)		// loop through arguments
 			switch_chr = (int) argv [arg_no] [switch_pos];
 			switch (switch_chr)
 				{
+				case 'a':
+					tpflags.asc = SW_ON;
+					break;
 				case 't':
 					tpflags.tprt = SW_ON;
 					break;
@@ -96,7 +100,7 @@ scl_mod = max_side % 64;
 scl_div_fp = (float) max_side / 64;
 y_scl_rmd = scl_mod;
 x_scl_rmd = scl_mod;
-//printf ("W=%d, H=%d, C=%d, A=%d, PC=%d, SD=%d, SM=%d, Sf=%5.3f\n", width, height, comp, aspect, pix_cnt, scl_div, scl_mod, scl_div_fp);
+printf ("W=%d, H=%d, C=%d, A=%d, PC=%d, SD=%d, SM=%d, Sf=%5.3f\n", width, height, comp, aspect, pix_cnt, scl_div, scl_mod, scl_div_fp);
 
 in_img_buff = (struct rgb_return *) malloc (sizeof (struct rgb_return) * pix_cnt);
 eightbit_thmb_buff = (unsigned char *) malloc (sizeof (unsigned char) * (THUMBNAIL_PIXELS * 3));
@@ -107,23 +111,28 @@ if (aspect != SQUARE)
 printf ("Padding %d\n", pix_cnt);
 	for (olp = 0;olp < pix_cnt;olp++)
 		{
-		in_img_buff [olp].red_val = 127;
-		in_img_buff [olp].grn_val = 127;
-		in_img_buff [olp].blu_val = 127;
+		in_img_buff [olp].red_val = PAD_VALUE;
+		in_img_buff [olp].grn_val = PAD_VALUE;
+		in_img_buff [olp].blu_val = PAD_VALUE;
 		}
 	}
 switch (aspect)
 	{
 	case PORTRAIT:
+		if ((height - width) % 2)
+			{
+			poc = 1;
+			}
 		pix_ofs = (height - width) / 2;
 		printf ("Portrait, %d, %d\n", pix_ofs, max_side - pix_ofs);
 		for (olp = 0;olp < height;olp++)
 			{
-			for (rlp = pix_ofs;rlp < max_side - pix_ofs;rlp++)
+			for (rlp = pix_ofs;rlp < (max_side - pix_ofs - poc);rlp++)
 				{
-				in_img_buff [(olp * height) + rlp].red_val = img_raw [ir_pos++];
-				in_img_buff [(olp * height) + rlp].grn_val = img_raw [ir_pos++];
-				in_img_buff [(olp * height) + rlp].blu_val = img_raw [ir_pos++];
+				in_img_buff [(olp * max_side) + rlp].red_val = img_raw [ir_pos++];
+				in_img_buff [(olp * max_side) + rlp].grn_val = img_raw [ir_pos++];
+				in_img_buff [(olp * max_side) + rlp].blu_val = img_raw [ir_pos++];
+//printf ("W=%d, H=%d, PO=%d, O=%d, R=%d\tIP=%5d\t%3d %3d %3d\n", width, height, pix_ofs, olp, rlp, ir_pos, in_img_buff [(olp * max_side) + rlp].red_val, in_img_buff [(olp * max_side) + rlp].grn_val, in_img_buff [(olp * max_side) + rlp].blu_val);
 				}
 			}
 		break;
@@ -161,9 +170,9 @@ if (!scl_mod)
 			racc = racc + pix_return.red_val;
 			gacc = gacc + pix_return.grn_val;
 			bacc = bacc + pix_return.blu_val;
-			eightbit_thmb_buff [ebo_vals++] = pix_return.red_val / (scl_div * scl_div);
-			eightbit_thmb_buff [ebo_vals++] = pix_return.grn_val / (scl_div * scl_div);
-			eightbit_thmb_buff [ebo_vals++] = pix_return.blu_val / (scl_div * scl_div);
+			eightbit_thmb_buff [ebo_vals++] = pix_return.red_val;
+			eightbit_thmb_buff [ebo_vals++] = pix_return.grn_val;
+			eightbit_thmb_buff [ebo_vals++] = pix_return.blu_val;
 //printf ("O=%2d, R=%2d, A=%7d, M=%5d\t", olp, rlp, (olp * max_side * scl_div) + (rlp * scl_div), max_side);
 			}
 		}
@@ -186,12 +195,12 @@ if (!scl_mod)
 				x_acc++;
 				}
 			pix_return = get_pixel (in_img_buff, (olp * max_side * scl_div) + (max_side * y_acc) + rlp * scl_div + x_acc, max_side, scl_div + y_inc, scl_div + x_inc);
-			racc = racc + (pix_return.red_val / ((scl_div + y_inc) * (scl_div + x_inc)));
-			gacc = gacc + (pix_return.grn_val / ((scl_div + y_inc) * (scl_div + x_inc)));
-			bacc = bacc + (pix_return.blu_val / ((scl_div + y_inc) * (scl_div + x_inc)));
-			eightbit_thmb_buff [ebo_vals++] = pix_return.red_val / ((scl_div + y_inc) * (scl_div + x_inc));
-			eightbit_thmb_buff [ebo_vals++] = pix_return.grn_val / ((scl_div + y_inc) * (scl_div + x_inc));
-			eightbit_thmb_buff [ebo_vals++] = pix_return.blu_val / ((scl_div + y_inc) * (scl_div + x_inc));
+			racc = racc + pix_return.red_val;
+			gacc = gacc + pix_return.grn_val;
+			bacc = bacc + pix_return.blu_val;
+			eightbit_thmb_buff [ebo_vals++] = pix_return.red_val;
+			eightbit_thmb_buff [ebo_vals++] = pix_return.grn_val;
+			eightbit_thmb_buff [ebo_vals++] = pix_return.blu_val;
 			x_tot = x_tot + scl_div + x_inc;
 			x_inc = 0;
 			}
@@ -217,10 +226,9 @@ for (olp = 0;olp < ebo_vals; olp += 12)
 		{
 		twelve_vals [rlp] = eightbit_thmb_buff [olp + rlp];
 		}
-	strcpy (nine_byte_chunk, twelveight_to_nine_six (twelve_vals));
 	for (pos = 0;pos < 9;pos++)
 		{
-		thmb_buff [thmb_vals++] = nine_byte_chunk [pos];
+		thmb_buff [thmb_vals++] = twelveight_to_nine_six (twelve_vals) [pos];
 		}
 	}
 if (tpflags.tprt)
@@ -229,16 +237,20 @@ if (tpflags.tprt)
 	fclose (out_thumbnail);
 	}
 
-/*for (olp = 0; olp < 64; olp++)
+
+if (tpflags.asc)
 	{
-	for (hlp = 0; hlp < 192; hlp += 3)
+	for (olp = 0; olp < 64; olp++)
 		{
-		printf ("%02d %02d %02d ", eightbit_thmb_buff [(olp * 192) + hlp] / 4, eightbit_thmb_buff [(olp * 192) + hlp + 1] / 4, eightbit_thmb_buff [(olp * 192) + hlp + 2] / 4);
-//		printf ("%c%c%c ", dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp] / 4), dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp + 1] / 4), dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp + 2] / 4));
+		for (hlp = 0; hlp < 192; hlp += 3)
+			{
+			printf ("%c%c%c", dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp] / 4), dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp + 1] / 4), dec_to_sixfour (eightbit_thmb_buff [(olp * 192) + hlp + 2] / 4));
+			}
+		printf ("\n");
 		}
-	printf ("\n");
 	}
-exit (0);*/
+
+
 
 for (olp = 0; olp < 4; olp += 2)
 	{
@@ -254,9 +266,7 @@ for (olp = 0; olp < 4; olp += 2)
 					lp++;
 					}
 				lp = lp - 1;
-//printf ("%c%c%c ", dec_to_sixfour ((int) rgb_return.red_val), dec_to_sixfour ((int) rgb_return.grn_val), dec_to_sixfour ((int) rgb_return.blu_val));
 				rgb_return = get_nine_six (nine_byte_chunk);
-//printf ("%1.1f %1.1f %1.1f  ", rgb_return.red_val, rgb_return.grn_val, rgb_return.blu_val);
 				quad_accum[olp + llp].red_val = quad_accum[olp + llp].red_val + rgb_return.red_val;
 				quad_accum[olp + llp].grn_val = quad_accum[olp + llp].grn_val + rgb_return.grn_val;
 				quad_accum[olp + llp].blu_val = quad_accum[olp + llp].blu_val + rgb_return.blu_val;
@@ -264,14 +274,13 @@ for (olp = 0; olp < 4; olp += 2)
 				}	// end qlp
 			}	// end llp
 		}	// end hlp
-//printf ("\n");
 	}	// end olp
 
 
 
 for (olp = 0; olp < 4; olp++)
 	{
-//printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
+printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
 	quad_accum[olp].red_val = quad_accum[olp].red_val / QUADRANT_DIVIDER;
 	quad_accum[olp].grn_val = quad_accum[olp].grn_val / QUADRANT_DIVIDER;
 	quad_accum[olp].blu_val = quad_accum[olp].blu_val / QUADRANT_DIVIDER;
@@ -305,21 +314,21 @@ for (olp = 0; olp < 4; olp++)
 			hue_value = hue_value + 6;
 			}
 		hue_value = hue_value * SIXBIT_MULTIPLIER;
-//printf ("G-B=%f, M-m=%f, H=%f\n", grn_dec - blu_dec, limits_return.max_val - limits_return.min_val, hue_value);
+printf ("G-B=%f, M-m=%f, H=%f\n", grn_dec - blu_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 	if (limits_return.channel == GRN_CHAN )
 		{
 		hue_value = (2 + ((blu_dec - red_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
-//printf ("B-R=%f, M-m=%f, H=%f\n", grn_dec - blu_dec, limits_return.max_val - limits_return.min_val, hue_value);
+printf ("B-R=%f, M-m=%f, H=%f\n", blu_dec - red_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 	if (limits_return.channel == BLU_CHAN )
 		{
 		hue_value = (4 + ((red_dec - grn_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
-//printf ("R-G=%f, M-m=%f, H=%f\n", grn_dec - blu_dec, limits_return.max_val - limits_return.min_val, hue_value);
+printf ("R-G=%f, M-m=%f, H=%f\n", red_dec - grn_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 	hue_print [olp] = dec_to_sixfour ((int) hue_value);
 	gry_print [olp] = dec_to_sixfour ((int) quad_accum [olp].gry_val);
-//printf ("LC=%d\tLa=%f\tLz=%f\tR=%7.3f, G=%7.3f, B=%7.3f\n", limits_return.channel, limits_return.min_val, limits_return.max_val, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val);
+printf ("LC=%d\tLa=%f\tLz=%f\tR=%7.3f, G=%7.3f, B=%7.3f\n", limits_return.channel, limits_return.min_val, limits_return.max_val, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val);
 	}
 mag_n = (powf ((float) (width * height), EXPONENT) / DIVIDER) - SUBTRACTOR;
 if (mag_n < 0)
@@ -328,6 +337,10 @@ if (mag_n < 0)
 	}
 
 printf ("%s %s %c\n", gry_print, hue_print, dec_to_sixfour (mag_n));
+if (tpflags.tprt)
+	{
+	printf ("%s*%s ", TEXT_RED, TEXT_RESET);
+	}
 
 return 0;
 }

@@ -209,13 +209,18 @@ for (yl = 0; yl < y_max; yl++)
 		gc = gc + in_img_buff [px].grn_val;
 		bc = bc + in_img_buff [px].blu_val;
 		//printf ("%2x%2x%2x ", rp, gp, bp);
+//		printf ("Y=%3d   X=%3d   %3d %3d %3d\n", yl, xl, in_img_buff [px].red_val, in_img_buff [px].grn_val, in_img_buff [px].blu_val);
 //		printf ("Y=%2d   X=%2d   %2x %2x %2x\n", yl, xl, rc, gc, bc);
 		}
 	}
 //printf ("YM=%d, XM=%d, PixCnt=%d\n", y_max, x_max, y_max * x_max);
-pix_return.red_val = rc;
-pix_return.grn_val = gc;
-pix_return.blu_val = bc;
+//printf ("\n\t\t%3d %3d %3d\n\n", rc / (y_max * x_max), gc / (y_max * x_max), bc / (y_max * x_max));
+pix_return.red_val = rc / (y_max * x_max);
+pix_return.grn_val = gc / (y_max * x_max);
+pix_return.blu_val = bc / (y_max * x_max);
+//pix_return.red_val = rc / (y_max * x_max * 0.98);
+//pix_return.grn_val = gc / (y_max * x_max * 0.98);
+//pix_return.blu_val = bc / (y_max * x_max * 0.98);
 
 return (pix_return);
 }

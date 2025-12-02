@@ -40,7 +40,7 @@
 #define SQUARE 1
 #define LANDSC 2
 #define PORTRAIT 3
-
+#define PAD_VALUE 127
 #define SLASH_TERM "/"
 #define PATH_CURRENT "./"
 #define DIR_CURRENT "."
@@ -207,6 +207,7 @@ struct tprint_db_lookup
 // Flags
 struct tprint_flags
 	{
+	char asc;		// write raw base 64 data to terminal
 	char tprt;		// write thumbnail file
 	char std_out;		// print output to stdout, supress file output
 	char verbose;		// mirror everything to stdout

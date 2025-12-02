@@ -231,9 +231,9 @@ unsigned char *twelveight_to_nine_six (unsigned char *twelve_byte_string)
 {
 unsigned char *nine_six = malloc (10);
 unsigned char tempa, tempb;
-//					        <2  >4  <4    >2   <6   0       <2        >4   <4   >2   <6   0       <2        >4   <4   >2    <6   0
-tempa = (twelve_byte_string [0] / 4) << 2;	//..000000 ..11 1111 ..2222 22 ..333333 ..444444 ..55 5555 ..6666 66 ..777777 ..000000 ..11 1111 ..2222 22 ..333333
-tempb = (twelve_byte_string [1] / 4) >> 4;	//00000011  11112222  22333333 44444455 55556666  66777777  00000011 11112222 22333333
+
+tempa = (twelve_byte_string [0] / 4) << 2;
+tempb = (twelve_byte_string [1] / 4) >> 4;
 nine_six [0] = tempa + tempb;
 
 tempa = (twelve_byte_string [1] / 4) << 4;
@@ -271,8 +271,6 @@ nine_six [8] = tempa + tempb;
 return (nine_six);
 }
 
-/*
-*/
 
 unsigned char dec_to_sixfour (int dec_value)
 {

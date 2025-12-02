@@ -40,9 +40,10 @@ unsigned char *thm_buffer;
 char mag_string [MAG_SUM_LEN];
 char hue_print [5] = NULL_STRING;
 char gry_print [5] = NULL_STRING;
+char *nn = malloc (10);
 
 int lp = 0;
-int qlp, llp, hlp, olp, rd_err, pos, n_chrs;
+int qlp, llp, hlp, olp, rd_err, pos, n_chrs, rlp;
 int wr_items = 0;
 
 float hue_value, red_dec, grn_dec, blu_dec, mag_n;
@@ -55,6 +56,29 @@ n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND, enquote 
 rgb_thumbnail = popen (cmd_line, FOR_READ);
 thm_buffer = (unsigned char *) calloc (1, THUMBNAIL_BYTES + 1);
 rd_err = fread (thm_buffer, 1, THUMBNAIL_BYTES, rgb_thumbnail);
+
+
+if (tpflags.asc == SW_ON)
+	{
+	for (olp = 0;olp < 64;olp++)
+		{
+		for (rlp = 0;rlp < 16;rlp++)
+			{
+			for (pos = 0;pos < 9;pos++)
+				{
+				nn [pos] = thm_buffer [(olp * 144) + (rlp * 9) + pos];
+				}
+			for (pos = 0;pos < 12;pos++)
+				{
+				printf ("%c",twelve_six_bit (nn) [pos]);
+				}
+		        }
+		printf ("\n");
+		}
+	}
+
+
+
 
 for (olp = 0; olp < 4; olp += 2)
 	{
@@ -114,7 +138,7 @@ free (thm_buffer);
 
 for (olp = 0; olp < 4; olp++)
 	{
-//printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
+printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
 	quad_accum[olp].red_val = quad_accum[olp].red_val / QUADRANT_DIVIDER;
 	quad_accum[olp].grn_val = quad_accum[olp].grn_val / QUADRANT_DIVIDER;
 	quad_accum[olp].blu_val = quad_accum[olp].blu_val / QUADRANT_DIVIDER;
@@ -150,18 +174,22 @@ for (olp = 0; olp < 4; olp++)
 			hue_value = hue_value + 6;
 			}
 		hue_value = hue_value * SIXBIT_MULTIPLIER;
+printf ("G-B=%f, M-m=%f, H=%f\n", grn_dec - blu_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 	if (limits_return.channel == GRN_CHAN )
 		{
 		hue_value = (2 + ((blu_dec - red_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
+printf ("B-R=%f, M-m=%f, H=%f\n", blu_dec - red_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 	if (limits_return.channel == BLU_CHAN )
 		{
 		hue_value = (4 + ((red_dec - grn_dec) / (limits_return.max_val - limits_return.min_val))) * SIXBIT_MULTIPLIER;
+printf ("R-G=%f, M-m=%f, H=%f\n", red_dec - grn_dec, limits_return.max_val - limits_return.min_val, hue_value);
 		}
 //	printf ("\tHue %d: %5.2f\t%c\n", olp, hue_value, dec_to_sixfour ((int) hue_value));
 	hue_print [olp] = dec_to_sixfour ((int) hue_value);
 	gry_print[olp] = dec_to_sixfour ((int) quad_accum[olp].gry_val);
+printf ("LC=%d\tLa=%f\tLz=%f\tR=%7.3f, G=%7.3f, B=%7.3f\n", limits_return.channel, limits_return.min_val, limits_return.max_val, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val);
 	}
 
 n_chrs = snprintf (cmd_line, FILELINE_LENGTH, "%s%s%s", MAGICK_COMMAND,  MAG_ARGS, img_name);
@@ -185,3 +213,12 @@ if (wr_items)
 
 return (tprint_return);
 }
+
+/*
+printf ("W=%d, H=%d, C=%d, A=%d, PC=%d, SD=%d, SM=%d, Sf=%5.3f\n", width, height, comp, aspect, pix_cnt, scl_div, scl_mod, scl_div_fp);
+printf ("Padding %d\n", pix_cnt);
+printf ("R=%ld, G=%ld, B=%ld\tSM=%d\n", racc, gacc, bacc, scl_mod);
+printf ("OP=%d\n", ebo_vals);
+printf ("-%d-\t%7.3f\t%7.3f\t%7.3f\t%7.3f\n", olp, quad_accum[olp].red_val, quad_accum[olp].grn_val, quad_accum[olp].blu_val, quad_accum[olp].gry_val);
+printf ("%s %s %c\n", gry_print, hue_print, dec_to_sixfour (mag_n));
+*/
